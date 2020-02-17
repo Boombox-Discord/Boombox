@@ -14,6 +14,8 @@ client.on('message', msg => {
  } else if (msg.content === 'dinosaur' || msg.content === 'Dinosaur') {
     msg.reply('Here have a Dinosaur!')
     msg.reply('https://media.giphy.com/media/W0QniYnt2WSMrMwDrS/giphy.gif')
+ } else if (msg.content === '' || msg.content === '') {
+    
  }
  });
 
