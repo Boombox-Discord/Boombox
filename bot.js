@@ -11,8 +11,8 @@ client.on('message', msg => {
  if (msg.content === 'hello' || msg.content === 'Hello') {
  msg.reply('Hello!');
  } else if (msg.content === 'fuck' || msg.content === 'Fuck') {
-    const ayy = client.emojis.find(emoji => emoji.name === "nsfwlemon");
-    msg.reply(`me ${ayy} `);
+    const nsfwlemon = client.emojis.find(emoji => emoji.name === "nsfwlemon");
+    msg.reply(`me ${nsfwlemon} `);
  } else if (msg.content === 'dinosaur' || msg.content === 'Dinosaur') {
     msg.reply('Here have a Dinosaur!')
     msg.reply('https://media.giphy.com/media/W0QniYnt2WSMrMwDrS/giphy.gif')
