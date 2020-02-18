@@ -6,6 +6,17 @@ client.on('ready', () => {
  });
 
 
+  // Put the Music module in the new Client object.
+// This allows for easy access to all the modules
+// functions and data.
+client.music = require("discord.js-musicbot-addon");
+
+// Now we start the music module.
+client.music.start(client, {
+  // Set the api key used for YouTube.
+  // This is required to run the bot.
+  youtubeKey: "AIzaSyB1TAY_jKKsyYqjndOsXawXexsSTfunzo0"
+});
 
 client.on('message', msg => {
  if (msg.content === 'hello' || msg.content === 'Hello') {
@@ -19,6 +30,9 @@ client.on('message', msg => {
  } else if (msg.content === 'pussy' || msg.content === 'pussy') {
    const ahegao = client.emojis.find(emoji => emoji.name === "3932_ahegao");
    msg.reply(`${ahegao} `);
+ } else if (msg.content === 'gay' || msg.content === 'Gay') {
+   const gay = client.emojis.find(emoji => emoji.name === "prideheart");
+   message.react(`${gay} `);
  }
  });
 
