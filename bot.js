@@ -19,20 +19,45 @@ client.music.start(client, {
 });
 
 client.on('message', msg => {
- if (msg.content === 'hello' || msg.content === 'Hello') {
- msg.reply('Hello!');
- } else if (msg.content === 'fuck' || msg.content === 'Fuck') {
+
+  var msgsplit = msg.content.split(" ");
+
+ if (msgsplit.includes('hello') || msgsplit.includes('Hello')) {
+  msg.channel.send('Hello!');
+ } else if (msgsplit.includes('fuck') || msgsplit.includes('Fuck')) {
     const nsfwlemon = client.emojis.find(emoji => emoji.name === "nsfwlemon");
-    msg.reply(`me ${nsfwlemon} `);
- } else if (msg.content === 'dinosaur' || msg.content === 'Dinosaur') {
-    msg.reply('Here have a Dinosaur!')
-    msg.reply('https://media.giphy.com/media/W0QniYnt2WSMrMwDrS/giphy.gif')
- } else if (msg.content === 'pussy' || msg.content === 'pussy') {
+    msg.channel.send(`me ${nsfwlemon} `);
+ } else if (msgsplit.includes('dinosaur') || msgsplit.includes('Dinosaur')) {
+    msg.channel.send('Here have a Dinosaur!')
+    msg.channel.send('https://media.giphy.com/media/W0QniYnt2WSMrMwDrS/giphy.gif')
+ } else if (msgsplit.includes('pussy') || msgsplit.includes('pussy')) {
    const ahegao = client.emojis.find(emoji => emoji.name === "3932_ahegao");
-   msg.reply(`${ahegao} `);
- } else if (msg.content === 'gay' || msg.content === 'Gay') {
-   const gay = client.emojis.find(emoji => emoji.name === "prideheart");
-   message.react(`${gay} `);
+   msg.channel.send(`${ahegao} `);
+ } else if (msg.isMentioned(client.users.get('451641455627206667')) && msgsplit.includes('test')) {
+    const gay = client.emojis.find(emoji => emoji.name === "prideheart");
+    msg.react(gay);
+    msg.channel.send("@451641455627206667 gay");
+ }else if (msgsplit.includes('trans') || msgsplit.includes('Trans') || msgsplit.includes('transgender') || msgsplit.includes('Transgender')) {
+   const trans = client.emojis.find(emoji => emoji.name === "transheart");
+   msg.react(trans);
+ } else if (msgsplit.includes('NB') || msgsplit.includes('non-binary') || msgsplit.includes('Non-Binary') || msgsplit.includes('ENBY') || msgsplit.includes('Non-binary')) {
+   const NB = client.emojis.find(emoji => emoji.name === "nbheart");
+   msg.react(NB);
+ } else if (msgsplit.includes('pan') || msgsplit.includes('Pan') || msgsplit.includes('Pansexual') || msgsplit.includes('pansexual')) {
+   const pan = client.emojis.find(emoji => emoji.name === "panheart");
+   msg.react(pan);
+ } else if (msgsplit.includes('Lesbian') || msgsplit.includes('lesbian')) {
+   const lesbian = client.emojis.find(emoji => emoji.name === 'lesbianheart');
+   msg.react(lesbian);
+ } else if (msgsplit.includes('shrek') || msgsplit.includes('Shrek')) {
+   const shrek = client.emojis.find(emoji => emoji.name === 'shrexualheart');
+   msg.react(shrek);
+ } else if (msgsplit.includes('bi') || msgsplit.includes('Bi') || msgsplit.includes('Bisexual') || msgsplit.includes('bisexual')) {
+   const bi = client.emojis.find(emoji => emoji.name === 'biheart');
+   msg.react(bi);
+ } else if (msgsplit.includes('gay') || msgsplit.includes('Gay')) {
+  const gay = client.emojis.find(emoji => emoji.name === "prideheart");
+  msg.react(gay);
  }
  });
 
