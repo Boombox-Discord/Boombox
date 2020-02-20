@@ -58,7 +58,11 @@ client.on('message', msg => {
  } else if (msgsplit.includes('gay') || msgsplit.includes('Gay')) {
   const gay = client.emojis.find(emoji => emoji.name === "prideheart");
   msg.react(gay);
- }
+ } else if (msgsplit.includes("piss") || msgsplit.includes('Piss') || msgsplit.includes('pee') || msgsplit.includes('Pee')) {
+  const piss = client.emojis.find(emoji => emoji.name === "7136_piss_heart_time");
+   msg.react(piss);
+   msg.channel.send(`${piss}`)
+ } 
  });
 
 
