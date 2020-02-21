@@ -3,6 +3,8 @@ const Discord = require('discord.js');
 
 client.on('ready', () => {
  console.log(`Logged in as ${client.user.tag}!`);
+ client.user.setActivity("fucking bitches");
+
  });
 
 
@@ -18,7 +20,11 @@ client.music.start(client, {
   youtubeKey: "AIzaSyB1TAY_jKKsyYqjndOsXawXexsSTfunzo0"
 });
 
-client.on('message', msg => {
+
+
+client.on('message', async msg => {
+
+  if(msg.author.bot) return;
 
   var msgsplit = msg.content.split(" ");
 
@@ -33,10 +39,10 @@ client.on('message', msg => {
  } else if (msgsplit.includes('pussy') || msgsplit.includes('pussy')) {
    const ahegao = client.emojis.find(emoji => emoji.name === "3932_ahegao");
    msg.channel.send(`${ahegao} `);
- } else if (msg.isMentioned(client.users.get('451641455627206667')) && msgsplit.includes('test')) {
+ } else if (msg.isMentioned(client.users.get('451641455627206667')) && msgsplit.includes('gay')) {
     const gay = client.emojis.find(emoji => emoji.name === "prideheart");
     msg.react(gay);
-    msg.channel.send("@451641455627206667 gay");
+    msg.channel.send("<@451641455627206667> gay");
  }else if (msgsplit.includes('trans') || msgsplit.includes('Trans') || msgsplit.includes('transgender') || msgsplit.includes('Transgender')) {
    const trans = client.emojis.find(emoji => emoji.name === "transheart");
    msg.react(trans);
@@ -52,6 +58,8 @@ client.on('message', msg => {
  } else if (msgsplit.includes('shrek') || msgsplit.includes('Shrek')) {
    const shrek = client.emojis.find(emoji => emoji.name === 'shrexualheart');
    msg.react(shrek);
+   msg.channel.send("Shrek is love...");
+   msg.channel.send("Shrek is life.")
  } else if (msgsplit.includes('bi') || msgsplit.includes('Bi') || msgsplit.includes('Bisexual') || msgsplit.includes('bisexual')) {
    const bi = client.emojis.find(emoji => emoji.name === 'biheart');
    msg.react(bi);
