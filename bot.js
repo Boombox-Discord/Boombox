@@ -30,7 +30,7 @@ client.on('message', async msg => {
 
  if (msgsplit.includes('hello') || msgsplit.includes('Hello')) {
   msg.channel.send('Hello!');
- } else if (msgsplit.includes('fuck') || msgsplit.includes('Fuck')) {
+ } else if (msg.content === 'Fuck' || msg.content === 'fuck') {
     const nsfwlemon = client.emojis.find(emoji => emoji.name === "nsfwlemon");
     msg.channel.send(`me ${nsfwlemon} `);
  } else if (msgsplit.includes('dinosaur') || msgsplit.includes('Dinosaur')) {
@@ -43,7 +43,7 @@ client.on('message', async msg => {
     const gay = client.emojis.find(emoji => emoji.name === "prideheart");
     msg.react(gay);
     msg.channel.send("<@451641455627206667> gay");
- }else if (msgsplit.includes('trans') || msgsplit.includes('Trans') || msgsplit.includes('transgender') || msgsplit.includes('Transgender')) {
+ }else if (msgsplit.includes('trans') || msgsplit.includes('Trans') || msgsplit.includes('transgender') || msgsplit.includes('Transgender') || msgsplit.includes('smore') || msgsplit.includes('Smore') || msgsplit.includes('Transpride') || msgsplit.includes('transpride')) {
    const trans = client.emojis.find(emoji => emoji.name === "transheart");
    msg.react(trans);
  } else if (msgsplit.includes('NB') || msgsplit.includes('non-binary') || msgsplit.includes('Non-Binary') || msgsplit.includes('ENBY') || msgsplit.includes('Non-binary')) {
