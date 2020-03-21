@@ -79,7 +79,11 @@ client.on('message', async msg => {
 } else if (msgsplit.includes('FAT FUCK')) {
   msg.channel.send({files: ["fat.jpg"]});
 }
+
  });
+
+ 
+
 
 
 
