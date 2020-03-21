@@ -70,7 +70,13 @@ client.on('message', async msg => {
   const piss = client.emojis.find(emoji => emoji.name === "7136_piss_heart_time");
    msg.react(piss);
    msg.channel.send(`${piss}`)
- } 
+ } else if(msgsplit.includes("Life changer")) {
+    msg.channel.send('miracle arnager');
+ } else if (msgsplit.includes('69')) {
+  msg.channel.send('nice');
+} else if (msgsplit.includes('emily') || msgsplit.includes('Emily')) {
+  msg.channel.send({files: ["Emily.jpg"]});
+}
  });
 
 
