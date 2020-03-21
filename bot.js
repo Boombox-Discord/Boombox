@@ -72,7 +72,11 @@ client.on('message', async msg => {
    msg.channel.send(`${piss}`)
  } else if(msgsplit.includes("Life changer")) {
     msg.channel.send('miracle arnager');
- }
+ } else if (msgsplit.includes('69')) {
+  msg.channel.send('nice');
+} else if (msgsplit.includes('emily') || msgsplit.includes('Emily')) {
+  msg.channel.send({files: ["Emily.jpg"]});
+}
  });
 
 
