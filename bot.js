@@ -76,7 +76,7 @@ client.on('message', async msg => {
   msg.channel.send('nice');
 } else if (msgsplit.includes('emily') || msgsplit.includes('Emily')) {
   msg.channel.send({files: ["Emily.jpg"]});
-} else if (msgsplit.includes('FAT FUCK')) {
+} else if (msgsplit.includes('FAT') && msgsplit.includes("FUCK")) {
   msg.channel.send({files: ["fat.jpg"]});
 }
  });
