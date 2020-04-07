@@ -1,5 +1,10 @@
 const Discord = require('discord.js');
- const client = new Discord.Client();
+
+const {
+	prefix,
+	token,
+} = require('./config.json');
+const client = new Discord.Client();
 
 client.on('ready', () => {
  console.log(`Logged in as ${client.user.tag}!`);
@@ -78,13 +83,12 @@ client.on('message', async msg => {
   msg.channel.send({files: ["Emily.jpg"]});
 } else if (msgsplit.includes('FAT') && msgsplit.includes("FUCK")) {
   msg.channel.send({files: ["fat.jpg"]});
+}  else if (msg.isMentioned(client.users.get('451641455627206667')) && msgsplit.includes('het')) {
+  const gay = client.emojis.find(emoji => emoji.name === "prideheart");
+  msg.channel.send("<@451641455627206667> het");
 }
-
  });
 
- 
 
 
-
-
-client.login('Njc4ODE5OTk0MjUwNzcyNDgw.Xk42rw.eTnWYjMa9iH3NSisRrB66GRxivM');
+client.login("Njc4ODE5OTk0MjUwNzcyNDgw.XowhvQ.rqgZjV0v4hcA7A52yjNTFeIHWjU");
