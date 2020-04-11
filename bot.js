@@ -42,7 +42,7 @@ client.on('message', async msg => {
     msg.channel.send('Here have a Dinosaur!')
     msg.channel.send('https://media.giphy.com/media/W0QniYnt2WSMrMwDrS/giphy.gif')
  } else if (msgsplit.includes('pussy') || msgsplit.includes('pussy')) {
-   const ahegao = client.emojis.find(emoji => emoji.name === "3932_ahegao");
+   const ahegao = client.emojis.find(emoji => emoji.name === "ahegao");
    msg.channel.send(`${ahegao} `);
  } else if (msg.isMentioned(client.users.get('451641455627206667')) && msgsplit.includes('gay')) {
     const gay = client.emojis.find(emoji => emoji.name === "prideheart");
