@@ -110,9 +110,11 @@ client.on('message', async msg => {
   msg.channel.send({files: ["Emily.jpg"]});
 } else if (msgsplit.includes('FAT') && msgsplit.includes("FUCK")) {
   msg.channel.send({files: ["fat.jpg"]});
-}  else if (msg.isMentioned(client.users.get('451641455627206667')) && msgsplit.includes('het')) {
+} else if (msg.isMentioned(client.users.get('451641455627206667')) && msgsplit.includes('het')) {
   const gay = client.emojis.find(emoji => emoji.name === "prideheart");
   msg.channel.send("<@451641455627206667> het");
+} else if (msgsplit.includes('two') && msgsplit.includes("frogs")) {
+  msg.channel.send({files: ["frog.png"]});
 }
  });
 
