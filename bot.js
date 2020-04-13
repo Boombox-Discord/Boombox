@@ -10,6 +10,8 @@ client.on('ready', () => {
  console.log(`Logged in as ${client.user.tag}!`);
  client.user.setActivity("fucking bitches");
 
+
+
  });
 
 
@@ -24,6 +26,31 @@ client.music.start(client, {
   // This is required to run the bot.
   youtubeKey: "AIzaSyB1TAY_jKKsyYqjndOsXawXexsSTfunzo0"
 });
+
+
+var fatFuckFriday = setInterval(function () {
+  var date = new Date();
+  var day = date.getDay();
+  var timeh = date.getHours();
+  var timem = date.getMinutes();
+  if (day === 5 && timeh === 12 && timem === 00) {
+    client.channels.get("592556176009592836").send("@everyone FAT FUCK FRIDAY");
+    client.channels.get("592556176009592836").send({files: ["fat.jpg"]});
+    console.log("Message sent")
+  }
+}, 30 * 1000);
+
+var twoFrogTuesday = setInterval(function () {
+  var date = new Date();
+  var day = date.getDay();
+  var timeh = date.getHours();
+  var timem = date.getMinutes();
+  if (day === 1 && timeh === 12 && timem === 00) {
+    client.channels.get("592556176009592836").send("@everyone two frogs tuesday");
+    client.channels.get("592556176009592836").send({files: ["frog.png"]});
+    console.log("Message sent")
+  }
+}, 30 * 1000);
 
 
 
@@ -42,7 +69,7 @@ client.on('message', async msg => {
     msg.channel.send('Here have a Dinosaur!')
     msg.channel.send('https://media.giphy.com/media/W0QniYnt2WSMrMwDrS/giphy.gif')
  } else if (msgsplit.includes('pussy') || msgsplit.includes('pussy')) {
-   const ahegao = client.emojis.find(emoji => emoji.name === "3932_ahegao");
+   const ahegao = client.emojis.find(emoji => emoji.name === "ahegao");
    msg.channel.send(`${ahegao} `);
  } else if (msg.isMentioned(client.users.get('451641455627206667')) && msgsplit.includes('gay')) {
     const gay = client.emojis.find(emoji => emoji.name === "prideheart");
