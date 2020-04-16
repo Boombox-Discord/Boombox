@@ -86,6 +86,11 @@ client.on('message', async msg => {
 }  else if (msg.isMentioned(client.users.get('451641455627206667')) && msgsplit.includes('het')) {
   const gay = client.emojis.find(emoji => emoji.name === "prideheart");
   msg.channel.send("<@451641455627206667> het");
+} else if (msg.isMentioned(client.users.get('651228303939731466')) && msgsplit.includes('het')) {
+  msg.channel.send("<@651228303939731466> het");
+} else if (msg.isMentioned(client.users.get('651228303939731466')) && msgsplit.includes('ishet?')) {
+  msg.channel.send("<@651228303939731466> is very het");
+  msg.channel.send({files: ["EmilyHet.png"]});
 }
  });
 
