@@ -10,6 +10,8 @@ client.on('ready', () => {
  console.log(`Logged in as ${client.user.tag}!`);
  client.user.setActivity("fucking bitches");
 
+
+
  });
 
 
@@ -24,6 +26,31 @@ client.music.start(client, {
   // This is required to run the bot.
   youtubeKey: "AIzaSyB1TAY_jKKsyYqjndOsXawXexsSTfunzo0"
 });
+
+
+var fatFuckFriday = setInterval(function () {
+  var date = new Date();
+  var day = date.getDay();
+  var timeh = date.getHours();
+  var timem = date.getMinutes();
+  if (day === 5 && timeh === 12 && timem === 00) {
+    client.channels.get("592556176009592836").send("@everyone FAT FUCK FRIDAY");
+    client.channels.get("592556176009592836").send({files: ["fat.jpg"]});
+    console.log("Message sent")
+  }
+}, 30 * 1000);
+
+var twoFrogTuesday = setInterval(function () {
+  var date = new Date();
+  var day = date.getDay();
+  var timeh = date.getHours();
+  var timem = date.getMinutes();
+  if (day === 1 && timeh === 12 && timem === 00) {
+    client.channels.get("592556176009592836").send("@everyone two frogs tuesday");
+    client.channels.get("592556176009592836").send({files: ["frog.png"]});
+    console.log("Message sent")
+  }
+}, 30 * 1000);
 
 
 
@@ -83,7 +110,7 @@ client.on('message', async msg => {
   msg.channel.send({files: ["Emily.jpg"]});
 } else if (msgsplit.includes('FAT') && msgsplit.includes("FUCK")) {
   msg.channel.send({files: ["fat.jpg"]});
-}  else if (msg.isMentioned(client.users.get('451641455627206667')) && msgsplit.includes('het')) {
+} else if (msg.isMentioned(client.users.get('451641455627206667')) && msgsplit.includes('het')) {
   const gay = client.emojis.find(emoji => emoji.name === "prideheart");
   msg.channel.send("<@451641455627206667> het");
 } else if (msg.isMentioned(client.users.get('651228303939731466')) && msgsplit.includes('het')) {
@@ -91,6 +118,8 @@ client.on('message', async msg => {
 } else if (msg.isMentioned(client.users.get('651228303939731466')) && msgsplit.includes('ishet?')) {
   msg.channel.send("<@651228303939731466> is very het");
   msg.channel.send({files: ["EmilyHet.png"]});
+} else if (msgsplit.includes('two') && msgsplit.includes("frogs")) {
+  msg.channel.send({files: ["frog.png"]});
 }
  });
 
