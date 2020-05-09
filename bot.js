@@ -38,7 +38,7 @@ var fatFuckFriday = setInterval(function () {
     client.channels.get("592556176009592836").send({files: ["fat.jpg"]});
     console.log("Message sent")
   }
-}, 30 * 1000);
+}, 40 * 1000);
 
 var twoFrogTuesday = setInterval(function () {
   var date = new Date();
@@ -50,31 +50,10 @@ var twoFrogTuesday = setInterval(function () {
     client.channels.get("592556176009592836").send({files: ["frog.png"]});
     console.log("Message sent")
   }
-}, 30 * 1000);
+}, 40 * 1000);
 
-var fatFuckFriday = setInterval(function () {
-  var date = new Date();
-  var day = date.getDay();
-  var timeh = date.getHours();
-  var timem = date.getMinutes();
-  if (day === 5 && timeh === 12 && timem === 00) {
-    client.channels.get("592556176009592836").send("@everyone FAT FUCK FRIDAY");
-    client.channels.get("592556176009592836").send({files: ["fat.jpg"]});
-    console.log("Message sent")
-  }
-}, 30 * 1000);
 
-var twoFrogTuesday = setInterval(function () {
-  var date = new Date();
-  var day = date.getDay();
-  var timeh = date.getHours();
-  var timem = date.getMinutes();
-  if (day === 1 && timeh === 12 && timem === 00) {
-    client.channels.get("592556176009592836").send("@everyone two frogs tuesday");
-    client.channels.get("592556176009592836").send({files: ["frog.png"]});
-    console.log("Message sent")
-  }
-}, 30 * 1000);
+
 
 
 
