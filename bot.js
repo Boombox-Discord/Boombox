@@ -9,9 +9,6 @@ const client = new Discord.Client();
 client.on('ready', () => {
  console.log(`Logged in as ${client.user.tag}!`);
  client.user.setActivity("fucking bitches");
-
-
-
  });
 
 
@@ -45,17 +42,12 @@ var twoFrogTuesday = setInterval(function () {
   var day = date.getDay();
   var timeh = date.getHours();
   var timem = date.getMinutes();
-  if (day === 1 && timeh === 12 && timem === 00) {
+  if (day === 2 && timeh === 12 && timem === 00) {
     client.channels.get("592556176009592836").send("@everyone two frogs tuesday");
     client.channels.get("592556176009592836").send({files: ["frog.png"]});
     console.log("Message sent")
   }
 }, 40 * 1000);
-
-
-
-
-
 
 
 
