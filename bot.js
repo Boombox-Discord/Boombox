@@ -49,6 +49,17 @@ var twoFrogTuesday = setInterval(function () {
   }
 }, 40 * 1000);
 
+var milfMonady = setInterval(function () {
+  var date = new Date();
+  var day = date.getDay();
+  var timeh = date.getHours();
+  var timem = date.getMinutes();
+  if (day === 1 && timeh === 12 && timem === 00) {
+    client.channels.get("592556176009592836").send("@everyone MILF Monday");
+    client.channels.get("592556176009592836").send({files: ["milf_monday.mp4"]});
+    console.log("Message sent")
+  }
+}, 40 * 1000);
 
 
 client.on('message', async msg => {
