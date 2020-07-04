@@ -70,6 +70,7 @@ var milfMonady = setInterval(function () {
 client.on('message', async msg => {
 
   if(msg.author.bot) return;
+  if (!msg.content.startsWith("!")) return;
 
   var msgsplit = msg.content.split(" ");
 
