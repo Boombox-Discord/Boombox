@@ -25,7 +25,6 @@ client.once('disconnect', () => {
 
 client.on('ready', () => {
  console.log(`Logged in as ${client.user.tag}!`);
- client.user.setActivity("fucking bitches");
  });
 
 
@@ -257,8 +256,9 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
   });
 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
- };
+client.user.setActivity(`Currently vibing to ${serverQueue.songs[0]['title']} `);
 
+ };
 
 
 client.login("Njc4ODE5OTk0MjUwNzcyNDgw.XowhvQ.rqgZjV0v4hcA7A52yjNTFeIHWjU");
