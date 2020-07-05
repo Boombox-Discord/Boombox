@@ -148,6 +148,12 @@ if (msg.content.startsWith(`${prefix}play`)) {
 } else if (msg.content.startsWith(`${prefix}stop`)) {
   stop(msg, serverQueue);
   return;
+} else if (msg.content.startsWith(`${prefix}np`)) {
+  np(msg, serverQueue);
+  return;
+} else if (msg.content.startsWith(`${prefix}queue`)) {
+  queuemsg(msg, serverQueue);
+  return;
 } else {
   msg.channel.send('You need to enter a valid command!')
 }
@@ -210,6 +216,25 @@ function stop(msg, serverQueue) {
 if (!msg.member.voiceChannel) return msg.channel.send('You have to be in a voice channel to stop the music!');
 serverQueue.songs = [];
 serverQueue.connection.dispatcher.end();
+}
+
+function np(msg, serverQueue) {
+  if (!msg.member.voiceChannel) return msg.channel.send('You have to be in a voice channel to stop the music!');
+  if(!serverQueue) return msg.channel.send('There is currently no song playing!');
+  return msg.channel.send(serverQueue.songs[0]['title']);
+}
+
+function queuemsg(msg, serverQueue) {
+  if (!msg.member.voiceChannel) return msg.channel.send('You have to be in a voice channel to stop the music!');
+  if(!serverQueue) return msg.channel.send('There is currently no songs in the queue!');
+  const _msgs = JSON.stringify(serverQueue.songs);
+  const newMsg = splitTxt(_msgs, 'https://');
+  return msg.channel.send(newMsg);
+}
+
+function splitTxt(text, splitPram) {
+  var splitTxt = text.split(splitPram);
+  return splitTxt;
 }
 
 function play(guild, song) {
