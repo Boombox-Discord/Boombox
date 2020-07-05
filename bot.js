@@ -248,6 +248,7 @@ if (!song) {
 const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
   .on('end', () => {
     console.log('Music ended!');
+    client.user.setActivity(`Currently not vibing to anything`);
     serverQueue.songs.shift();
     play(guild, serverQueue.songs[0]);
   })
