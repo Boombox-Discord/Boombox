@@ -74,11 +74,13 @@ var argsSlice = args.slice(1, -1);
 var i;
 var video = "";
 for (i = 0; i < argsSlice.length; i++) {
-  video += argsSlice[i];
+  video += argsSlice[i] + " ";
 }
 
 
 video += args[args.length - 1];
+
+console.log(video);
 
 const urlGet = ('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=' + video + '&key=AIzaSyBjcokZLxgV2OXttI7qPbk5USkHn_xk-YI');
 
