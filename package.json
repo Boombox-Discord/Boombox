@@ -15,6 +15,7 @@
     "discord.js-musicbot-v2": "^13.9.3",
     "ffmpeg": "0.0.4",
     "opusscript": "0.0.7",
+    "xmlhttprequest": "^1.8.0",
     "ytdl-core": "^2.1.7"
   }
 }
