@@ -60,6 +60,9 @@ client.on('message', async msg => {
 });
 
 async function execute(msg, serverQueue) {
+
+msg.channel.startTyping();
+
 const args = msg.content.split(' ');
 
 const voiceChannel = msg.member.voiceChannel;
@@ -125,6 +128,7 @@ xmlhttp.onreadystatechange = async function()
           var connection = await voiceChannel.join();
           queueContruct.connection = connection;
           play(msg.guild, queueContruct.songs[0]);
+          msg.channel.stopTyping();
           return msg.channel.send({embed: {
             author: {
               name: client.user.username,
@@ -146,6 +150,7 @@ xmlhttp.onreadystatechange = async function()
       } else {
         serverQueue.songs.push(song);
         console.log(serverQueue.songs);
+        msg.channel.stopTyping();
         return msg.channel.send({embed: {
           author: {
             name: client.user.username,
@@ -237,6 +242,7 @@ if (!song) {
 
 const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
   .on('end', (msg) => {
+    msg.channel.startTyping();
     console.log('Music ended!');
     client.user.setActivity(`Currently not vibing to anything`);
     serverQueue.songs.shift();
@@ -244,6 +250,7 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
     if (!serverQueue.songs[0]) {
       return;
     } else {
+      msg.channel.stopTyping();
       return msg.channel.send({embed: {
         author: {
           name: client.user.username,
