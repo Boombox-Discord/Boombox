@@ -61,7 +61,6 @@ client.on('message', async msg => {
 
 async function execute(msg, serverQueue) {
 
-msg.channel.startTyping();
 
 const args = msg.content.split(' ');
 
@@ -85,7 +84,7 @@ video += args[args.length - 1];
 
 console.log(video);
 
-const urlGet = ('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=' + video + '&key=AIzaSyBjcokZLxgV2OXttI7qPbk5USkHn_xk-YI');
+const urlGet = ('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=' + video + '&key=AIzaSyAr0vQubuB2gUF8D62AqohTI1H-iWpuAcU');
 
 var xmlhttp = new XMLHttpRequest();
 
@@ -128,7 +127,6 @@ xmlhttp.onreadystatechange = async function()
           var connection = await voiceChannel.join();
           queueContruct.connection = connection;
           play(msg.guild, queueContruct.songs[0]);
-          msg.channel.stopTyping();
           return msg.channel.send({embed: {
             author: {
               name: client.user.username,
@@ -150,7 +148,6 @@ xmlhttp.onreadystatechange = async function()
       } else {
         serverQueue.songs.push(song);
         console.log(serverQueue.songs);
-        msg.channel.stopTyping();
         return msg.channel.send({embed: {
           author: {
             name: client.user.username,
@@ -242,7 +239,6 @@ if (!song) {
 
 const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
   .on('end', (msg) => {
-    msg.channel.startTyping();
     console.log('Music ended!');
     client.user.setActivity(`Currently not vibing to anything`);
     serverQueue.songs.shift();
@@ -250,7 +246,6 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
     if (!serverQueue.songs[0]) {
       return;
     } else {
-      msg.channel.stopTyping();
       return msg.channel.send({embed: {
         author: {
           name: client.user.username,
