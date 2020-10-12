@@ -1,12 +1,9 @@
 {
-  "name": "riley-bot",
-  "version": "1.0.0",
-  "description": "Riley's Discord Bot",
+  "name": "music-bot-for-discord",
+  "version": "0.0.4",
+  "description": "An open source and completely free music bot for Discord.",
   "main": "bot.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Riley Quirk",
+  "author": "Arrow Quirk",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.6.4",
