@@ -403,4 +403,4 @@ client.user.setActivity(`Currently vibing to ${serverQueue.songs[0]['title']} `)
  };
 
 
-client.login("Njc4ODE5OTk0MjUwNzcyNDgw.XowhvQ.rqgZjV0v4hcA7A52yjNTFeIHWjU");
+client.login(token);
