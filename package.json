@@ -9,7 +9,7 @@
   "author": "Riley Quirk",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.5.1",
+    "discord.js": "^11.6.4",
     "discord.js-music-bot-bluspring": "^0.4.1",
     "discord.js-musicbot-addon": "^13.9.1",
     "discord.js-musicbot-v2": "^13.9.3",
