@@ -69,28 +69,23 @@ client.on('message', async msg => {
   }
 });
 
-var guildId;
-var sessionId;
-var tokent
 
 client.on('raw', packets => {
-    if (!['VOICE_STATE_UPDATE', 'VOICE_SERVER_UPDATE'].includes(packets.t)) return;
-    if (['VOICE_SERVER_UPDATE'].includes(packets.t)) {
-      var event = packets;
-      tokent = packets.d.token
-    }
-    if (['VOICE_STATE_UPDATE'].includes(packets.t)) {
-      guildId = packets.d.guild_id;
-      sessionId = packets.d.session_id;
-    }
+    if (!['VOICE_SERVER_UPDATE'].includes(packets.t)) return;
+    // if (['VOICE_SERVER_UPDATE'].includes(packets.t)) {
+    //   var event = packets.d;
+    //   tokent = packets.d.token
+    // }
+    // if (['VOICE_STATE_UPDATE'].includes(packets.t)) {
+    //   guildId = packets.d.guild_id;
+    //   sessionId = packets.d.session_id;
+    // }
     console.log(packets)
-    console.log(event)
     let connect = {
       "op": "voiceUpdate",
-      "guildId": guildId,
-      "sessionId": sessionId,
-      "event": event,
-      "token": tokent
+      "guildId": packets.d.guild_id,
+      "event": packets.d,
+      // "token": tokent
     }
     console.log(connect)
     webSocket.send(JSON.stringify(connect));
