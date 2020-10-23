@@ -14,6 +14,6 @@
     "fs": "0.0.1-security",
     "opusscript": "0.0.7",
     "xmlhttprequest": "^1.8.0",
-    "ytdl-core": "^3.4.1"
+    "ytdl-core": "^3.4.2"
   }
 }
