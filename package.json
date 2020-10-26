@@ -6,7 +6,7 @@
   "author": "Arrow Quirk",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^12.4.0",
+    "discord.js": "^12.4.1",
     "discord.js-music-bot-bluspring": "^0.4.1",
     "discord.js-musicbot-addon": "^13.9.1",
     "discord.js-musicbot-v2": "^13.9.3",
