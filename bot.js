@@ -14,7 +14,6 @@ const client = new Discord.Client();
 
 const queue = new Map();
 
-let jsonData = require('./starboard.json')
 
 client.once('ready', () => {
 	console.log('Ready!');
@@ -34,48 +33,6 @@ client.on('ready', () => {
  client.user.setActivity(`Currently not vibing to anything`);
  });
 
-
-client.on("messageReactionAdd", async (reaction, user) => {
-  let jsonData = require('./starboard.json')
-
-  if (reaction.partial) {
-    try {
-      await reaction.fetch();
-    } catch (error) {
-      console.error('Something went wrong when fetching the message: ', error);
-      return;
-    }
-  }
-
-
-  if (reaction.emoji.name === '⭐') {
-    if (reaction.count === 3) {
-      let msgURL = "https://discord.com/channels/" + reaction.message.guild.id + "/" + reaction.message.channel.id + "/" + reaction.message.id;
-      let userName = reaction.message.member.user.username
-      let avatarURL = "https://cdn.discordapp.com/avatars/" + reaction.message.member.user.id + "/" + reaction.message.member.user.avatar + ".png"
-      console.log(avatarURL)
-      let channelName = reaction.message.channel.name
-      let guildName = reaction.message.channel.guild.name
-      client.channels.get(jsonData.channel).send({"embed": {
-        "footer": {
-          "text": `${guildName} | ${channelName}`
-        },
-        "author": {
-          "name": userName,
-          "icon_url": avatarURL
-        },
-        "fields": [
-          {
-            "name": reaction.message.content,
-            "value": `[Click here for context](${msgURL})`
-          }
-        ]
-      }
-    });
-    }
-  }
-
-});
 
 client.on('message', async msg => {
 
@@ -104,9 +61,6 @@ client.on('message', async msg => {
     return;
   } else if (msg.content.startsWith(`${prefix}help`)) {
     help(msg, serverQueue);
-    return;
-  } else if (msg.content.startsWith(`${prefix}starboard-config`)) {
-    starboard(msg)
     return;
   }
 });
@@ -310,26 +264,6 @@ function np(msg, serverQueue) {
   }});
 }
 
-function starboard(msg) {
-  msg.channel.send("Please type the name of the channel you would like stars to be posted in.");
-  msg.channel.awaitMessages(m => m.author.id === msg.author.id, {max: 2, time: 30000}).then(collected => {
-    let channelIDStar = msg.guild.channels.find(channel => channel.name === collected.last().content.toLowerCase());
-    if (channelIDStar === null) {
-      return msg.channel.send("That is not a valid text channel. Please re run this command again and input a valid text channel.");
-    }
-    else {
-      let starChannelID = channelIDStar.id;
-      let guildID = msg.guild.id
-      console.log(starChannelID);
-      let jsonDataInput = {
-        guildID
-      }
-      let data = JSON.stringify(jsonDataInput)
-      fs.writeFileSync('starboard.json', data);
-      return msg.channel.send(`OK I will send stars to ${starChannelID}`)
-    }
-  })
-}
 
 function queuemsg(msg, serverQueue) {
   if (!msg.member.voiceChannel) return msg.channel.send('You have to be in a voice channel to stop the music!');

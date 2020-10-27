@@ -1,2 +1,4 @@
 config.json
 lavalink-config.yml
+logs
+node_modules
