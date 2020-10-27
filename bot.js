@@ -59,7 +59,7 @@ async function execute(msg, serverQueue) {
   const args = msg.content.split(" ");
 
 
-  const voiceChannel = msg.member.voice.channel;
+  const voiceChannel = msg.member.voiceChannel;
   if (!voiceChannel) return msg.channel.send("You need to be in a voice channel to play music!");
   const permissions = voiceChannel.permissionsFor(msg.client.user);
   if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
@@ -77,11 +77,19 @@ async function execute(msg, serverQueue) {
 
   video += args[args.length - 1];
 
-  console.log(video);
+  msg.channel.send({embed: {
+    author: {
+      name: client.user.username,
+      icon_url: client.user.avatarURL
+    },
+  title: "🔍 Searching...",
+  color: 16711680,
+  description: `Please wait, we are searching youtube for a song called ${video}`,
+  }});
+
 
   const urlGet = ("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=" + video + "&key=" + youtubeApi);
 
-  console.log(typeof(urlGet))
 
   var xmlhttp = new XMLHttpRequest();
 
@@ -129,7 +137,7 @@ async function execute(msg, serverQueue) {
             return msg.channel.send({embed: {
               author: {
                 name: client.user.username,
-                icon_url: client.user.displayAvatarURL({ format: 'png'})
+                icon_url: client.user.avatarURL
               },
             title: song.title,
             url: videoURL,
@@ -146,11 +154,10 @@ async function execute(msg, serverQueue) {
           }
         } else {
           serverQueue.songs.push(song);
-          console.log(serverQueue.songs);
           return msg.channel.send({embed: {
             author: {
               name: client.user.username,
-              icon_url: client.user.displayAvatarURL({ format: 'png'})
+              icon_url: client.avatarURL
             },
           title: song.title,
           url: videoURL,
@@ -180,7 +187,7 @@ const helpTitle = client.user.username + " help";
       "title": helpTitle,
       "author": {
         "name": client.user.username,
-        "icon_url": client.user.displayAvatarURL({ format: 'png'}),
+        "icon_url": client.user.avatarURL,
       },
       "color": 16711680,
       "fields": [
@@ -218,39 +225,39 @@ const helpTitle = client.user.username + " help";
   }
 
 function skip(msg, serverQueue) {
-if (!msg.member.voice.channel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to skip the music!");
 if (!serverQueue) return msg.channel.send("There is no song that I could skip!");
 serverQueue.connection.dispatcher.end(msg);
 }
 
 function stop(msg, serverQueue) {
-if (!msg.member.voice.channel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
 serverQueue.songs = [];
 serverQueue.connection.dispatcher.end(msg);
 }
 
 function volume(msg, serverQueue) {
-  if (!msg.member.voice.channel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to change the volume!");
   if (!serverQueue) return msg.channel.send("There is no song playing.");
   const args = msg.content.split(" ");
   if (args[1] >= 6 || args[1] <= 0) {
     return msg.channel.send("Please select a number between 1 and 5.")
   }
   serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 5);
+  msg.channel.send("I have set the volume to" + args[1])
   }
 
 function np(msg, serverQueue) {
-  if (!msg.member.voice.channel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to see what is currently playing!");
   if(!serverQueue) return msg.channel.send("There is currently no song playing!");
   return msg.channel.send({embed: {
     author: {
       name: client.user.username,
-      icon_url: client.user.displayAvatarURL({ format: 'png'})
+      icon_url: client.user.avatarURL
     },
-   title: serverQueue.songs[0]["title"],
-   url: serverQueue.songs[0]["url"],
+   title: "Currnet song playing",
    color: 16711680,
-   description: `${serverQueue.songs[0]["title"]} is currently playing!`,
+   description: serverQueue.songs[0]["title"] + " is currently playing!",
    thumbnail: {
     url: serverQueue.songs["0"]["imgurl"]
    }
@@ -259,16 +266,20 @@ function np(msg, serverQueue) {
 
 
 function queuemsg(msg, serverQueue) {
-  if (!msg.member.voice.channel) return msg.channel.send("You have to be in a voice channel to request the queue.");
+  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to request the queue.");
   if(!serverQueue) return msg.channel.send("There is currently no songs in the queue!");
-  const embed = new Discord.RichEmbed()
-  .setTitle("Current Songs in the Queue")
-  .setAuthor(client.user.username, client.user.displayAvatarURL({ format: 'png'}))
-  .setColor(0xFF0000)
-  .setThumbnail(serverQueue.songs["0"]["imgurl"])
-  .addField(showObject(serverQueue.songs),"Current songs in the queue")
-  .setTimestamp()
-  return msg.channel.send({embed});
+  return msg.channel.send({embed: {
+    author: {
+      name: client.user.username,
+      icon_url: client.user.avatarURL
+    },
+   title: "Current Songs in the Queue",
+   color: 16711680,
+   description: showObject(serverQueue.songs),
+   thumbnail: {
+    url: serverQueue.songs["0"]["imgurl"]
+   }
+  }});
 }
 
 
@@ -293,14 +304,14 @@ if (!song) {
   
 }
 
-const dispatcher = serverQueue.connection.play(ytdl(song.url))
+const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
   .on("end", (msg) => {
-    console.log("Music ended!");
     client.user.setActivity(`Currently not vibing to anything`);
     serverQueue.songs.shift();
     play(guild, serverQueue.songs[0]);
     if (!serverQueue.songs[0]) {
-      return;
+      return msg.channel.send("No more songs in the queue! Leaving voice channel.");
+
     } else {
       return msg.channel.send({embed: {
         author: {
@@ -310,7 +321,7 @@ const dispatcher = serverQueue.connection.play(ytdl(song.url))
        title: serverQueue.songs[0]["title"],
        url: serverQueue.songs[0]["url"],
        color: 16711680,
-       description: `${serverQueue.songs[0]["title"]} is now playing playing!`,
+       description: `${serverQueue.songs[0]["title"]} is now playing!`,
        thumbnail: {
         url: serverQueue.songs["0"]["imgurl"]
        }
