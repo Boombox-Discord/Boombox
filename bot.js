@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+
 const Discord = require('discord.js');
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
@@ -14,7 +14,6 @@ const client = new Discord.Client();
 
 const queue = new Map();
 
-let jsonData = require('./starboard.json')
 
 client.once('ready', () => {
 	console.log('Ready!');
