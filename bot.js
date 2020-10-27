@@ -18,7 +18,7 @@ const queue = new Map();
 
 client.on("ready", () => {
  console.log(`Logged in as ${client.user.tag}!`);
- client.user.setActivity('for !help', { type: 'WATCHING' })
+ client.user.setActivity("for !help", { type: "WATCHING" })
   .catch(console.error);
  });
 
@@ -104,7 +104,7 @@ async function execute(msg, serverQueue) {
         var parse = JSON.parse(str);
         var videoID = parse["items"][0]["id"]["videoId"];
         var imgURL = parse["items"][0]["snippet"]["thumbnails"]["high"]["url"];
-        var videoTitle = parse["items"][0]["snippet"]["title"]
+        var videoTitle = parse["items"][0]["snippet"]["title"];
         const videoURL = "https://www.youtube.com/watch?v=" + videoID;
           
         //Play song
@@ -242,10 +242,10 @@ function volume(msg, serverQueue) {
   if (!serverQueue) return msg.channel.send("There is no song playing.");
   const args = msg.content.split(" ");
   if (args[1] >= 6 || args[1] <= 0) {
-    return msg.channel.send("Please select a number between 1 and 5.")
+    return msg.channel.send("Please select a number between 1 and 5.");
   }
   serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 5);
-  msg.channel.send("I have set the volume to" + args[1])
+  msg.channel.send("I have set the volume to" + args[1]);
   }
 
 function np(msg, serverQueue) {
@@ -317,7 +317,7 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
       return msg.channel.send({embed: {
         author: {
           name: client.user.username,
-          icon_url: client.user.displayAvatarURL({ format: 'png'})
+          icon_url: client.user.displayAvatarURL({ format: "png"})
         },
        title: serverQueue.songs[0]["title"],
        url: serverQueue.songs[0]["url"],
@@ -330,7 +330,7 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
     }
     
   })
-  .on("error", error => {
+  .on("error", (error) => {
     console.error(error);
   });
   
@@ -338,7 +338,7 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
 
- };
+ }
 
 
 client.login(token);
