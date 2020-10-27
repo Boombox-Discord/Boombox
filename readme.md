@@ -14,7 +14,10 @@ Boombox is a free, open source, music bot for Discord. It is built on JavaScript
 The defualt prefix is "!" but this can be changed in the config.json file if you wish to self host the bot.
 
 | Command |Usage | Description |
-| ------------- |:-------------:| -----:|
+| ------------- |:-------------:| :-----|
 | Play | !play [song name or youtube link] | This will find the song from youtube and start playing it. If there is something currently playing it will add it to the queue. |
 | Skip | !skip | Will skip the currenty playing song. |
-| zebra stripes | are neat      |    $1 |
+| Stop | !stop | Will stop current playing music and delete the queue. |
+| Now Playing | !np | Displays what song is currently playing. |
+| Queue | !queue | Displays current songs queue. |
+| Volume | !volume | Set's the volume. Use a number between 1 and 5. | 
