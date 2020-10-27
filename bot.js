@@ -6,7 +6,8 @@ const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 const {
 	prefix,
-	token,
+  token,
+  youtubeApi,
 } = require("./config.json");
 const ytdl = require("ytdl-core");
 
@@ -78,7 +79,7 @@ async function execute(msg, serverQueue) {
 
   console.log(video);
 
-  const urlGet = ("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=" + video + "&key=AIzaSyAr0vQubuB2gUF8D62AqohTI1H-iWpuAcU");
+  const urlGet = ("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=" + video + "&key=" + youtubeApi);
 
   console.log(typeof(urlGet))
 
@@ -86,7 +87,7 @@ async function execute(msg, serverQueue) {
 
 
   xmlhttp.onreadystatechange = async function() 
-  {
+  {}
       if (this.readyState === 4 && this.status === 200) 
       {
           //Use parse() method to convert JSON string to JSON object
@@ -95,6 +96,8 @@ async function execute(msg, serverQueue) {
         var videoID = parse["items"][0]["id"]["videoId"];
         var imgURL = parse["items"][0]["snippet"]["thumbnails"]["high"]["url"];
         const videoURL = "https://www.youtube.com/watch?v=" + videoID;
+
+        console.log(typeof(videoURL))
           
         //Play song
         const songInfo = await ytdl.getInfo(videoURL);

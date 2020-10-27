@@ -1,4 +1,5 @@
 {
     "prefix": "!",
-    "token": "Discrod token"
+    "token": "Discrod token",
+    "youtubeApi": "Youtube API Token"
 }
