@@ -307,7 +307,6 @@ if (!song) {
 
 const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
   .on("end", (msg) => {
-    client.user.setActivity(`Currently not vibing to anything`);
     serverQueue.songs.shift();
     play(guild, serverQueue.songs[0]);
     if (!serverQueue.songs[0]) {
@@ -317,7 +316,7 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
       return msg.channel.send({embed: {
         author: {
           name: client.user.username,
-          icon_url: client.user.displayAvatarURL({ format: "png"})
+          icon_url: client.user.avatarURL
         },
        title: serverQueue.songs[0]["title"],
        url: serverQueue.songs[0]["url"],
