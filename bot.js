@@ -87,7 +87,7 @@ async function execute(msg, serverQueue) {
 
 
   xmlhttp.onreadystatechange = async function() 
-  {}
+  {
       if (this.readyState === 4 && this.status === 200) 
       {
           //Use parse() method to convert JSON string to JSON object
@@ -95,15 +95,14 @@ async function execute(msg, serverQueue) {
         var parse = JSON.parse(str);
         var videoID = parse["items"][0]["id"]["videoId"];
         var imgURL = parse["items"][0]["snippet"]["thumbnails"]["high"]["url"];
+        var videoTitle = parse["items"][0]["snippet"]["title"]
         const videoURL = "https://www.youtube.com/watch?v=" + videoID;
-
-        console.log(typeof(videoURL))
           
         //Play song
         const songInfo = await ytdl.getInfo(videoURL);
         const song = {
-          title: songInfo.title,
-          url: songInfo.video_url,
+          title: videoTitle,
+          url: songInfo.url,
           imgurl: imgURL,
         };
 
@@ -120,6 +119,7 @@ async function execute(msg, serverQueue) {
           queue.set(msg.guild.id, queueContruct);
 
           queueContruct.songs.push(song);
+
 
           try {
             
@@ -218,19 +218,19 @@ const helpTitle = client.user.username + " help";
   }
 
 function skip(msg, serverQueue) {
-if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+if (!msg.member.voice.channel) return msg.channel.send("You have to be in a voice channel to stop the music!");
 if (!serverQueue) return msg.channel.send("There is no song that I could skip!");
 serverQueue.connection.dispatcher.end(msg);
 }
 
 function stop(msg, serverQueue) {
-if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+if (!msg.member.voice.channel) return msg.channel.send("You have to be in a voice channel to stop the music!");
 serverQueue.songs = [];
 serverQueue.connection.dispatcher.end(msg);
 }
 
 function volume(msg, serverQueue) {
-  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+  if (!msg.member.voice.channel) return msg.channel.send("You have to be in a voice channel to stop the music!");
   if (!serverQueue) return msg.channel.send("There is no song playing.");
   const args = msg.content.split(" ");
   if (args[1] >= 6 || args[1] <= 0) {
@@ -240,7 +240,7 @@ function volume(msg, serverQueue) {
   }
 
 function np(msg, serverQueue) {
-  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+  if (!msg.member.voice.channel) return msg.channel.send("You have to be in a voice channel to stop the music!");
   if(!serverQueue) return msg.channel.send("There is currently no song playing!");
   return msg.channel.send({embed: {
     author: {
@@ -259,7 +259,7 @@ function np(msg, serverQueue) {
 
 
 function queuemsg(msg, serverQueue) {
-  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to request the queue.");
+  if (!msg.member.voice.channel) return msg.channel.send("You have to be in a voice channel to request the queue.");
   if(!serverQueue) return msg.channel.send("There is currently no songs in the queue!");
   const embed = new Discord.RichEmbed()
   .setTitle("Current Songs in the Queue")
@@ -283,6 +283,7 @@ function showObject(obj) {
 
 
 function play(guild, song) {
+
 const serverQueue = queue.get(guild.id);
 
 if (!song) {
@@ -292,7 +293,7 @@ if (!song) {
   
 }
 
-const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
+const dispatcher = serverQueue.connection.play(ytdl(song.url))
   .on("end", (msg) => {
     console.log("Music ended!");
     client.user.setActivity(`Currently not vibing to anything`);
