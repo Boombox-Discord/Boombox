@@ -18,7 +18,8 @@ const queue = new Map();
 
 client.on("ready", () => {
  console.log(`Logged in as ${client.user.tag}!`);
- client.user.setActivity(`Currently not vibing to anything`);
+ client.user.setActivity('for !help', { type: 'WATCHING' })
+  .catch(console.error);
  });
 
 client.on("message", async (msg) => {
@@ -336,7 +337,6 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
 
 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
-client.user.setActivity(`Currently vibing to ${serverQueue.songs[0]["title"]} `);
 
  };
 
