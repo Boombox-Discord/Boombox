@@ -34,6 +34,9 @@ client.on('ready', () => {
  });
 
 
+
+
+
 client.on('message', async msg => {
 
   if(msg.author.bot) return;
@@ -61,9 +64,6 @@ client.on('message', async msg => {
     return;
   } else if (msg.content.startsWith(`${prefix}help`)) {
     help(msg, serverQueue);
-    return;
-  } else if (msg.content.startsWith(`${prefix}starboard-config`)) {
-    starboard(msg)
     return;
   }
 });
