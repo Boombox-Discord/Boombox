@@ -35,6 +35,8 @@ You can join us on our [Official Discord Server.](https://discord.gg/HKnyEB9)
 
 To install run the commands below.
 
+First, make a copy of config-example.json and call it config.json. Enter your own discord token and youtube api token. You can also change the prefix here if you wish.
+
 `npm install` and `node bot.js`
 
 Docker support is going to be added at a later date.
