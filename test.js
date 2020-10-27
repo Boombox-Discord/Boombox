@@ -9,6 +9,7 @@ const {
 	prefix,
 	token,
 } = require('./config.json');
+const { maxHeaderSize } = require('http');
 
 const client = new Discord.Client();
 
@@ -54,8 +55,10 @@ client.on('message', async msg => {
   if (!msg.content.startsWith("!")) return;
 
   if (msg.content.startsWith(`${prefix}join`)) {
-    const voiceChannel = msg.member.voiceChannel;
-    const connection = await voiceChannel.join();
+    const voiceChannel = msg.member.voiceChannel.join()
+    msg.channel.send(msg.member.voiceSessionID)
+    // msg.channel.send(voiceChannel)
+    // const connection = await voiceChannel.join();
   }
   if (msg.content.startsWith(`${prefix}play`)) {
     let play = {
@@ -70,25 +73,24 @@ client.on('message', async msg => {
 });
 
 
+
 client.on('raw', packets => {
     if (!['VOICE_SERVER_UPDATE'].includes(packets.t)) return;
-    // if (['VOICE_SERVER_UPDATE'].includes(packets.t)) {
-    //   var event = packets.d;
-    //   tokent = packets.d.token
-    // }
-    // if (['VOICE_STATE_UPDATE'].includes(packets.t)) {
-    //   guildId = packets.d.guild_id;
-    //   sessionId = packets.d.session_id;
-    // }
-    console.log(packets)
+    console.log(packets);
     let connect = {
       "op": "voiceUpdate",
-      "guildId": packets.d.guild_id,
+      "guildId": "592556176009592834",
+      "sessionId": "77056d2f3e50a47c75e7cce31bc85ca3",
       "event": packets.d,
       // "token": tokent
     }
-    console.log(connect)
+    console.log(connect);
     webSocket.send(JSON.stringify(connect));
 });
 
 client.login(token);
+
+
+// async function connect(server, state) {
+
+// }
