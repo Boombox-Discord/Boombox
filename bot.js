@@ -57,7 +57,8 @@ async function execute(msg, serverQueue) {
 
   const args = msg.content.split(" ");
 
-  const voiceChannel = msg.member.voiceChannel;
+
+  const voiceChannel = msg.member.voice.channel;
   if (!voiceChannel) return msg.channel.send("You need to be in a voice channel to play music!");
   const permissions = voiceChannel.permissionsFor(msg.client.user);
   if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
@@ -79,6 +80,8 @@ async function execute(msg, serverQueue) {
 
   const urlGet = ("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=" + video + "&key=AIzaSyAr0vQubuB2gUF8D62AqohTI1H-iWpuAcU");
 
+  console.log(typeof(urlGet))
+
   var xmlhttp = new XMLHttpRequest();
 
 
@@ -89,9 +92,9 @@ async function execute(msg, serverQueue) {
           //Use parse() method to convert JSON string to JSON object
         var str = this.responseText;
         var parse = JSON.parse(str);
-        var url = parse["items"][0]["id"]["videoId"];
+        var videoID = parse["items"][0]["id"]["videoId"];
         var imgURL = parse["items"][0]["snippet"]["thumbnails"]["high"]["url"];
-        const videoURL = "https://www.youtube.com/watch?v=" + url;
+        const videoURL = "https://www.youtube.com/watch?v=" + videoID;
           
         //Play song
         const songInfo = await ytdl.getInfo(videoURL);
@@ -123,7 +126,7 @@ async function execute(msg, serverQueue) {
             return msg.channel.send({embed: {
               author: {
                 name: client.user.username,
-                icon_url: client.user.avatarURL
+                icon_url: client.user.displayAvatarURL({ format: 'png'})
               },
             title: song.title,
             url: videoURL,
@@ -144,7 +147,7 @@ async function execute(msg, serverQueue) {
           return msg.channel.send({embed: {
             author: {
               name: client.user.username,
-              icon_url: client.user.avatarURL
+              icon_url: client.user.displayAvatarURL({ format: 'png'})
             },
           title: song.title,
           url: videoURL,
@@ -168,12 +171,13 @@ async function execute(msg, serverQueue) {
 function help(msg, serverQueue) {
 const helpTitle = client.user.username + " help";
 
+
   return msg.channel.send({
     "embed": {
       "title": helpTitle,
       "author": {
         "name": client.user.username,
-        "icon_url": client.user.avatarURL
+        "icon_url": client.user.displayAvatarURL({ format: 'png'}),
       },
       "color": 16711680,
       "fields": [
@@ -238,7 +242,7 @@ function np(msg, serverQueue) {
   return msg.channel.send({embed: {
     author: {
       name: client.user.username,
-      icon_url: client.user.avatarURL
+      icon_url: client.user.displayAvatarURL({ format: 'png'})
     },
    title: serverQueue.songs[0]["title"],
    url: serverQueue.songs[0]["url"],
@@ -252,11 +256,11 @@ function np(msg, serverQueue) {
 
 
 function queuemsg(msg, serverQueue) {
-  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to request the queue.");
   if(!serverQueue) return msg.channel.send("There is currently no songs in the queue!");
   const embed = new Discord.RichEmbed()
   .setTitle("Current Songs in the Queue")
-  .setAuthor(client.user.username, client.user.avatarURL)
+  .setAuthor(client.user.username, client.user.displayAvatarURL({ format: 'png'}))
   .setColor(0xFF0000)
   .setThumbnail(serverQueue.songs["0"]["imgurl"])
   .addField(showObject(serverQueue.songs),"Current songs in the queue")
@@ -297,7 +301,7 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
       return msg.channel.send({embed: {
         author: {
           name: client.user.username,
-          icon_url: client.user.avatarURL
+          icon_url: client.user.displayAvatarURL({ format: 'png'})
         },
        title: serverQueue.songs[0]["title"],
        url: serverQueue.songs[0]["url"],
