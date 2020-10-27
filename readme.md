@@ -8,15 +8,15 @@
     <img src="https://img.shields.io/badge/Invite-to%20your%20server-blue.svg?style=for-the-badge" alt="Invite to Server">
   </a>
 
-# About
+## About
 
 Boombox is a free, open source, music bot for Discord. It is built on JavaScript and uses Discord.js, and ytdl. 
 
-# Commands
+## Commands
 
 The defualt prefix is "!" but this can be changed in the config.json file if you wish to self host the bot.
 
-| Command |Usage | Description |
+| Command | Usage | Description |
 | ------------- |:------------- | :----- |
 | Play | !play [song name or youtube link] | This will find the song from youtube and start playing it. If there is something currently playing it will add it to the queue. |
 | Skip | !skip | Will skip the currenty playing song. |
@@ -25,13 +25,13 @@ The defualt prefix is "!" but this can be changed in the config.json file if you
 | Queue | !queue | Displays current songs queue. |
 | Volume | !volume | Set's the volume. Use a number between 1 and 5. | 
 
-# Join The Community
+## Join The Community
 
 Want to submit bug reports, feature requests, our just chat with our coumminty?
 
 You can join us on our [Official Discord Server.](https://discord.gg/HKnyEB9)
 
-# Insatll and Running
+## Insatll and Running
 
 To install run the commands below.
 

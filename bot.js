@@ -1,46 +1,29 @@
-'use strict';
+"use strict";
 
 
-const Discord = require('discord.js');
+const Discord = require("discord.js");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 const {
 	prefix,
 	token,
-} = require('./config.json');
-const ytdl = require('ytdl-core');
+} = require("./config.json");
+const ytdl = require("ytdl-core");
 
 const client = new Discord.Client();
 
 const queue = new Map();
 
 
-client.once('ready', () => {
-	console.log('Ready!');
-});
-
-client.once('reconnecting', () => {
-	console.log('Reconnecting!');
-});
-
-client.once('disconnect', () => {
-	console.log('Disconnect!');
-});
-
-
-client.on('ready', () => {
+client.on("ready", () => {
  console.log(`Logged in as ${client.user.tag}!`);
  client.user.setActivity(`Currently not vibing to anything`);
  });
 
-
-
-
-
-client.on('message', async msg => {
+client.on("message", async (msg) => {
 
   if(msg.author.bot) return;
-  if (!msg.content.startsWith("!")) return;
+  if (!msg.content.startsWith(prefix)) return;
 
   const serverQueue = queue.get(msg.guild.id);
 
@@ -72,13 +55,13 @@ client.on('message', async msg => {
 async function execute(msg, serverQueue) {
 
 
-  const args = msg.content.split(' ');
+  const args = msg.content.split(" ");
 
   const voiceChannel = msg.member.voiceChannel;
-  if (!voiceChannel) return msg.channel.send('You need to be in a voice channel to play music!');
+  if (!voiceChannel) return msg.channel.send("You need to be in a voice channel to play music!");
   const permissions = voiceChannel.permissionsFor(msg.client.user);
-  if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
-    return msg.channel.send('I need the permissions to join and speak in your voice channel!');
+  if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+    return msg.channel.send("I need the permissions to join and speak in your voice channel!");
   }
 
 
@@ -94,14 +77,14 @@ async function execute(msg, serverQueue) {
 
   console.log(video);
 
-  const urlGet = ('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=' + video + '&key=AIzaSyAr0vQubuB2gUF8D62AqohTI1H-iWpuAcU');
+  const urlGet = ("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=" + video + "&key=AIzaSyAr0vQubuB2gUF8D62AqohTI1H-iWpuAcU");
 
   var xmlhttp = new XMLHttpRequest();
 
 
   xmlhttp.onreadystatechange = async function() 
   {
-      if (this.readyState == 4 && this.status == 200) 
+      if (this.readyState === 4 && this.status === 200) 
       {
           //Use parse() method to convert JSON string to JSON object
         var str = this.responseText;
@@ -183,11 +166,11 @@ async function execute(msg, serverQueue) {
   }
 
 function help(msg, serverQueue) {
-const help_title = client.user.username + " help"
+const helpTitle = client.user.username + " help";
 
   return msg.channel.send({
     "embed": {
-      "title": help_title,
+      "title": helpTitle,
       "author": {
         "name": client.user.username,
         "icon_url": client.user.avatarURL
@@ -228,55 +211,54 @@ const help_title = client.user.username + " help"
   }
 
 function skip(msg, serverQueue) {
-if (!msg.member.voiceChannel) return msg.channel.send('You have to be in a voice channel to stop the music!');
-if (!serverQueue) return msg.channel.send('There is no song that I could skip!');
+if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+if (!serverQueue) return msg.channel.send("There is no song that I could skip!");
 serverQueue.connection.dispatcher.end(msg);
 }
 
 function stop(msg, serverQueue) {
-if (!msg.member.voiceChannel) return msg.channel.send('You have to be in a voice channel to stop the music!');
+if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
 serverQueue.songs = [];
 serverQueue.connection.dispatcher.end(msg);
 }
 
 function volume(msg, serverQueue) {
-  if (!msg.member.voiceChannel) return msg.channel.send('You have to be in a voice channel to stop the music!');
-  if (!serverQueue) return msg.channel.send('There is no song playing.');
-  const args = msg.content.split(' ');
+  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+  if (!serverQueue) return msg.channel.send("There is no song playing.");
+  const args = msg.content.split(" ");
   if (args[1] >= 6 || args[1] <= 0) {
-    return msg.channel.send('Please select a number between 1 and 5.')
+    return msg.channel.send("Please select a number between 1 and 5.")
   }
   serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 5);
   }
 
 function np(msg, serverQueue) {
-  if (!msg.member.voiceChannel) return msg.channel.send('You have to be in a voice channel to stop the music!');
-  if(!serverQueue) return msg.channel.send('There is currently no song playing!');
+  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+  if(!serverQueue) return msg.channel.send("There is currently no song playing!");
   return msg.channel.send({embed: {
     author: {
       name: client.user.username,
       icon_url: client.user.avatarURL
     },
-   title: serverQueue.songs[0]['title'],
-   url: serverQueue.songs[0]['url'],
+   title: serverQueue.songs[0]["title"],
+   url: serverQueue.songs[0]["url"],
    color: 16711680,
-   description: `${serverQueue.songs[0]['title']} is currently playing!`,
+   description: `${serverQueue.songs[0]["title"]} is currently playing!`,
    thumbnail: {
-    url: serverQueue.songs['0']['imgurl']
+    url: serverQueue.songs["0"]["imgurl"]
    }
   }});
 }
 
 
 function queuemsg(msg, serverQueue) {
-  if (!msg.member.voiceChannel) return msg.channel.send('You have to be in a voice channel to stop the music!');
-  if(!serverQueue) return msg.channel.send('There is currently no songs in the queue!');
-  const _msgs = serverQueue.songs;
+  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+  if(!serverQueue) return msg.channel.send("There is currently no songs in the queue!");
   const embed = new Discord.RichEmbed()
   .setTitle("Current Songs in the Queue")
   .setAuthor(client.user.username, client.user.avatarURL)
   .setColor(0xFF0000)
-  .setThumbnail(serverQueue.songs['0']['imgurl'])
+  .setThumbnail(serverQueue.songs["0"]["imgurl"])
   .addField(showObject(serverQueue.songs),"Current songs in the queue")
   .setTimestamp()
   return msg.channel.send({embed});
@@ -287,7 +269,7 @@ function showObject(obj) {
   var result = "";
   var i;
   for (i = 0; i < obj.length; i++) {
-    result += obj[i]["title"] + '\n' + '\n';
+    result += obj[i]["title"] + "\n" + "\n";
   }
   return result;
 }
@@ -304,8 +286,8 @@ if (!song) {
 }
 
 const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
-  .on('end', (msg) => {
-    console.log('Music ended!');
+  .on("end", (msg) => {
+    console.log("Music ended!");
     client.user.setActivity(`Currently not vibing to anything`);
     serverQueue.songs.shift();
     play(guild, serverQueue.songs[0]);
@@ -317,25 +299,25 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
           name: client.user.username,
           icon_url: client.user.avatarURL
         },
-       title: serverQueue.songs[0]['title'],
-       url: serverQueue.songs[0]['url'],
+       title: serverQueue.songs[0]["title"],
+       url: serverQueue.songs[0]["url"],
        color: 16711680,
-       description: `${serverQueue.songs[0]['title']} is now playing playing!`,
+       description: `${serverQueue.songs[0]["title"]} is now playing playing!`,
        thumbnail: {
-        url: serverQueue.songs['0']['imgurl']
+        url: serverQueue.songs["0"]["imgurl"]
        }
       }});
     }
     
   })
-  .on('error', error => {
+  .on("error", error => {
     console.error(error);
   });
   
 
 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
-client.user.setActivity(`Currently vibing to ${serverQueue.songs[0]['title']} `);
+client.user.setActivity(`Currently vibing to ${serverQueue.songs[0]["title"]} `);
 
  };
 
