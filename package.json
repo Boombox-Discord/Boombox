@@ -1,19 +1,31 @@
 {
-  "name": "music-bot-for-discord",
-  "version": "0.0.4",
-  "description": "An open source and completely free music bot for Discord.",
+  "name": "boombox",
+  "version": "0.0.5",
+  "description": "A free, and open source discord music bot, based on discord.js and ytdl",
   "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AjayACST/Boombox.git"
+  },
+  "keywords": [
+    "music",
+    "discord",
+    "bot",
+    "youtube",
+    "play"
+  ],
   "author": "Arrow Quirk",
-  "license": "ISC",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/AjayACST/Boombox/issues"
+  },
+  "homepage": "https://github.com/AjayACST/Boombox#readme",
   "dependencies": {
-    "discord.js": "^12.4.0",
-    "discord.js-music-bot-bluspring": "^0.4.1",
-    "discord.js-musicbot-addon": "^13.9.1",
-    "discord.js-musicbot-v2": "^13.9.3",
-    "ffmpeg": "0.0.4",
-    "fs": "0.0.1-security",
-    "opusscript": "0.0.7",
+    "discord.js": "^12.4.1",
     "xmlhttprequest": "^1.8.0",
-    "ytdl-core": "^3.4.2"
+    "ytdl-core": "^4.0.0"
   }
 }
