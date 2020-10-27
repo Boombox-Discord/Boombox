@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+
 const Discord = require('discord.js');
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
@@ -35,32 +35,7 @@ client.on('ready', () => {
 
 
 
-  if (reaction.emoji.name === '⭐') {
-    if (reaction.count === 3) {
-      let msgURL = "https://discord.com/channels/" + reaction.message.guild.id + "/" + reaction.message.channel.id + "/" + reaction.message.id;
-      let userName = reaction.message.member.user.username
-      let avatarURL = "https://cdn.discordapp.com/avatars/" + reaction.message.member.user.id + "/" + reaction.message.member.user.avatar + ".png"
-      console.log(avatarURL)
-      let channelName = reaction.message.channel.name
-      let guildName = reaction.message.channel.guild.name
-      client.channels.get(jsonData.channel).send({"embed": {
-        "footer": {
-          "text": `${guildName} | ${channelName}`
-        },
-        "author": {
-          "name": userName,
-          "icon_url": avatarURL
-        },
-        "fields": [
-          {
-            "name": reaction.message.content,
-            "value": `[Click here for context](${msgURL})`
-          }
-        ]
-      }
-    });
-    }
-  }
+
 
 client.on('message', async msg => {
 
