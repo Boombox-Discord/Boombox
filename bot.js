@@ -253,6 +253,10 @@ const helpTitle = client.user.username + " help";
         {
           "name": "!volume",
           "value": "Set's the volume. Use a number between 1 and 5."
+        },
+        {
+          "name": "!invite",
+          "value": "Sends an invite link for the bot."
         }
       ]
     }

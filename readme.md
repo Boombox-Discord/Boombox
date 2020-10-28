@@ -27,6 +27,7 @@ The defualt prefix is "!" but this can be changed in the config.json file if you
 | Now Playing | !np | Displays what song is currently playing. |
 | Queue | !queue | Displays current songs queue. |
 | Volume | !volume | Set's the volume. Use a number between 1 and 5. | 
+| Invite | !invite | Sends an invite link for the bot. |
 
 ## Join The Community
 
