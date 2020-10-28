@@ -7,6 +7,9 @@
 <a href="https://discord.com/api/oauth2/authorize?client_id=678819994250772480&permissions=36785152&scope=bot">
     <img src="https://img.shields.io/badge/Invite-to%20your%20server-blue.svg?style=for-the-badge" alt="Invite to Server">
   </a>
+  <a href="https://discord.gg/invite/HKnyEB9">
+    <img src="https://discordapp.com/api/guilds/770511689258237973/widget.png?style=shield" alt="Discord Server">
+  </a>
 
 ## About
 
