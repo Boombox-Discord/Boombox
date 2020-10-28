@@ -8,12 +8,40 @@ const {
 	prefix,
   token,
   youtubeApi,
+  inviteLink
 } = require("./config.json");
 const ytdl = require("ytdl-core");
 
 const client = new Discord.Client();
 
 const queue = new Map();
+
+client.on("guildCreate", (guild) => {
+  client.channels.get("770865244171272232").send({embed: {
+    author: {
+      name: client.user.username,
+      icon_url: client.user.avatarURL
+    },
+  title: "New Guild Join",
+  color: 16711680,
+  footer: {
+    text: "Guild count: " + client.guilds.size
+  },
+  thumbnail: {
+    url: guild.iconURL
+  },
+  fields: [
+    {
+      name: "Guild name",
+      value: guild.name
+    },
+    {
+      name: "Guild ID",
+      value: guild.id,
+    }
+  ]
+  }});
+})
 
 
 client.on("ready", () => {
@@ -49,6 +77,9 @@ client.on("message", async (msg) => {
     return;
   } else if (msg.content.startsWith(`${prefix}help`)) {
     help(msg, serverQueue);
+    return;
+  } else if (msg.content.startsWith(`${prefix}invite`)) {
+    invite(msg);
     return;
   }
 });
@@ -103,7 +134,7 @@ async function execute(msg, serverQueue) {
         var str = this.responseText;
         var parse = JSON.parse(str);
         if (parse["pageInfo"]["totalResults"] === 0) {
-          return msg.channel.send("Sorry we couldn't find any songs called " + video + ". Please try again or paste a link to the youtube video.")
+          return msg.channel.send("Sorry we couldn't find any songs called " + video + ". Please try again or paste a link to the youtube video.");
         }
         var videoID = parse["items"][0]["id"]["videoId"];
         var imgURL = parse["items"][0]["snippet"]["thumbnails"]["high"]["url"];
@@ -283,6 +314,18 @@ function queuemsg(msg, serverQueue) {
    thumbnail: {
     url: serverQueue.songs["0"]["imgurl"]
    }
+  }});
+}
+
+function invite(msg) {
+  return msg.channel.send({embed: {
+    author: {
+      name: client.user.username,
+      icon_url: client.user.avatarURL
+    },
+   title: `Click here to add Boombox to your server.`,
+   url: inviteLink,
+   color: 16711680,
   }});
 }
 
