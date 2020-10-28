@@ -245,7 +245,7 @@ function volume(msg, serverQueue) {
     return msg.channel.send("Please select a number between 1 and 5.");
   }
   serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 5);
-  msg.channel.send("I have set the volume to" + args[1]);
+  msg.channel.send("I have set the volume to " + args[1]);
   }
 
 function np(msg, serverQueue) {
@@ -288,7 +288,8 @@ function showObject(obj) {
   var result = "";
   var i;
   for (i = 0; i < obj.length; i++) {
-    result += obj[i]["title"] + "\n" + "\n";
+    var numberInQueue = i + 1
+    result += numberInQueue + ". " + obj[i]["title"] + "\n";
   }
   return result;
 }
