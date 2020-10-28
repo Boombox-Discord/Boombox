@@ -102,6 +102,9 @@ async function execute(msg, serverQueue) {
           //Use parse() method to convert JSON string to JSON object
         var str = this.responseText;
         var parse = JSON.parse(str);
+        if (parse["pageInfo"]["totalResults"] === 0) {
+          return msg.channel.send("Sorry we couldn't find any songs called " + video + ". Please try again or paste a link to the youtube video.")
+        }
         var videoID = parse["items"][0]["id"]["videoId"];
         var imgURL = parse["items"][0]["snippet"]["thumbnails"]["high"]["url"];
         var videoTitle = parse["items"][0]["snippet"]["title"];
@@ -288,7 +291,7 @@ function showObject(obj) {
   var result = "";
   var i;
   for (i = 0; i < obj.length; i++) {
-    var numberInQueue = i + 1
+    var numberInQueue = i + 1;
     result += numberInQueue + ". " + obj[i]["title"] + "\n";
   }
   return result;
