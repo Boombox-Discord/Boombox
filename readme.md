@@ -36,9 +36,11 @@ You can join us on our [Official Discord Server.](https://discord.gg/HKnyEB9)
 
 ## Insatll and Running
 
+If you would like to add the bot to your Discord server [click here.](https://discord.com/api/oauth2/authorize?client_id=678819994250772480&permissions=36785152&scope=bot) If you would like to self-host the bot keep reading.
+
 To install run the commands below.
 
-First, make a copy of config-example.json and call it config.json. Enter your own discord token and youtube api token. You can also change the prefix here if you wish.
+First, make a copy of config-example.json and call it config.json. Enter your own discord token, youtube api token and invite link. You can also change the prefix here if you wish.
 
 `npm install` and `node bot.js`
 
