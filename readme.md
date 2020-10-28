@@ -35,7 +35,7 @@ Want to submit bug reports, feature requests, our just chat with our coumminty?
 
 You can join us on our [Official Discord Server.](https://discord.gg/HKnyEB9)
 
-## Insatll and Running
+## Install and Running
 
 If you would like to add the bot to your Discord server [click here.](https://discord.com/api/oauth2/authorize?client_id=678819994250772480&permissions=36785152&scope=bot) If you would like to self-host the bot keep reading.
 
