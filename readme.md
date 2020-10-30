@@ -29,6 +29,8 @@ The defualt prefix is "!" but this can be changed in the config.json file if you
 | Volume | !volume | Set's the volume. Use a number between 1 and 5. | 
 | Invite | !invite | Sends an invite link for the bot. |
 
+![GIF of commands](https://boombox.quirky.codes/IMG/Header.gif)
+
 ## Join The Community
 
 Want to submit bug reports, feature requests, our just chat with our coumminty?
