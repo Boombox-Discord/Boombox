@@ -2,5 +2,7 @@
     "prefix": "!",
     "token": "Discrod token",
     "youtubeApi": "Youtube API Token",
-    "inviteLink": "https://discord.com/api/oauth2/authorize?client_id=678819994250772480&permissions=36785152&scope=bot"
+    "inviteLink": "https://discord.com/api/oauth2/authorize?client_id=678819994250772480&permissions=36785152&scope=bot",
+    "statsdURL": "localhost",
+    "statsdPort": "8125"
 }
