@@ -3,21 +3,27 @@
 
 const Discord = require("discord.js");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const ytdl = require("ytdl-core");
+const lynx = require('lynx');
+
 
 const {
 	prefix,
   token,
   youtubeApi,
-  inviteLink
+  inviteLink,
+  statsdURL,
+  statsdPort
 } = require("./config.json");
-const ytdl = require("ytdl-core");
 
 const client = new Discord.Client();
 
 const queue = new Map();
 
-client.on("guildCreate", (guild) => {
-  client.channels.get("770865244171272232").send({embed: {
+var metrics = new lynx(statsdURL, statsdPort)
+
+client.on('guildCreate', (guild) => {
+  client.channels.get('770865244171272232').send({embed: {
     author: {
       name: client.user.username,
       icon_url: client.user.avatarURL
@@ -86,6 +92,8 @@ client.on("message", async (msg) => {
 
 
 async function execute(msg, serverQueue) {
+
+  metrics.increment('boombox.play');
 
 
   const args = msg.content.split(" ");
@@ -214,7 +222,9 @@ async function execute(msg, serverQueue) {
   }
 
 function help(msg, serverQueue) {
-const helpTitle = client.user.username + " help";
+
+  metrics.increment('boombox.help');
+  const helpTitle = client.user.username + " help";
 
 
   return msg.channel.send({
@@ -264,18 +274,21 @@ const helpTitle = client.user.username + " help";
   }
 
 function skip(msg, serverQueue) {
-if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to skip the music!");
-if (!serverQueue) return msg.channel.send("There is no song that I could skip!");
-serverQueue.connection.dispatcher.end(msg);
+  metrics.increment('boombox.skip');
+  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to skip the music!");
+  if (!serverQueue) return msg.channel.send("There is no song that I could skip!");
+  serverQueue.connection.dispatcher.end(msg);
 }
 
 function stop(msg, serverQueue) {
-if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
-serverQueue.songs = [];
-serverQueue.connection.dispatcher.end(msg);
+  metrics.increment('boombox.stop');
+  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+  serverQueue.songs = [];
+  serverQueue.connection.dispatcher.end(msg);
 }
 
 function volume(msg, serverQueue) {
+  metrics.increment('boombox.volume');
   if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to change the volume!");
   if (!serverQueue) return msg.channel.send("There is no song playing.");
   const args = msg.content.split(" ");
@@ -287,6 +300,7 @@ function volume(msg, serverQueue) {
   }
 
 function np(msg, serverQueue) {
+  metrics.increment('boombox.np');
   if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to see what is currently playing!");
   if(!serverQueue) return msg.channel.send("There is currently no song playing!");
   return msg.channel.send({embed: {
@@ -305,6 +319,7 @@ function np(msg, serverQueue) {
 
 
 function queuemsg(msg, serverQueue) {
+  metrics.increment('boombox.queue');
   if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to request the queue.");
   if(!serverQueue) return msg.channel.send("There is currently no songs in the queue!");
   return msg.channel.send({embed: {
@@ -322,6 +337,7 @@ function queuemsg(msg, serverQueue) {
 }
 
 function invite(msg) {
+  metrics.increment('boombox.invite');
   return msg.channel.send({embed: {
     author: {
       name: client.user.username,
