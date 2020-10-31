@@ -1,10 +1,8 @@
-
 const Discord = require("discord.js");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const ytdl = require("ytdl-core");
 const lynx = require('lynx');
 const lyricsAPI = require('genius-lyrics-api');
-const { Menu } = require('discord.js-menu');
 
 
 
@@ -376,47 +374,40 @@ function lyrics(msg, serverQueue) {
 
   var regex = new RegExp('.{' + 1023 + '}|.{1,' + Number(1023-1) + '}', 'g');
 
-  console.log(lyrics.match(regex));
+  lyrics = lyrics.match(regex);
 
-  if (lyrics.length > 1023) {
-    lyrics = lyrics.substring(0,1019);
+  console.log(lyrics.length)
 
-    lyrics = lyrics + `...`
-  } 
+  console.log(lyricsCreate(lyrics, lyrics.length-10))
 
-  let userMenu = new Menu(msg.channel, msg.author.id, [
-    {
-        name: 'lyrics',
-        content: new MessageEmbed({
-            title: "Your user info!",
-            color: 0x7289DA
-        })
-    }
-  ], 300000);
-  userMenu.start();
+  const exampleEmbed = new Discord.RichEmbed()
+	.setColor('#0099ff')
+	.setTitle('Some title')
+	.setAuthor('Some name', 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org')
+  .setDescription('Some description here')
+  .setFooter('Some footer text here', 'https://i.imgur.com/wSTFkRM.png');
+  
+  for (i = 0; i < lyrics.length; i++) {
+    exampleEmbed.addField(`${lyrics[i]} \n`);
+  }
 
-  userMenu.on('pageChange', destination => {
-      if (destination.name === "user") {
-          destination.content.description = message.author.username + "'s info:"
-          destination.content.addField('Avatar URL:', message.author.avatarURL())
-          destination.content.addField('Are you a bot?', message.author.bot ? "Yes!" : "No...")
-      }
-  });
-  msg.channel.send({embed: {
-    author: {
-      name: client.user.username,
-      icon_url: client.user.avatarURL
-    },
-    url: geniusURL,
-    title: `Lyrics for ${serverQueue.songs[0]["title"]}`,
-    color: 16711680,
-    fields: [
-      {
-        name: "Lyrics",
-        value: lyrics
-      }
-    ]
-    }});
+  msg.channel.send(exampleEmbed);
+
+  // msg.channel.send({embed: {
+  //   author: {
+  //     name: client.user.username,
+  //     icon_url: client.user.avatarURL
+  //   },
+  //   url: geniusURL,
+  //   title: `Lyrics for ${serverQueue.songs[0]["title"]}`,
+  //   color: 16711680,
+  //   fields: [
+  //     {
+  //       name: "Lyrics",
+  //       value: lyrics
+  //     }
+  //   ]
+  //   }});
   });
 }
 
@@ -426,6 +417,15 @@ function showObject(obj) {
   for (i = 0; i < obj.length; i++) {
     var numberInQueue = i + 1;
     result += numberInQueue + ". " + obj[i]["title"] + "\n";
+  }
+  return result;
+}
+
+function lyricsCreate(obj, amount) {
+  var result = "";
+  var i;
+  for (i = amount; i < obj.length; i++) {
+    result += obj[i] + "\n";
   }
   return result;
 }
