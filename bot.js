@@ -386,7 +386,7 @@ function lyrics(msg, serverQueue) {
 
   let userMenu = new Menu(msg.channel, msg.author.id, [
     {
-        name: 'user',
+        name: 'lyrics',
         content: new MessageEmbed({
             title: "Your user info!",
             color: 0x7289DA
