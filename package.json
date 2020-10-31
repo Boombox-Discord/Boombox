@@ -2,9 +2,12 @@
   "name": "boombox",
   "version": "0.0.5",
   "description": "A free, and open source discord music bot, based on discord.js and ytdl",
-  "main": "bot.js",
+  "main": "build/main/bot.js",
+  "typings": "build/main/bot.d.ts",
+  "module": "build/module/bot.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "run-p build:*",
+    "build:main": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -29,5 +32,8 @@
     "lynx": "^0.2.0",
     "xmlhttprequest": "^1.8.0",
     "ytdl-core": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.5"
   }
 }

@@ -14,7 +14,7 @@ const {
   inviteLink,
   statsdURL,
   statsdPort
-} = require("./config.json");
+} = require("../config.json");
 
 const client = new Discord.Client();
 
