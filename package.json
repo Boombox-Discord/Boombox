@@ -26,6 +26,7 @@
   "dependencies": {
     "@discordjs/opus": "^0.3.3",
     "discord.js": "^11.6.4",
+    "discord.js-menu": "^2.1.1",
     "genius-lyrics-api": "^3.0.3",
     "lynx": "^0.2.0",
     "xmlhttprequest": "^1.8.0",

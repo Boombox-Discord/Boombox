@@ -4,6 +4,7 @@ const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const ytdl = require("ytdl-core");
 const lynx = require('lynx');
 const lyricsAPI = require('genius-lyrics-api');
+const { Menu } = require('discord.js-menu');
 
 
 
@@ -373,26 +374,48 @@ function lyrics(msg, serverQueue) {
 
   var geniusLyrics = getLyrics(geniusURL).then((lyrics) => {
 
-    if (lyrics.length > 1023) {
-      lyrics = lyrics.substring(0,1019);
+  var regex = new RegExp('.{' + 1023 + '}|.{1,' + Number(1023-1) + '}', 'g');
 
-      lyrics = lyrics + `...`
-    } 
+  console.log(lyrics.match(regex));
 
-    msg.channel.send({embed: {
-      author: {
-        name: client.user.username,
-        icon_url: client.user.avatarURL
-      },
-      url: geniusURL,
-      title: `Lyrics for ${serverQueue.songs[0]["title"]}`,
-      color: 16711680,
-      fields: [
-        {
-          name: "Lyrics",
-          value: lyrics
-        }
-      ]
+  if (lyrics.length > 1023) {
+    lyrics = lyrics.substring(0,1019);
+
+    lyrics = lyrics + `...`
+  } 
+
+  let userMenu = new Menu(msg.channel, msg.author.id, [
+    {
+        name: 'user',
+        content: new MessageEmbed({
+            title: "Your user info!",
+            color: 0x7289DA
+        })
+    }
+  ], 300000);
+  userMenu.start();
+
+  userMenu.on('pageChange', destination => {
+      if (destination.name === "user") {
+          destination.content.description = message.author.username + "'s info:"
+          destination.content.addField('Avatar URL:', message.author.avatarURL())
+          destination.content.addField('Are you a bot?', message.author.bot ? "Yes!" : "No...")
+      }
+  });
+  msg.channel.send({embed: {
+    author: {
+      name: client.user.username,
+      icon_url: client.user.avatarURL
+    },
+    url: geniusURL,
+    title: `Lyrics for ${serverQueue.songs[0]["title"]}`,
+    color: 16711680,
+    fields: [
+      {
+        name: "Lyrics",
+        value: lyrics
+      }
+    ]
     }});
   });
 }
