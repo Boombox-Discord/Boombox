@@ -1,10 +1,10 @@
-"use strict";
-
 
 const Discord = require("discord.js");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const ytdl = require("ytdl-core");
 const lynx = require('lynx');
+const lyricsAPI = require('genius-lyrics-api');
+
 
 
 const {
@@ -13,8 +13,11 @@ const {
   youtubeApi,
   inviteLink,
   statsdURL,
-  statsdPort
+  statsdPort,
+  geniusApiKey
 } = require("./config.json");
+const searchSong = require("genius-lyrics-api/lib/searchSong");
+const getLyrics = require("genius-lyrics-api/lib/getLyrics");
 
 const client = new Discord.Client();
 
@@ -87,6 +90,9 @@ client.on("message", async (msg) => {
   } else if (msg.content.startsWith(`${prefix}invite`)) {
     invite(msg);
     return;
+  } else if (msg.content.startsWith(`${prefix}lyrics`)) {
+    lyrics(msg, serverQueue);
+    return;
   }
 });
 
@@ -148,6 +154,16 @@ async function execute(msg, serverQueue) {
         var imgURL = parse["items"][0]["snippet"]["thumbnails"]["high"]["url"];
         var videoTitle = parse["items"][0]["snippet"]["title"];
         const videoURL = "https://www.youtube.com/watch?v=" + videoID;
+
+        var optionsSong = {
+          apiKey: geniusApiKey,
+          title: video,
+          artist: "",
+          optimizeQuery: true
+        }
+    
+        var geniusSong = await searchSong(optionsSong)
+
           
         //Play song
         const songInfo = await ytdl.getInfo(videoURL);
@@ -155,6 +171,7 @@ async function execute(msg, serverQueue) {
           title: videoTitle,
           url: songInfo.url,
           imgurl: imgURL,
+          geniusURL: geniusSong[0]["url"]
         };
 
         if (!serverQueue) {
@@ -349,6 +366,36 @@ function invite(msg) {
   }});
 }
 
+
+function lyrics(msg, serverQueue) {
+  metrics.increment('boombox.lyrics');
+  geniusURL = serverQueue.songs[0]["geniusURL"]
+
+  var geniusLyrics = getLyrics(geniusURL).then((lyrics) => {
+
+    if (lyrics.length > 1023) {
+      lyrics = lyrics.substring(0,1019);
+
+      lyrics = lyrics + `...`
+    } 
+
+    msg.channel.send({embed: {
+      author: {
+        name: client.user.username,
+        icon_url: client.user.avatarURL
+      },
+      url: geniusURL,
+      title: `Lyrics for ${serverQueue.songs[0]["title"]}`,
+      color: 16711680,
+      fields: [
+        {
+          name: "Lyrics",
+          value: lyrics
+        }
+      ]
+    }});
+  });
+}
 
 function showObject(obj) {
   var result = "";
