@@ -1,4 +1,4 @@
-FROM node:15-buster-slim
+FROM node:15-buster
 
 # Create app directory
 WORKDIR /usr/src/app
