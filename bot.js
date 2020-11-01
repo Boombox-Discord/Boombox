@@ -146,15 +146,15 @@ async function execute(msg, serverQueue) {
           //Use parse() method to convert JSON string to JSON object
         var str = this.responseText;
         var parse = JSON.parse(str);
-        if (parse.pageInfo["totalResults"] === 0) {
+        if (parse.pageInfo.totalResults === 0) {
           return msg.channel.send("Sorry we couldn't find any songs called " + video + ". Please try again or paste a link to the youtube video.");
         }
-        if (parse.items[0].snippet["liveBroadcastContent"] === "live" || parse.items[0].snippet["liveBroadcastContent"] === "upcoming") {
+        if (parse.items[0].snippet.liveBroadcastContent === "live" || parse.items[0].snippet.liveBroadcastContent === "upcoming") {
           return msg.channel.send("Sorry that is a live video. Please try a video that is not live.")
         }
-        var videoID = parse.items[0].id["videoId"];
-        var imgURL = parse.items[0].snippet["thumbnails"].high["url"];
-        var videoTitle = parse.items[0].snippet["title"];
+        var videoID = parse.items[0].id.videoId;
+        var imgURL = parse.items[0].snippet.thumbnails.high.url;
+        var videoTitle = parse.items[0].snippet.title;
         const videoURL = "https://www.youtube.com/watch?v=" + videoID;
 
         var optionsSong = {
