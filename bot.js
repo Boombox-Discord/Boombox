@@ -1,10 +1,9 @@
-"use strict";
-
-
 const Discord = require("discord.js");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const ytdl = require("ytdl-core");
 const lynx = require('lynx');
+const lyricsAPI = require('genius-lyrics-api');
+
 
 
 const {
@@ -13,8 +12,11 @@ const {
   youtubeApi,
   inviteLink,
   statsdURL,
-  statsdPort
+  statsdPort,
+  geniusApiKey
 } = require("./config.json");
+const searchSong = require("genius-lyrics-api/lib/searchSong");
+const getLyrics = require("genius-lyrics-api/lib/getLyrics");
 
 const client = new Discord.Client();
 
@@ -87,6 +89,9 @@ client.on("message", async (msg) => {
   } else if (msg.content.startsWith(`${prefix}invite`)) {
     invite(msg);
     return;
+  } else if (msg.content.startsWith(`${prefix}lyrics`)) {
+    lyrics(msg, serverQueue);
+    return;
   }
 });
 
@@ -144,17 +149,37 @@ async function execute(msg, serverQueue) {
         if (parse["pageInfo"]["totalResults"] === 0) {
           return msg.channel.send("Sorry we couldn't find any songs called " + video + ". Please try again or paste a link to the youtube video.");
         }
+        if (parse["items"][0]["snippet"]["liveBroadcastContent"] === "live" || parse["items"][0]["snippet"]["liveBroadcastContent"] === "upcoming") {
+          return msg.channel.send("Sorry that is a live video. Please try a video that is not live.")
+        }
         var videoID = parse["items"][0]["id"]["videoId"];
         var imgURL = parse["items"][0]["snippet"]["thumbnails"]["high"]["url"];
         var videoTitle = parse["items"][0]["snippet"]["title"];
         const videoURL = "https://www.youtube.com/watch?v=" + videoID;
-          
+
+        var optionsSong = {
+          apiKey: geniusApiKey,
+          title: video,
+          artist: "",
+          optimizeQuery: true
+        }
+    
+        var geniusSong = await searchSong(optionsSong)
+
+        if (geniusSong === null) {
+          geniusSong = [
+            {
+              url: "Nothing found."
+            }
+          ]
+        }
         //Play song
         const songInfo = await ytdl.getInfo(videoURL);
         const song = {
           title: videoTitle,
           url: songInfo.url,
           imgurl: imgURL,
+          geniusURL: geniusSong[0]["url"]
         };
 
         if (!serverQueue) {
@@ -350,8 +375,90 @@ function invite(msg) {
 }
 
 
+async function lyrics(msg, serverQueue) {
+  metrics.increment('boombox.lyrics');
+
+  const args = msg.content.split(" ");
+
+  var argsSlice = args.slice(1, -1);
+  var i;
+  var song = "";
+  for (i = 0; i < argsSlice.length; i++) {
+    song += argsSlice[i] + " ";
+  }
+
+  song += args[args.length - 1];
+
+  if (song === `${prefix}lyrics`) {
+    if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to request the lyrics to the currently playing song.");
+    if(!serverQueue) return msg.channel.send("There is currently no songs playing!");
+    
+    geniusURL = serverQueue.songs[0]["geniusURL"]
+
+    if (geniusURL === "Nothing found.") {
+      return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
+    }
+
+    var geniusLyrics = getLyrics(geniusURL).then((lyrics) => {
+
+      const exampleEmbed = new Discord.RichEmbed()
+      .setColor(16711680)
+      .setTitle(`Lyrics for ${serverQueue.songs[0]["title"]}`)
+      .setAuthor(client.user.username, client.user.avatarURL)
+      .setFooter('Lyrics provided from Genius');
+
+      var splitted = lyrics.split(/\n\s*\n/);
+
+      splitted.forEach((capture, i) => exampleEmbed.addField('\u200b', `${capture}`));
+
+      msg.channel.send(exampleEmbed);
+    });
+  } else {
+    var optionsSong = {
+      apiKey: geniusApiKey,
+      title: song,
+      artist: "",
+      optimizeQuery: true
+    }
+    var geniusSong = await searchSong(optionsSong)
+    console.log(geniusSong)
+    if (geniusSong === null) {
+      geniusSong = [
+        {
+          url: "Nothing found."
+          }
+        ]
+      }
+
+      geniusURL = geniusSong[0]["url"]
+
+    if (geniusURL === "Nothing found.") {
+      return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
+    }
+
+    var geniusLyrics = getLyrics(geniusURL).then((lyrics) => {
+
+      const lyricsEmbed = new Discord.RichEmbed()
+      .setColor(16711680)
+      .setTitle(`Lyrics for ${geniusSong[0]["title"]}`)
+      .setAuthor(client.user.username, client.user.avatarURL)
+      .setFooter('Lyrics provided from Genius');
+
+      var splitted = lyrics.split(/\n\s*\n/);
+
+      splitted.forEach((capture, i) => lyricsEmbed.addField('\u200b', `${capture}`));
+
+      msg.channel.send(lyricsEmbed);
+    });
+
+  }
+
+
+  
+}
+
 function showObject(obj) {
-  var result = "";
+  var result = [];
   var i;
   for (i = 0; i < obj.length; i++) {
     var numberInQueue = i + 1;
@@ -359,6 +466,7 @@ function showObject(obj) {
   }
   return result;
 }
+
 
 
 function play(guild, song) {
@@ -377,21 +485,20 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
     serverQueue.songs.shift();
     play(guild, serverQueue.songs[0]);
     if (!serverQueue.songs[0]) {
-      return msg.channel.send("No more songs in the queue! Leaving voice channel.");
-
+      return serverQueue.textChannel.send("No more songs in the queue! Leaving voice channel.");
     } else {
-      return msg.channel.send({embed: {
+      return serverQueue.textChannel.send({embed: {
         author: {
           name: client.user.username,
           icon_url: client.user.avatarURL
         },
-       title: serverQueue.songs[0]["title"],
-       url: serverQueue.songs[0]["url"],
+       title: `${serverQueue.songs[0]["title"]}`,
+       url: `https://youtube.com${serverQueue.songs[0]["url"]}`,
        color: 16711680,
        description: `${serverQueue.songs[0]["title"]} is now playing!`,
-       thumbnail: {
-        url: serverQueue.songs["0"]["imgurl"]
-       }
+          thumbnail: {
+            url: serverQueue.songs[0]["imgurl"]
+          }
       }});
     }
     
