@@ -2,7 +2,7 @@ const Discord = require("discord.js");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const ytdl = require("ytdl-core");
 const lynx = require('lynx');
-const lyricsAPI = require('genius-lyrics-api');
+const lyricsAPI = require('genius-lyrics-api'); // skipcq: JS-0128
 
 
 
@@ -456,7 +456,7 @@ async function lyrics(msg, serverQueue) {
       return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
     }
 
-    var geniusLyrics = getLyrics(geniusURL).then((lyrics) => {
+    var geniusLyrics = getLyrics(geniusURL).then((lyrics) => { // skipcq: JS-0128
 
       const lyricsEmbed = new Discord.RichEmbed()
       .setColor(16711680)
