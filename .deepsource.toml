@@ -1,0 +1,13 @@
+version = 1
+
+[[analyzers]]
+name = "javascript"
+enabled = true
+
+  [analyzers.meta]
+  environment = ["nodejs"]
+  style_guide = "standard"
+
+[[transformers]]
+name = "standardjs"
+enabled = true
