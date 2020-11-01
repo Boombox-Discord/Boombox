@@ -401,7 +401,7 @@ async function lyrics(msg, serverQueue) {
     if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to request the lyrics to the currently playing song.");
     if(!serverQueue) return msg.channel.send("There is currently no songs playing!");
     
-    geniusURL = serverQueue.songs[0].geniusURL
+    var geniusURL = serverQueue.songs[0].geniusURL
 
     if (geniusURL === "Nothing found.") {
       return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
@@ -450,7 +450,7 @@ async function lyrics(msg, serverQueue) {
         ]
       }
 
-      geniusURL = geniusSong[0].url
+    var geniusURL = geniusSong[0].url
 
     if (geniusURL === "Nothing found.") {
       return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
