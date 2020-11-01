@@ -14,7 +14,7 @@ const {
   statsdURL,
   statsdPort,
   geniusApiKey
-} = require("./config.json");
+} = require("./config.json"); //skipcq: JS-0266
 const searchSong = require("genius-lyrics-api/lib/searchSong");
 const getLyrics = require("genius-lyrics-api/lib/getLyrics");
 
@@ -450,7 +450,7 @@ async function lyrics(msg, serverQueue) {
         ]
       }
 
-    var geniusURL = geniusSong[0].url
+    geniusURL = geniusSong[0].url
 
     if (geniusURL === "Nothing found.") {
       return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
