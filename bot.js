@@ -54,7 +54,7 @@ client.on('guildCreate', (guild) => {
 
 client.on("ready", () => {
  console.log(`Logged in as ${client.user.tag}!`);
- client.user.setActivity("for !help", { type: "WATCHING" })
+ client.user.setActivity(`for ${prefix}help`, { type: "WATCHING" })
   .catch(console.error);
  });
 
@@ -129,7 +129,7 @@ async function execute(msg, serverQueue) {
     },
   title: "🔍 Searching...",
   color: 16711680,
-  description: `Please wait, we are searching youtube for a song called ${video}`,
+  description: `Please wait, we are searching YouTube for a song called ${video}.`,
   }});
 
 
@@ -262,35 +262,43 @@ function help(msg, serverQueue) {
       "color": 16711680,
       "fields": [
         {
-          "name": "!help",
+          "name": `${prefix}help`,
           "value": "Displays this command"
         },
         {
-          "name": "!play [song name or url]",
+          "name": `${prefix}play [song name or url]`,
           "value": "This command will play a song. If a song is currently playing it will add it to the queue. You can type a song name or paste a link to the YouTube video."
         },
         {
-          "name": "!skip",
+          "name": `${prefix}skip`,
           "value": "Will skip the current song."
         },
         {
-          "name": "!stop",
+          "name": `${prefix}stop`,
           "value": "Will stop all music and delete the queue."
         },
         {
-          "name": "!np",
+          "name": `${prefix}np`,
           "value": "Displays what song is currently playing."
         },
         {
-          "name": "!queue",
+          "name": `${prefix}lyrics`,
+          "value": "Will get the currently playing songs lyrics. Lyrics are provided by Genius."
+        },
+        {
+          "name": `${prefix}lyrics [song name]`,
+          "value": "Will get the lyrics for the provided song. Lyrics are provided by Genius."
+        },
+        {
+          "name": `${prefix}queue`,
           "value": "Displays current queue."
         },
         {
-          "name": "!volume",
+          "name": `${prefix}volume`,
           "value": "Set's the volume. Use a number between 1 and 5."
         },
         {
-          "name": "!invite",
+          "name": `${prefix}invite`,
           "value": "Sends an invite link for the bot."
         }
       ]
@@ -411,17 +419,29 @@ async function lyrics(msg, serverQueue) {
 
       splitted.forEach((capture, i) => exampleEmbed.addField('\u200b', `${capture}`));
 
-      msg.channel.send(exampleEmbed);
+      return msg.channel.send(exampleEmbed);
     });
   } else {
+
+    msg.channel.send({embed: {
+      author: {
+        name: client.user.username,
+        icon_url: client.user.avatarURL
+      },
+    title: "🔍 Searching...",
+    color: 16711680,
+    description: `Please wait, we are searching Genius for lyrics to ${song}.`,
+    }});
+
     var optionsSong = {
       apiKey: geniusApiKey,
       title: song,
       artist: "",
       optimizeQuery: true
     }
+
     var geniusSong = await searchSong(optionsSong)
-    console.log(geniusSong)
+
     if (geniusSong === null) {
       geniusSong = [
         {
@@ -448,7 +468,7 @@ async function lyrics(msg, serverQueue) {
 
       splitted.forEach((capture, i) => lyricsEmbed.addField('\u200b', `${capture}`));
 
-      msg.channel.send(lyricsEmbed);
+      return msg.channel.send(lyricsEmbed);
     });
 
   }

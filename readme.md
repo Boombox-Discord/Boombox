@@ -24,7 +24,9 @@ The defualt prefix is "!" but this can be changed in the config.json file if you
 | Play | !play [song name or youtube link] | This will find the song from youtube and start playing it. If there is something currently playing it will add it to the queue. |
 | Skip | !skip | Will skip the currently playing song. |
 | Stop | !stop | Will stop current playing music and delete the queue. |
-| Now Playing | !np | Displays what song is currently playing. |
+| Now Playing | !np | Displays what song is currently playing. |.
+| Lyrics | !lyrics | Will get the currently playing songs lyrics. Lyrics are provided by Genius. |
+| Lyrics | !lyrics [song name] | Will get the lyrics for the provided song. Lyrics are provided by Genius. |
 | Queue | !queue | Displays current songs queue. |
 | Volume | !volume | Set's the volume. Use a number between 1 and 5. | 
 | Invite | !invite | Sends an invite link for the bot. |
@@ -43,8 +45,29 @@ If you would like to add the bot to your Discord server [click here.](https://di
 
 To install run the commands below.
 
-First, make a copy of config-example.json and call it config.json. Enter your own discord token, youtube api token and invite link. You can also change the prefix here if you wish.
+## Docker
+
+First, make a copy of config-example.json and call it config.json. Enter your own discord token, youtube api token, invite link, and Genius API Client Access token. You can also change the prefix here if you wish.
+
+Now run
+
+`docker-compose up -d` and a docker two docker containers will start. One with the bot in it and one with graphite. You can access graphite's web interface at the IP address of it's container. 
+
+## Local install
+
+First, make a copy of config-example.json and call it config.json. Enter your own discord token, youtube api token, invite link, statsD IP address and port, and Genius API Client Access token. You can also change the prefix here if you wish.
+
+If you don't already have graphite installed you can install it into a docker container with ```docker run -d \
+ --name graphite \
+ --restart=always \
+ -p 80:80 \
+ -p 2003-2004:2003-2004 \
+ -p 2023-2024:2023-2024 \
+ -p 8125:8125/udp \
+ -p 8126:8126 \
+ graphiteapp/graphite-statsd```
+
+ Now run
 
 `npm install` and `node bot.js`
 
-Docker support is going to be added at a later date.
