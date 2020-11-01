@@ -28,6 +28,7 @@
     "discord.js": "^11.6.4",
     "genius-lyrics-api": "^3.0.3",
     "lynx": "^0.2.0",
+    "standard": "^16.0.1",
     "xmlhttprequest": "^1.8.0",
     "ytdl-core": "^4.0.0"
   }
