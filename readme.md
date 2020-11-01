@@ -10,6 +10,7 @@
   <a href="https://discord.gg/invite/HKnyEB9">
     <img src="https://discordapp.com/api/guilds/770511689258237973/widget.png?style=shield" alt="Discord Server">
   </a>
+  [![DeepSource](https://deepsource.io/gh/Boombox-Discord/Boombox.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/Boombox-Discord/Boombox/?ref=repository-badge)
 
 ## About
 
