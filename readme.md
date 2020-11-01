@@ -4,13 +4,14 @@
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5cdfe7f2879e4af4a04dc41bd0cbefc2)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AjayACST/Boombox&amp;utm_campaign=Badge_Grade)
 [![DeepScan grade](https://deepscan.io/api/teams/11492/projects/14394/branches/266677/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=11492&pid=14394&bid=266677)
+[![DeepSource](https://deepsource.io/gh/Boombox-Discord/Boombox.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/Boombox-Discord/Boombox/?ref=repository-badge)
 <a href="https://discord.com/api/oauth2/authorize?client_id=678819994250772480&permissions=36785152&scope=bot">
     <img src="https://img.shields.io/badge/Invite-to%20your%20server-blue.svg?style=for-the-badge" alt="Invite to Server">
   </a>
   <a href="https://discord.gg/invite/HKnyEB9">
     <img src="https://discordapp.com/api/guilds/770511689258237973/widget.png?style=shield" alt="Discord Server">
   </a>
-  [![DeepSource](https://deepsource.io/gh/Boombox-Discord/Boombox.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/Boombox-Discord/Boombox/?ref=repository-badge)
+  
 
 ## About
 
