@@ -146,15 +146,15 @@ async function execute(msg, serverQueue) {
           //Use parse() method to convert JSON string to JSON object
         var str = this.responseText;
         var parse = JSON.parse(str);
-        if (parse["pageInfo"]["totalResults"] === 0) {
+        if (parse.pageInfo["totalResults"] === 0) {
           return msg.channel.send("Sorry we couldn't find any songs called " + video + ". Please try again or paste a link to the youtube video.");
         }
-        if (parse["items"][0]["snippet"]["liveBroadcastContent"] === "live" || parse["items"][0]["snippet"]["liveBroadcastContent"] === "upcoming") {
+        if (parse.items[0].snippet["liveBroadcastContent"] === "live" || parse.items[0].snippet["liveBroadcastContent"] === "upcoming") {
           return msg.channel.send("Sorry that is a live video. Please try a video that is not live.")
         }
-        var videoID = parse["items"][0]["id"]["videoId"];
-        var imgURL = parse["items"][0]["snippet"]["thumbnails"]["high"]["url"];
-        var videoTitle = parse["items"][0]["snippet"]["title"];
+        var videoID = parse.items[0].id["videoId"];
+        var imgURL = parse.items[0].snippet["thumbnails"].high["url"];
+        var videoTitle = parse.items[0].snippet["title"];
         const videoURL = "https://www.youtube.com/watch?v=" + videoID;
 
         var optionsSong = {
@@ -179,7 +179,7 @@ async function execute(msg, serverQueue) {
           title: videoTitle,
           url: songInfo.url,
           imgurl: imgURL,
-          geniusURL: geniusSong[0]["url"]
+          geniusURL: geniusSong[0].url
         };
 
         if (!serverQueue) {
@@ -343,9 +343,9 @@ function np(msg, serverQueue) {
     },
    title: "Currnet song playing",
    color: 16711680,
-   description: serverQueue.songs[0]["title"] + " is currently playing!",
+   description: serverQueue.songs[0].title + " is currently playing!",
    thumbnail: {
-    url: serverQueue.songs["0"]["imgurl"]
+    url: serverQueue.songs["0"].imgurl
    }
   }});
 }
@@ -364,7 +364,7 @@ function queuemsg(msg, serverQueue) {
    color: 16711680,
    description: showObject(serverQueue.songs),
    thumbnail: {
-    url: serverQueue.songs["0"]["imgurl"]
+    url: serverQueue.songs["0"].imgurl
    }
   }});
 }
@@ -401,7 +401,7 @@ async function lyrics(msg, serverQueue) {
     if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to request the lyrics to the currently playing song.");
     if(!serverQueue) return msg.channel.send("There is currently no songs playing!");
     
-    geniusURL = serverQueue.songs[0]["geniusURL"]
+    geniusURL = serverQueue.songs[0].geniusURL
 
     if (geniusURL === "Nothing found.") {
       return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
@@ -411,7 +411,7 @@ async function lyrics(msg, serverQueue) {
 
       const exampleEmbed = new Discord.RichEmbed()
       .setColor(16711680)
-      .setTitle(`Lyrics for ${serverQueue.songs[0]["title"]}`)
+      .setTitle(`Lyrics for ${serverQueue.songs[0].title}`)
       .setAuthor(client.user.username, client.user.avatarURL)
       .setFooter('Lyrics provided from Genius');
 
@@ -450,7 +450,7 @@ async function lyrics(msg, serverQueue) {
         ]
       }
 
-      geniusURL = geniusSong[0]["url"]
+      geniusURL = geniusSong[0].url
 
     if (geniusURL === "Nothing found.") {
       return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
@@ -460,7 +460,7 @@ async function lyrics(msg, serverQueue) {
 
       const lyricsEmbed = new Discord.RichEmbed()
       .setColor(16711680)
-      .setTitle(`Lyrics for ${geniusSong[0]["title"]}`)
+      .setTitle(`Lyrics for ${geniusSong[0].title}`)
       .setAuthor(client.user.username, client.user.avatarURL)
       .setFooter('Lyrics provided from Genius');
 
@@ -482,7 +482,7 @@ function showObject(obj) {
   var i;
   for (i = 0; i < obj.length; i++) {
     var numberInQueue = i + 1;
-    result += numberInQueue + ". " + obj[i]["title"] + "\n";
+    result += numberInQueue + ". " + obj[i].title + "\n";
   }
   return result;
 }
@@ -512,12 +512,12 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
           name: client.user.username,
           icon_url: client.user.avatarURL
         },
-       title: `${serverQueue.songs[0]["title"]}`,
-       url: `https://youtube.com${serverQueue.songs[0]["url"]}`,
+       title: `${serverQueue.songs[0].title}`,
+       url: `https://youtube.com${serverQueue.songs[0].url}`,
        color: 16711680,
-       description: `${serverQueue.songs[0]["title"]} is now playing!`,
+       description: `${serverQueue.songs[0].title} is now playing!`,
           thumbnail: {
-            url: serverQueue.songs[0]["imgurl"]
+            url: serverQueue.songs[0].imgurl
           }
       }});
     }
