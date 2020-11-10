@@ -175,6 +175,7 @@ async function execute(msg, serverQueue) {
         }
         //Play song
         const songInfo = await ytdl.getInfo(videoURL);
+
         const song = {
           title: videoTitle,
           url: songInfo.url,
