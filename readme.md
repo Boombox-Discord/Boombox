@@ -2,7 +2,7 @@
 
 <h4>A Discord.js bot for playing music from Discord.<h4>
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5cdfe7f2879e4af4a04dc41bd0cbefc2)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=AjayACST/Boombox&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/12aec9b09d3442db9d72b07f5988a8e0)](https://www.codacy.com/gh/Boombox-Discord/Boombox/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Boombox-Discord/Boombox&amp;utm_campaign=Badge_Grade)
 [![DeepScan grade](https://deepscan.io/api/teams/11492/projects/14394/branches/266677/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=11492&pid=14394&bid=266677)
 [![DeepSource](https://deepsource.io/gh/Boombox-Discord/Boombox.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/Boombox-Discord/Boombox/?ref=repository-badge)
 <a href="https://discord.com/api/oauth2/authorize?client_id=678819994250772480&permissions=36785152&scope=bot">
