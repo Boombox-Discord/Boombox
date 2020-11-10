@@ -1,8 +1,8 @@
 const Discord = require("discord.js");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const ytdl = require("ytdl-core");
-const lynx = require('lynx');
-const lyricsAPI = require('genius-lyrics-api'); // skipcq: JS-0128
+const lynx = require("lynx");
+const lyricsAPI = require("genius-lyrics-api"); // skipcq: JS-0128
 
 
 
@@ -22,10 +22,10 @@ const client = new Discord.Client();
 
 const queue = new Map();
 
-var metrics = new lynx(statsdURL, statsdPort)
+var Metrics = new lynx(statsdURL, statsdPort)
 
-client.on('guildCreate', (guild) => {
-  client.channels.get('770865244171272232').send({embed: {
+client.on("guildCreate", (guild) => {
+  client.channels.get("770865244171272232").send({embed: {
     author: {
       name: client.user.username,
       icon_url: client.user.avatarURL
@@ -55,7 +55,6 @@ client.on('guildCreate', (guild) => {
 client.on("ready", () => {
  console.log(`Logged in as ${client.user.tag}!`);
  client.user.setActivity(`for ${prefix}help`, { type: "WATCHING" })
-  .catch(console.error);
  });
 
 client.on("message", async (msg) => {
@@ -98,14 +97,16 @@ client.on("message", async (msg) => {
 
 async function execute(msg, serverQueue) {
 
-  metrics.increment('boombox.play');
+  Metrics.increment("boombox.play");
 
 
   const args = msg.content.split(" ");
 
 
   const voiceChannel = msg.member.voiceChannel;
-  if (!voiceChannel) return msg.channel.send("You need to be in a voice channel to play music!");
+  if (!voiceChannel) {
+    return msg.channel.send("You need to be in a voice channel to play music!");
+  } 
   const permissions = voiceChannel.permissionsFor(msg.client.user);
   if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
     return msg.channel.send("I need the permissions to join and speak in your voice channel!");
@@ -150,7 +151,7 @@ async function execute(msg, serverQueue) {
           return msg.channel.send("Sorry we couldn't find any songs called " + video + ". Please try again or paste a link to the youtube video.");
         }
         if (parse.items[0].snippet.liveBroadcastContent === "live" || parse.items[0].snippet.liveBroadcastContent === "upcoming") {
-          return msg.channel.send("Sorry that is a live video. Please try a video that is not live.")
+          return msg.channel.send("Sorry that is a live video. Please try a video that is not live.");
         }
         var videoID = parse.items[0].id.videoId;
         var imgURL = parse.items[0].snippet.thumbnails.high.url;
@@ -162,9 +163,9 @@ async function execute(msg, serverQueue) {
           title: video,
           artist: "",
           optimizeQuery: true
-        }
+        };
     
-        var geniusSong = await searchSong(optionsSong)
+        var geniusSong = await searchSong(optionsSong);
 
         if (geniusSong === null) {
           geniusSong = [
@@ -217,7 +218,6 @@ async function execute(msg, serverQueue) {
             }
             }});
           } catch (err) {
-            console.log(err);
             queue.delete(msg.guild.id);
             return msg.channel.send(err);
           }
@@ -249,7 +249,7 @@ async function execute(msg, serverQueue) {
 
 function help(msg, serverQueue) {
 
-  metrics.increment('boombox.help');
+  Metrics.increment("boombox.help");
   const helpTitle = client.user.username + " help";
 
 
@@ -308,35 +308,49 @@ function help(msg, serverQueue) {
   }
 
 function skip(msg, serverQueue) {
-  metrics.increment('boombox.skip');
-  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to skip the music!");
-  if (!serverQueue) return msg.channel.send("There is no song that I could skip!");
+  Metrics.increment("boombox.skip");
+  if (!msg.member.voiceChannel) {
+    return msg.channel.send("You have to be in a voice channel to skip the music!");
+  };
+  if (!serverQueue) {
+    return msg.channel.send("There is no song that I could skip!");
+  };
   serverQueue.connection.dispatcher.end(msg);
 }
 
 function stop(msg, serverQueue) {
-  metrics.increment('boombox.stop');
-  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to stop the music!");
+  Metrics.increment("boombox.stop");
+  if (!msg.member.voiceChannel) {
+    return msg.channel.send("You have to be in a voice channel to stop the music!");
+  };
   serverQueue.songs = [];
   serverQueue.connection.dispatcher.end(msg);
 }
 
 function volume(msg, serverQueue) {
-  metrics.increment('boombox.volume');
-  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to change the volume!");
-  if (!serverQueue) return msg.channel.send("There is no song playing.");
+  Metrics.increment("boombox.volume");
+  if (!msg.member.voiceChannel) {
+    return msg.channel.send("You have to be in a voice channel to change the volume!");
+  };
+  if (!serverQueue) {
+    return msg.channel.send("There is no song playing.");
+  };
   const args = msg.content.split(" ");
   if (args[1] >= 6 || args[1] <= 0) {
     return msg.channel.send("Please select a number between 1 and 5.");
   }
   serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 5);
   msg.channel.send("I have set the volume to " + args[1]);
-  }
+};
 
 function np(msg, serverQueue) {
-  metrics.increment('boombox.np');
-  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to see what is currently playing!");
-  if(!serverQueue) return msg.channel.send("There is currently no song playing!");
+  Metrics.increment("boombox.np");
+  if (!msg.member.voiceChannel) {
+    return msg.channel.send("You have to be in a voice channel to see what is currently playing!");
+  } ;
+  if(!serverQueue) {
+    return msg.channel.send("There is currently no song playing!");
+  };
   return msg.channel.send({embed: {
     author: {
       name: client.user.username,
@@ -353,9 +367,13 @@ function np(msg, serverQueue) {
 
 
 function queuemsg(msg, serverQueue) {
-  metrics.increment('boombox.queue');
-  if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to request the queue.");
-  if(!serverQueue) return msg.channel.send("There is currently no songs in the queue!");
+  Metrics.increment("boombox.queue");
+  if (!msg.member.voiceChannel) {
+    return msg.channel.send("You have to be in a voice channel to request the queue.");
+  };
+  if(!serverQueue) {
+    return msg.channel.send("There is currently no songs in the queue!");
+  };
   return msg.channel.send({embed: {
     author: {
       name: client.user.username,
@@ -371,7 +389,7 @@ function queuemsg(msg, serverQueue) {
 }
 
 function invite(msg) {
-  metrics.increment('boombox.invite');
+  Metrics.increment("boombox.invite");
   return msg.channel.send({embed: {
     author: {
       name: client.user.username,
@@ -385,7 +403,7 @@ function invite(msg) {
 
 
 async function lyrics(msg, serverQueue) {
-  metrics.increment('boombox.lyrics');
+  Metrics.increment("boombox.lyrics");
 
   const args = msg.content.split(" ");
 
@@ -399,8 +417,12 @@ async function lyrics(msg, serverQueue) {
   song += args[args.length - 1];
 
   if (song === `${prefix}lyrics`) {
-    if (!msg.member.voiceChannel) return msg.channel.send("You have to be in a voice channel to request the lyrics to the currently playing song.");
-    if(!serverQueue) return msg.channel.send("There is currently no songs playing!");
+    if (!msg.member.voiceChannel) {
+      return msg.channel.send("You have to be in a voice channel to request the lyrics to the currently playing song.");
+    };
+    if(!serverQueue) {
+      return msg.channel.send("There is currently no songs playing!");
+    };
     
     var geniusURL = serverQueue.songs[0].geniusURL
 
@@ -414,11 +436,11 @@ async function lyrics(msg, serverQueue) {
       .setColor(16711680)
       .setTitle(`Lyrics for ${serverQueue.songs[0].title}`)
       .setAuthor(client.user.username, client.user.avatarURL)
-      .setFooter('Lyrics provided from Genius');
+      .setFooter("Lyrics provided from Genius");
 
       var splitted = lyrics.split(/\n\s*\n/);
 
-      splitted.forEach((capture, i) => exampleEmbed.addField('\u200b', `${capture}`));
+      splitted.forEach((capture, i) => exampleEmbed.addField("\u200b", `${capture}`));
 
       return msg.channel.send(exampleEmbed);
     });
@@ -463,11 +485,11 @@ async function lyrics(msg, serverQueue) {
       .setColor(16711680)
       .setTitle(`Lyrics for ${geniusSong[0].title}`)
       .setAuthor(client.user.username, client.user.avatarURL)
-      .setFooter('Lyrics provided from Genius');
+      .setFooter("Lyrics provided from Genius");
 
       var splitted = lyrics.split(/\n\s*\n/);
 
-      splitted.forEach((capture, i) => lyricsEmbed.addField('\u200b', `${capture}`));
+      splitted.forEach((capture, i) => lyricsEmbed.addField("\u200b", `${capture}`));
 
       return msg.channel.send(lyricsEmbed);
     });

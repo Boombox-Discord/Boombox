@@ -72,4 +72,3 @@ If you don't already have graphite installed you can install it into a docker co
  Now run
 
 `npm install` and `node bot.js`
-
