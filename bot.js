@@ -81,35 +81,35 @@ client.on("message", async (msg) => {
       return;
     } catch(err) {
       throw new BoomboxErrors(msg, "skip", client, "Error skipping song");
-    };
+    }
   } else if (msg.content.startsWith(`${prefix}stop`)) {
     try {
       stop(msg, serverQueue);
       return;
     } catch(err) {
       throw new BoomboxErrors(msg, "stop", client, "Error stopping song");
-    };
+    }
   } else if (msg.content.startsWith(`${prefix}np`)) {
     try {
       np(msg, serverQueue);
       return;
     } catch(err) {
       throw new BoomboxErrors(msg, "now playing", client, "Error getting now playing");
-    };
+    }
   } else if (msg.content.startsWith(`${prefix}queue`)) {
     try {
       queuemsg(msg, serverQueue);
       return;
     } catch(err) {
       throw new BoomboxErrors(msg, "now playing", client, "Error stopping song");
-    };
+    }
   } else if (msg.content.startsWith(`${prefix}volume`)) {
     try {
       volume(msg, serverQueue);
       return;
     } catch(err) {
       throw new BoomboxErrors(msg, "volume", client, "Error changing volume");
-    };
+    }
   } else if (msg.content.startsWith(`${prefix}help`)) {
     try {
       help(msg, serverQueue);
@@ -123,7 +123,7 @@ client.on("message", async (msg) => {
       return;
     } catch(err) {
       throw new BoomboxErrors(msg, "invite", client, "Error displaying bot invite");
-    };
+    }
   } else if (msg.content.startsWith(`${prefix}lyrics`)) {
     try {
       lyrics(msg, serverQueue);
@@ -436,7 +436,7 @@ function invite(msg) {
       name: client.user.username,
       icon_url: client.user.avatarURL
     },
-   title: `Click here to add Boombox to your server.`,
+   title: "Click here to add Boombox to your server.",
    url: inviteLink,
    color: 16711680,
   }});
