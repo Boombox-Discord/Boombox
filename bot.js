@@ -1,11 +1,8 @@
 const Discord = require("discord.js");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const ytdl = require("ytdl-core");
-const lynx = require("lynx");
+const Lynx = require("lynx");
 const lyricsAPI = require("genius-lyrics-api"); // skipcq: JS-0128
-const fs = require("fs");
-
-
 
 const {
 	prefix,
@@ -16,14 +13,16 @@ const {
   statsdPort,
   geniusApiKey
 } = require("./config.json"); //skipcq: JS-0266
+
 const searchSong = require("genius-lyrics-api/lib/searchSong");
 const getLyrics = require("genius-lyrics-api/lib/getLyrics");
+const BoomboxErrors = require("./errors/errors");
 
 const client = new Discord.Client();
 
 const queue = new Map();
 
-var Metrics = new lynx(statsdURL, statsdPort)
+var Metrics = new Lynx(statsdURL, statsdPort);
 
 client.on("guildCreate", (guild) => {
   client.channels.get("770865244171272232").send({embed: {
@@ -50,48 +49,88 @@ client.on("guildCreate", (guild) => {
     }
   ]
   }});
-})
+});
 
 
 client.on("ready", () => {
  console.log(`Logged in as ${client.user.tag}!`);
- client.user.setActivity(`for ${prefix}help`, { type: "WATCHING" })
+ client.user.setActivity(`for ${prefix}help`, { type: "WATCHING" });
  });
 
 client.on("message", async (msg) => {
 
-  if(msg.author.bot) return;
-  if (!msg.content.startsWith(prefix)) return;
+  if (msg.author.bot) {
+    return;
+  }
+  if (!msg.content.startsWith(prefix)) {
+    return;
+  }
 
   const serverQueue = queue.get(msg.guild.id);
 
   if (msg.content.startsWith(`${prefix}play`)) {
-    execute(msg, serverQueue);
-    return;
+    try {
+      execute(msg, serverQueue);
+      return;
+    } catch(err) {
+      throw new BoomboxErrors(msg, "play", client, "Error playing song");
+    }
   } else if (msg.content.startsWith(`${prefix}skip`)) {
-    skip(msg, serverQueue);
-    return;
+    try {
+      skip(msg, serverQueue);
+      return;
+    } catch(err) {
+      throw new BoomboxErrors(msg, "skip", client, "Error skipping song");
+    }
   } else if (msg.content.startsWith(`${prefix}stop`)) {
-    stop(msg, serverQueue);
-    return;
+    try {
+      stop(msg, serverQueue);
+      return;
+    } catch(err) {
+      throw new BoomboxErrors(msg, "stop", client, "Error stopping song");
+    }
   } else if (msg.content.startsWith(`${prefix}np`)) {
-    np(msg, serverQueue);
-    return;
+    try {
+      np(msg, serverQueue);
+      return;
+    } catch(err) {
+      throw new BoomboxErrors(msg, "now playing", client, "Error getting now playing");
+    }
   } else if (msg.content.startsWith(`${prefix}queue`)) {
-    queuemsg(msg, serverQueue);
-    return;
+    try {
+      queuemsg(msg, serverQueue);
+      return;
+    } catch(err) {
+      throw new BoomboxErrors(msg, "now playing", client, "Error stopping song");
+    }
   } else if (msg.content.startsWith(`${prefix}volume`)) {
-    volume(msg, serverQueue);
-    return;
+    try {
+      volume(msg, serverQueue);
+      return;
+    } catch(err) {
+      throw new BoomboxErrors(msg, "volume", client, "Error changing volume");
+    }
   } else if (msg.content.startsWith(`${prefix}help`)) {
-    help(msg, serverQueue);
-    return;
+    try {
+      help(msg, serverQueue);
+      return;
+    } catch(err) {
+      throw new BoomboxErrors(msg, "help", client, "Error displaying help command");
+    }
   } else if (msg.content.startsWith(`${prefix}invite`)) {
-    invite(msg);
-    return;
+    try {
+      invite(msg);
+      return;
+    } catch(err) {
+      throw new BoomboxErrors(msg, "invite", client, "Error displaying bot invite");
+    }
   } else if (msg.content.startsWith(`${prefix}lyrics`)) {
-    lyrics(msg, serverQueue);
-    return;
+    try {
+      lyrics(msg, serverQueue);
+      return;
+    } catch(err) {
+      throw new BoomboxErrors(msg, "lyrics", client, "Error displaying lyrics");
+    }
   }
 });
 
@@ -397,7 +436,7 @@ function invite(msg) {
       name: client.user.username,
       icon_url: client.user.avatarURL
     },
-   title: `Click here to add Boombox to your server.`,
+   title: "Click here to add Boombox to your server.",
    url: inviteLink,
    color: 16711680,
   }});
@@ -426,10 +465,10 @@ async function lyrics(msg, serverQueue) {
       return msg.channel.send("There is currently no songs playing!");
     };
     
-    var geniusURL = serverQueue.songs[0].geniusURL
+    var geniusURL = serverQueue.songs[0].geniusURL;
 
     if (geniusURL === "Nothing found.") {
-      return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
+      return msg.channel.send("Sorry we couldn't find any lyrics for that song.");
     }
 
     var geniusLyrics = getLyrics(geniusURL).then((lyrics) => {
@@ -463,9 +502,9 @@ async function lyrics(msg, serverQueue) {
       title: song,
       artist: "",
       optimizeQuery: true
-    }
+    };
 
-    var geniusSong = await searchSong(optionsSong)
+    var geniusSong = await searchSong(optionsSong);
 
     if (geniusSong === null) {
       geniusSong = [
@@ -475,7 +514,7 @@ async function lyrics(msg, serverQueue) {
         ]
       }
 
-    geniusURL = geniusSong[0].url
+    geniusURL = geniusSong[0].url;
 
     if (geniusURL === "Nothing found.") {
       return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
@@ -525,7 +564,7 @@ if (!song) {
   
 }
 
-const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: 'audioonly', dlChunkSize: 0 }))
+const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: "audioonly", dlChunkSize: 0 }))
   .on("end", (msg) => {
     serverQueue.songs.shift();
     play(guild, serverQueue.songs[0]);
@@ -549,14 +588,12 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: 'a
     
   })
   .on("error", (error) => {
-    console.error(error);
+    console.log(error);
   });
   
 
 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-
-
- }
+}
 
 
 client.login(token);
