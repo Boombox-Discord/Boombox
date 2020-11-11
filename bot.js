@@ -54,17 +54,17 @@ client.on("guildCreate", (guild) => {
 
 client.on("ready", () => {
  console.log(`Logged in as ${client.user.tag}!`);
- client.user.setActivity(`for ${prefix}help`, { type: "WATCHING" })
+ client.user.setActivity(`for ${prefix}help`, { type: "WATCHING" });
  });
 
 client.on("message", async (msg) => {
 
   if (msg.author.bot) {
     return;
-  };
+  }
   if (!msg.content.startsWith(prefix)) {
     return;
-  };
+  }
 
   const serverQueue = queue.get(msg.guild.id);
 
@@ -468,7 +468,7 @@ async function lyrics(msg, serverQueue) {
     var geniusURL = serverQueue.songs[0].geniusURL;
 
     if (geniusURL === "Nothing found.") {
-      return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
+      return msg.channel.send("Sorry we couldn't find any lyrics for that song.");
     }
 
     var geniusLyrics = getLyrics(geniusURL).then((lyrics) => {
@@ -502,7 +502,7 @@ async function lyrics(msg, serverQueue) {
       title: song,
       artist: "",
       optimizeQuery: true
-    }
+    };
 
     var geniusSong = await searchSong(optionsSong);
 
@@ -514,7 +514,7 @@ async function lyrics(msg, serverQueue) {
         ]
       }
 
-    geniusURL = geniusSong[0].url
+    geniusURL = geniusSong[0].url;
 
     if (geniusURL === "Nothing found.") {
       return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
@@ -564,7 +564,7 @@ if (!song) {
   
 }
 
-const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: 'audioonly', dlChunkSize: 0 }))
+const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: "audioonly", dlChunkSize: 0 }))
   .on("end", (msg) => {
     serverQueue.songs.shift();
     play(guild, serverQueue.songs[0]);
@@ -588,7 +588,7 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: 'a
     
   })
   .on("error", (error) => {
-    throw new BoomboxErrors(msg, "dispatcher", client, "Error in the dispatcher");
+    console.log(error);
   });
   
 
