@@ -1,12 +1,8 @@
 const Discord = require("discord.js");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const ytdl = require("ytdl-core");
-const lynx = require("lynx");
+const Lynx = require("lynx");
 const lyricsAPI = require("genius-lyrics-api"); // skipcq: JS-0128
-const Errors = require("./errors/errors")
-
-
-
 
 const {
 	prefix,
@@ -17,6 +13,7 @@ const {
   statsdPort,
   geniusApiKey
 } = require("./config.json"); //skipcq: JS-0266
+
 const searchSong = require("genius-lyrics-api/lib/searchSong");
 const getLyrics = require("genius-lyrics-api/lib/getLyrics");
 const BoomboxErrors = require("./errors/errors");
@@ -25,7 +22,7 @@ const client = new Discord.Client();
 
 const queue = new Map();
 
-var Metrics = new lynx(statsdURL, statsdPort)
+var Metrics = new Lynx(statsdURL, statsdPort);
 
 client.on("guildCreate", (guild) => {
   client.channels.get("770865244171272232").send({embed: {
@@ -52,7 +49,7 @@ client.on("guildCreate", (guild) => {
     }
   ]
   }});
-})
+});
 
 
 client.on("ready", () => {
@@ -62,8 +59,12 @@ client.on("ready", () => {
 
 client.on("message", async (msg) => {
 
-  if(msg.author.bot) return;
-  if (!msg.content.startsWith(prefix)) return;
+  if (msg.author.bot) {
+    return;
+  };
+  if (!msg.content.startsWith(prefix)) {
+    return;
+  };
 
   const serverQueue = queue.get(msg.guild.id);
 
@@ -73,7 +74,7 @@ client.on("message", async (msg) => {
       return;
     } catch(err) {
       throw new BoomboxErrors(msg, "play", client, "Error playing song");
-    };
+    }
   } else if (msg.content.startsWith(`${prefix}skip`)) {
     try {
       skip(msg, serverQueue);
@@ -464,7 +465,7 @@ async function lyrics(msg, serverQueue) {
       return msg.channel.send("There is currently no songs playing!");
     };
     
-    var geniusURL = serverQueue.songs[0].geniusURL
+    var geniusURL = serverQueue.songs[0].geniusURL;
 
     if (geniusURL === "Nothing found.") {
       return msg.channel.send("Sorry we couldn't find any lyrics for that song.")
@@ -503,7 +504,7 @@ async function lyrics(msg, serverQueue) {
       optimizeQuery: true
     }
 
-    var geniusSong = await searchSong(optionsSong)
+    var geniusSong = await searchSong(optionsSong);
 
     if (geniusSong === null) {
       geniusSong = [
@@ -587,14 +588,12 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: 'a
     
   })
   .on("error", (error) => {
-    console.error(error);
+    throw new BoomboxErrors(msg, "dispatcher", client, "Error in the dispatcher");
   });
   
 
 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-
-
- }
+}
 
 
 client.login(token);

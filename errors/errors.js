@@ -22,7 +22,7 @@ class BoomboxErrors extends Error {
                 }
               ]
             }
-          })
+          });
     }
 }
 

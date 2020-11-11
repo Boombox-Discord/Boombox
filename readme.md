@@ -12,7 +12,6 @@
     <img src="https://discordapp.com/api/guilds/770511689258237973/widget.png?style=shield" alt="Discord Server">
   </a>
   
-
 ## About
 
 Boombox is a free, open source, music bot for Discord. It is built on JavaScript and uses Discord.js, and ytdl. 
