@@ -3,6 +3,7 @@ const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const ytdl = require("ytdl-core");
 const lynx = require("lynx");
 const lyricsAPI = require("genius-lyrics-api"); // skipcq: JS-0128
+const fs = require("fs");
 
 
 
@@ -176,6 +177,7 @@ async function execute(msg, serverQueue) {
         }
         //Play song
         const songInfo = await ytdl.getInfo(videoURL);
+
 
         const song = {
           title: videoTitle,
@@ -523,7 +525,7 @@ if (!song) {
   
 }
 
-const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
+const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: 'audioonly', dlChunkSize: 0 }))
   .on("end", (msg) => {
     serverQueue.songs.shift();
     play(guild, serverQueue.songs[0]);
