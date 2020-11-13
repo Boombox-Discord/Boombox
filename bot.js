@@ -12,7 +12,7 @@ const {
   statsdURL,
   statsdPort,
   geniusApiKey,
-  errorChannel
+  errorChannel,
 } = require("./config.json"); //skipcq: JS-0266
 
 const searchSong = require("genius-lyrics-api/lib/searchSong");
@@ -74,21 +74,39 @@ client.on("message", async (msg) => {
       execute(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "play", client, "Error playing song", errorChannel);
+      throw new BoomboxErrors(
+        msg,
+        "play",
+        client,
+        "Error playing song",
+        errorChannel
+      );
     }
   } else if (msg.content.startsWith(`${prefix}skip`)) {
     try {
       skip(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "skip", client, "Error skipping song", errorChannel);
+      throw new BoomboxErrors(
+        msg,
+        "skip",
+        client,
+        "Error skipping song",
+        errorChannel
+      );
     }
   } else if (msg.content.startsWith(`${prefix}stop`)) {
     try {
       stop(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "stop", client, "Error stopping song", errorChannel);
+      throw new BoomboxErrors(
+        msg,
+        "stop",
+        client,
+        "Error stopping song",
+        errorChannel
+      );
     }
   } else if (msg.content.startsWith(`${prefix}np`)) {
     try {
@@ -121,7 +139,13 @@ client.on("message", async (msg) => {
       volume(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "volume", client, "Error changing volume", errorChannel);
+      throw new BoomboxErrors(
+        msg,
+        "volume",
+        client,
+        "Error changing volume",
+        errorChannel
+      );
     }
   } else if (msg.content.startsWith(`${prefix}help`)) {
     try {
@@ -154,7 +178,13 @@ client.on("message", async (msg) => {
       lyrics(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "lyrics", client, "Error displaying lyrics", errorChannel);
+      throw new BoomboxErrors(
+        msg,
+        "lyrics",
+        client,
+        "Error displaying lyrics",
+        errorChannel
+      );
     }
   }
 });
