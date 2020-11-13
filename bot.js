@@ -122,7 +122,7 @@ client.on("message", async (msg) => {
     }
   } else if (msg.content.startsWith(`${prefix}help`)) {
     try {
-      help(msg, serverQueue);
+      help(msg);
       return;
     } catch (err) {
       throw new BoomboxErrors(
@@ -312,7 +312,7 @@ async function execute(msg, serverQueue) {
   xmlhttp.send();
 }
 
-function help(msg, serverQueue) {
+function help(msg) {
   Metrics.increment("boombox.help");
   const helpTitle = client.user.username + " help";
 
