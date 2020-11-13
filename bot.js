@@ -428,6 +428,9 @@ function stop(msg, serverQueue) {
       "You have to be in a voice channel to stop the music!"
     );
   }
+  if (!serverQueue) {
+    return msg.channel.send("There is no song currently playing to stop!");
+  }
   serverQueue.songs = [];
   serverQueue.connection.dispatcher.end(msg);
 }
