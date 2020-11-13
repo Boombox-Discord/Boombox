@@ -31,5 +31,8 @@
     "standard": "^16.0.1",
     "xmlhttprequest": "^1.8.0",
     "ytdl-core": "^4.0.3"
+  },
+  "devDependencies": {
+    "prettier": "2.1.2"
   }
 }
