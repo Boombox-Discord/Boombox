@@ -12,6 +12,7 @@ const {
   statsdURL,
   statsdPort,
   geniusApiKey,
+  errorChannel
 } = require("./config.json"); //skipcq: JS-0266
 
 const searchSong = require("genius-lyrics-api/lib/searchSong");
@@ -73,21 +74,21 @@ client.on("message", async (msg) => {
       execute(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "play", client, "Error playing song");
+      throw new BoomboxErrors(msg, "play", client, "Error playing song", errorChannel);
     }
   } else if (msg.content.startsWith(`${prefix}skip`)) {
     try {
       skip(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "skip", client, "Error skipping song");
+      throw new BoomboxErrors(msg, "skip", client, "Error skipping song", errorChannel);
     }
   } else if (msg.content.startsWith(`${prefix}stop`)) {
     try {
       stop(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "stop", client, "Error stopping song");
+      throw new BoomboxErrors(msg, "stop", client, "Error stopping song", errorChannel);
     }
   } else if (msg.content.startsWith(`${prefix}np`)) {
     try {
@@ -98,7 +99,8 @@ client.on("message", async (msg) => {
         msg,
         "now playing",
         client,
-        "Error getting now playing"
+        "Error getting now playing",
+        errorChannel
       );
     }
   } else if (msg.content.startsWith(`${prefix}queue`)) {
@@ -110,7 +112,8 @@ client.on("message", async (msg) => {
         msg,
         "now playing",
         client,
-        "Error stopping song"
+        "Error stopping song",
+        errorChannel
       );
     }
   } else if (msg.content.startsWith(`${prefix}volume`)) {
@@ -118,7 +121,7 @@ client.on("message", async (msg) => {
       volume(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "volume", client, "Error changing volume");
+      throw new BoomboxErrors(msg, "volume", client, "Error changing volume", errorChannel);
     }
   } else if (msg.content.startsWith(`${prefix}help`)) {
     try {
@@ -129,7 +132,8 @@ client.on("message", async (msg) => {
         msg,
         "help",
         client,
-        "Error displaying help command"
+        "Error displaying help command",
+        errorChannel
       );
     }
   } else if (msg.content.startsWith(`${prefix}invite`)) {
@@ -141,7 +145,8 @@ client.on("message", async (msg) => {
         msg,
         "invite",
         client,
-        "Error displaying bot invite"
+        "Error displaying bot invite",
+        errorChannel
       );
     }
   } else if (msg.content.startsWith(`${prefix}lyrics`)) {
@@ -149,7 +154,7 @@ client.on("message", async (msg) => {
       lyrics(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "lyrics", client, "Error displaying lyrics");
+      throw new BoomboxErrors(msg, "lyrics", client, "Error displaying lyrics", errorChannel);
     }
   }
 });
