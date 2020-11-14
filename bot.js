@@ -328,9 +328,9 @@ async function playlistQueue(msg, serverQueue, parse) {
     }
     try {
       songInfo = await ytdl.getInfo(videoURL);
-      var songNumber =+ i;
-    } catch(err) {
-      failedSongs =+ 1;
+      var songNumber = +i;
+    } catch (err) {
+      failedSongs = +1;
     }
 
     const song = {
@@ -344,11 +344,9 @@ async function playlistQueue(msg, serverQueue, parse) {
     songNumberMsg.edit(
       `We have added ${songNumber} songs from the playlist to the queue.`
     );
-
-    
   }
-  console.log(failedSongs)
-  if (failedSongs >= 1){
+  console.log(failedSongs);
+  if (failedSongs >= 1) {
     return msg.channel.send({
       embed: {
         author: {
@@ -357,7 +355,9 @@ async function playlistQueue(msg, serverQueue, parse) {
         },
         title: "✅ Done",
         color: 16711680,
-        description: `We have added ${parse.items.length - failedSongs} songs from this playlist to the queue, and failed to add ${failedSongs} songs.`,
+        description: `We have added ${
+          parse.items.length - failedSongs
+        } songs from this playlist to the queue, and failed to add ${failedSongs} songs.`,
       },
     });
   }
@@ -553,6 +553,11 @@ function help(msg) {
           name: `${prefix}play [song name or url]`,
           value:
             "This command will play a song. If a song is currently playing it will add it to the queue. You can type a song name or paste a link to the YouTube video.",
+        },
+        {
+          name: `${prefix}playlist [youtube playlist url]`,
+          value:
+            "This command will add all songs from a youtube playlist into the queue.",
         },
         {
           name: `${prefix}skip`,

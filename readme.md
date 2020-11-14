@@ -31,6 +31,7 @@ The defualt prefix is "!" but this can be changed in the config.json file if you
 | Queue       | !queue                            | Displays current songs queue.                                                                                                   |
 | Volume      | !volume                           | Set's the volume. Use a number between 1 and 5.                                                                                 |
 | Invite      | !invite                           | Sends an invite link for the bot.                                                                                               |
+| Playlist    | !playlist [youtube playlist url]  | This command will add all songs from a youtube playlist into the queue.                                                         |
 
 ![GIF of commands](https://boombox.quirky.codes/IMG/Header.gif)
 
