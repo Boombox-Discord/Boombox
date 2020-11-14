@@ -196,7 +196,6 @@ client.on("message", async (msg) => {
   }
 });
 
-
 async function playlist(msg, serverQueue) {
   Metrics.increment("boombox.playlist");
 
@@ -304,7 +303,7 @@ async function playlistQueue(msg, serverQueue, parse) {
       songNumberMsg = msg;
     });
   for (var i = 1; i < parse.items.length; i++) {
-    var songNumber =+ i;
+    var songNumber = +i;
     var videoID = parse.items[i].snippet.resourceId.videoId;
     var imgURL = parse.items[i].snippet.thumbnails.high.url;
     var videoTitle = parse.items[i].snippet.title;
@@ -473,7 +472,6 @@ async function execute(msg, serverQueue) {
               author: {
                 name: client.user.username,
                 icon_url: client.user.avatarURL,
-
               },
               title: song.title,
               url: videoURL,
@@ -801,7 +799,6 @@ function showObject(obj) {
   return result;
 }
 
-
 async function play(guild, song, playlist, parse, msg) {
   const serverQueue = queue.get(guild.id);
 
@@ -814,7 +811,6 @@ async function play(guild, song, playlist, parse, msg) {
   if (playlist === "playlist") {
     playlistQueue(msg, serverQueue, parse);
   }
-
 
   const dispatcher = serverQueue.connection
     .playStream(ytdl(song.url, { filter: "audioonly", dlChunkSize: 0 }))
