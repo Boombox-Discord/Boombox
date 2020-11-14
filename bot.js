@@ -68,12 +68,12 @@ client.on("message", async (msg) => {
 
   const serverQueue = queue.get(msg.guild.id);
 
-  if (msg.content.startsWith(`${prefix}play`)) {
+  if (msg.content.startsWith(`${prefix}playlist`)) {
     try {
-      execute(msg, serverQueue);
+      playlist(msg, serverQueue);
       return;
     } catch(err) {
-      throw new BoomboxErrors(msg, "play", client, "Error playing song");
+      throw new BoomboxErrors(msg, "playlist", client, "Error playing song from youtube playlist.");
     }
   } else if (msg.content.startsWith(`${prefix}skip`)) {
     try {
@@ -131,8 +131,44 @@ client.on("message", async (msg) => {
     } catch(err) {
       throw new BoomboxErrors(msg, "lyrics", client, "Error displaying lyrics");
     }
+  } else if (msg.content.startsWith(`${prefix}play`)) {
+    try {
+      execute(msg, serverQueue);
+      return;
+    } catch(err) {
+      throw new BoomboxErrors(msg, "play", client, "Error playing song.");
+    }
   }
 });
+
+async function playlist(msg, serverQueue) {
+  Metrics.increment("boombox.playlist");
+
+  const voiceChannel = msg.member.voiceChannel;
+  if (!voiceChannel) {
+    return msg.channel.send("You need to be in a voice channel to play music!");
+  } 
+  const permissions = voiceChannel.permissionsFor(msg.client.user);
+  if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+    return msg.channel.send("I need the permissions to join and speak in your voice channel!");
+  }
+
+  const args = msg.content.split("&list=");
+
+  msg.channel.send({embed: {
+    author: {
+      name: client.user.username,
+      icon_url: client.user.avatarURL
+    },
+  title: "🔍 Searching...",
+  color: 16711680,
+  description: `Please wait, we are adding all songs from that playlist into the queue. This can take a minute.`,
+  }});
+
+  const urlGet = ("https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=25&playlistId=" + args[1] + "&key=" + youtubeApi);
+
+  console.log(urlGet)
+}
 
 
 async function execute(msg, serverQueue) {
@@ -593,7 +629,7 @@ const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: "a
   
 
 dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-}
+};
 
 
 client.login(token);
