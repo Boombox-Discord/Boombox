@@ -128,7 +128,7 @@ client.on("message", async (msg) => {
     } catch (err) {
       throw new BoomboxErrors(
         msg,
-        "now playing",
+        "queue",
         client,
         "Error stopping song",
         errorChannel
@@ -220,12 +220,12 @@ async function playlist(msg, serverQueue) {
       },
       title: "🔍 Searching...",
       color: 16711680,
-      description: `Please wait, we are adding all songs from that playlist into the queue. This can take a minute.`,
+      description: `Please wait, we are adding all songs from that playlist into the queue. This can take awhile depending on how many songs are in the playlist.`,
     },
   });
 
   const urlGet =
-    "https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=25&playlistId=" +
+    "https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=1000&playlistId=" +
     args[1] +
     "&key=" +
     youtubeApi;
@@ -285,7 +285,7 @@ async function playlist(msg, serverQueue) {
         queueContruct.connection = connection;
         await play(msg.guild, queueContruct.songs[0], "playlist", parse, msg);
       } else {
-        serverQueue.songs.push(song);
+        playlistQueue(msg, serverQueue, parse);
       }
     }
   };
@@ -304,7 +304,7 @@ async function playlistQueue(msg, serverQueue, parse) {
     });
   for (var i = 1; i < parse.items.length; i++) {
     var failedSongs = 0;
-    var songNumber = +i;
+    var songInfo;
     var videoID = parse.items[i].snippet.resourceId.videoId;
     var imgURL = parse.items[i].snippet.thumbnails.high.url;
     var videoTitle = parse.items[i].snippet.title;
@@ -327,26 +327,28 @@ async function playlistQueue(msg, serverQueue, parse) {
       ];
     }
     try {
-      const songInfo = await ytdl.getInfo(videoURL);
-      const song = {
-        title: videoTitle,
-        url: songInfo.url,
-        imgurl: imgURL,
-        geniusURL: geniusSong[0].url,
-      };
-  
-      serverQueue.songs.push(song);
-      songNumberMsg.edit(
-        `We have added ${songNumber} songs from the playlist to the queue.`
-      );
+      songInfo = await ytdl.getInfo(videoURL);
+      var songNumber =+ i;
     } catch(err) {
       failedSongs =+ 1;
     }
-    
+
+    const song = {
+      title: videoTitle,
+      url: songInfo.url,
+      imgurl: imgURL,
+      geniusURL: geniusSong[0].url,
+    };
+
+    serverQueue.songs.push(song);
+    songNumberMsg.edit(
+      `We have added ${songNumber} songs from the playlist to the queue.`
+    );
 
     
   }
-  if (failedSongs > 1){
+  console.log(failedSongs)
+  if (failedSongs >= 1){
     return msg.channel.send({
       embed: {
         author: {
@@ -672,15 +674,22 @@ function queuemsg(msg, serverQueue) {
   if (!serverQueue) {
     return msg.channel.send("There is currently no songs in the queue!");
   }
+  var serverQueueSongs = showObject(serverQueue.songs);
+
+  if (serverQueueSongs.includes("21. ")) {
+    serverQueueSongs = serverQueueSongs.split("21. ");
+    serverQueueSongs = serverQueueSongs[0];
+  }
+
   return msg.channel.send({
     embed: {
       author: {
         name: client.user.username,
         icon_url: client.user.avatarURL,
       },
-      title: "Current Songs in the Queue",
+      title: "First 20 songs in the queue.",
       color: 16711680,
-      description: showObject(serverQueue.songs),
+      description: serverQueueSongs,
       thumbnail: {
         url: serverQueue.songs["0"].imgurl,
       },
