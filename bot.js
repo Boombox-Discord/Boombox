@@ -272,8 +272,8 @@ async function playlistQueue(msg, serverQueue, parse) {
     .then((msg) => {
       songNumberMsg = msg;
     });
-  for (i = 1; i < parse.items.length; i++) {
-    var songNumber = +i;
+  for (var i = 1; i < parse.items.length; i++) {
+    var songNumber =+ i;
     var videoID = parse.items[i].snippet.resourceId.videoId;
     var imgURL = parse.items[i].snippet.thumbnails.high.url;
     var videoTitle = parse.items[i].snippet.title;
