@@ -328,9 +328,9 @@ async function playlistQueue(msg, serverQueue, parse) {
     }
     try {
       songInfo = await ytdl.getInfo(videoURL);
-      var songNumber =+ i;
-    } catch(err) {
-      failedSongs =+ 1;
+      var songNumber = +i;
+    } catch (err) {
+      failedSongs = +1;
     }
 
     const song = {
@@ -344,11 +344,9 @@ async function playlistQueue(msg, serverQueue, parse) {
     songNumberMsg.edit(
       `We have added ${songNumber} songs from the playlist to the queue.`
     );
-
-    
   }
-  console.log(failedSongs)
-  if (failedSongs >= 1){
+  console.log(failedSongs);
+  if (failedSongs >= 1) {
     return msg.channel.send({
       embed: {
         author: {
@@ -357,7 +355,9 @@ async function playlistQueue(msg, serverQueue, parse) {
         },
         title: "✅ Done",
         color: 16711680,
-        description: `We have added ${parse.items.length - failedSongs} songs from this playlist to the queue, and failed to add ${failedSongs} songs.`,
+        description: `We have added ${
+          parse.items.length - failedSongs
+        } songs from this playlist to the queue, and failed to add ${failedSongs} songs.`,
       },
     });
   }
