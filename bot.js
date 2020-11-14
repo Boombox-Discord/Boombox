@@ -303,6 +303,7 @@ async function playlistQueue(msg, serverQueue, parse) {
       songNumberMsg = msg;
     });
   for (var i = 1; i < parse.items.length; i++) {
+    var failedSongs = 0;
     var songNumber = +i;
     var videoID = parse.items[i].snippet.resourceId.videoId;
     var imgURL = parse.items[i].snippet.thumbnails.high.url;
@@ -325,20 +326,38 @@ async function playlistQueue(msg, serverQueue, parse) {
         },
       ];
     }
+    try {
+      const songInfo = await ytdl.getInfo(videoURL);
+      const song = {
+        title: videoTitle,
+        url: songInfo.url,
+        imgurl: imgURL,
+        geniusURL: geniusSong[0].url,
+      };
+  
+      serverQueue.songs.push(song);
+      songNumberMsg.edit(
+        `We have added ${songNumber} songs from the playlist to the queue.`
+      );
+    } catch(err) {
+      failedSongs =+ 1;
+    }
+    
 
-    const songInfo = await ytdl.getInfo(videoURL);
-
-    const song = {
-      title: videoTitle,
-      url: songInfo.url,
-      imgurl: imgURL,
-      geniusURL: geniusSong[0].url,
-    };
-
-    serverQueue.songs.push(song);
-    songNumberMsg.edit(
-      `We have added ${songNumber} songs from the playlist to the queue.`
-    );
+    
+  }
+  if (failedSongs > 1){
+    return msg.channel.send({
+      embed: {
+        author: {
+          name: client.user.username,
+          icon_url: client.user.avatarURL,
+        },
+        title: "✅ Done",
+        color: 16711680,
+        description: `We have added ${parse.items.length - failedSongs} songs from this playlist to the queue, and failed to add ${failedSongs} songs.`,
+      },
+    });
   }
   return msg.channel.send({
     embed: {
