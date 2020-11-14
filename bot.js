@@ -168,6 +168,112 @@ async function playlist(msg, serverQueue) {
   const urlGet = ("https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=25&playlistId=" + args[1] + "&key=" + youtubeApi);
 
   console.log(urlGet)
+
+  var xmlhttp = new XMLHttpRequest();
+
+  xmlhttp.onreadystatechange = async function() {
+    if (this.readyState === 4 & this.status === 200) {
+      var str = this.responseText;
+      var parse = JSON.parse(str);
+      var videoID = parse.items[0].snippet.resourceId.videoId;
+      var imgURL = parse.items[0].snippet.thumbnails.high.url;
+      var videoTitle = parse.items[0].snippet.title;
+      var videoURL = "https://www.youtube.com/watch?v=" + videoID;
+
+      var optionsSong = {
+        apiKey: geniusApiKey,
+        title: videoTitle,
+        artist: "",
+        optimizeQuery: true
+      };
+
+      var geniusSong = await searchSong(optionsSong);
+
+      if (geniusSong === null) {
+        geniusSong = [
+          {
+            url: "Nothing found."
+          }
+        ]
+      }
+      var geniusSong = await searchSong(optionsSong);
+
+        if (geniusSong === null) {
+          geniusSong = [
+            {
+              url: "Nothing found."
+            }
+          ]
+        }
+        //Play song
+        const songInfo = await ytdl.getInfo(videoURL);
+
+
+        const song = {
+          title: videoTitle,
+          url: songInfo.url,
+          imgurl: imgURL,
+          geniusURL: geniusSong[0].url
+        };
+
+        if (!serverQueue) {
+          const queueContruct = {
+            textChannel: msg.channel,
+            voiceChannel: voiceChannel,
+            connection: null,
+            songs: [],
+            volume: 5,
+            playing: true,
+          };
+
+          queue.set(msg.guild.id, queueContruct);
+
+          queueContruct.songs.push(song);
+
+
+          try {
+            
+            var connection = await voiceChannel.join();
+            queueContruct.connection = connection;
+            play(msg.guild, queueContruct.songs[0]);
+            return msg.channel.send({embed: {
+              author: {
+                name: client.user.username,
+                icon_url: client.user.avatarURL
+              },
+            title: song.title,
+            url: videoURL,
+            color: 16711680,
+            description: `${song.title} is now playing!`,
+            thumbnail: {
+              url: song.imgurl
+            }
+            }});
+          } catch (err) {
+            queue.delete(msg.guild.id);
+            return msg.channel.send(err);
+          }
+        } else {
+          serverQueue.songs.push(song);
+          return msg.channel.send({embed: {
+            author: {
+              name: client.user.username,
+              icon_url: client.avatarURL
+            },
+          title: song.title,
+          url: videoURL,
+          color: 16711680,
+          description: `${song.title} has been added to queue!`,
+          thumbnail: {
+            url: song.imgurl
+          }
+          }});
+        }
+    }
+  };
+  xmlhttp.open("GET", urlGet, true)
+
+  xmlhttp.send();
 }
 
 
@@ -406,6 +512,7 @@ function stop(msg, serverQueue) {
 
 function volume(msg, serverQueue) {
   Metrics.increment("boombox.volume");
+  console.log(serverQueue)
   if (!msg.member.voiceChannel) {
     return msg.channel.send("You have to be in a voice channel to change the volume!");
   };
@@ -592,6 +699,7 @@ function showObject(obj) {
 function play(guild, song) {
 
 const serverQueue = queue.get(guild.id);
+console.log(serverQueue.songs);
 
 if (!song) {
   serverQueue.voiceChannel.leave();
