@@ -334,19 +334,16 @@ async function playlistQueue(msg, serverQueue, parse) {
         imgurl: imgURL,
         geniusURL: geniusSong[0].url,
       };
-  
+
       serverQueue.songs.push(song);
       songNumberMsg.edit(
         `We have added ${songNumber} songs from the playlist to the queue.`
       );
-    } catch(err) {
-      failedSongs =+ 1;
+    } catch (err) {
+      failedSongs = +1;
     }
-    
-
-    
   }
-  if (failedSongs > 1){
+  if (failedSongs > 1) {
     return msg.channel.send({
       embed: {
         author: {
@@ -355,7 +352,9 @@ async function playlistQueue(msg, serverQueue, parse) {
         },
         title: "✅ Done",
         color: 16711680,
-        description: `We have added ${parse.items.length - failedSongs} songs from this playlist to the queue, and failed to add ${failedSongs} songs.`,
+        description: `We have added ${
+          parse.items.length - failedSongs
+        } songs from this playlist to the queue, and failed to add ${failedSongs} songs.`,
       },
     });
   }
