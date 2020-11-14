@@ -1,11 +1,11 @@
 class BoomboxErrors extends Error {
-  constructor(msg, command, client, args) {
-    super(msg, command, client, args);
+  constructor(msg, command, client, args, errorChannel) {
+    super(msg, command, client, args, errorChannel);
     this.name = "Boombox Error";
     msg.channel.send(
       "Sorry an error has occured. Please try again later, or submit a bug report on our support server."
     );
-    client.channels.get("770516315508834304").send({
+    client.channels.get(errorChannel).send({
       embed: {
         color: 16711680,
         timestamp: msg.createdAt,

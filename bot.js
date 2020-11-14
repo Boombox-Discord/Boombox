@@ -12,6 +12,7 @@ const {
   statsdURL,
   statsdPort,
   geniusApiKey,
+  errorChannel,
 } = require("./config.json"); //skipcq: JS-0266
 
 const searchSong = require("genius-lyrics-api/lib/searchSong");
@@ -77,7 +78,8 @@ client.on("message", async (msg) => {
         msg,
         "playlist",
         client,
-        "Error playing song from youtube playlist."
+        "Error playing song from youtube playlist.",
+        errorChannel
       );
     }
   } else if (msg.content.startsWith(`${prefix}skip`)) {
@@ -85,14 +87,26 @@ client.on("message", async (msg) => {
       skip(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "skip", client, "Error skipping song");
+      throw new BoomboxErrors(
+        msg,
+        "skip",
+        client,
+        "Error skipping song",
+        errorChannel
+      );
     }
   } else if (msg.content.startsWith(`${prefix}stop`)) {
     try {
       stop(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "stop", client, "Error stopping song");
+      throw new BoomboxErrors(
+        msg,
+        "stop",
+        client,
+        "Error stopping song",
+        errorChannel
+      );
     }
   } else if (msg.content.startsWith(`${prefix}np`)) {
     try {
@@ -103,7 +117,8 @@ client.on("message", async (msg) => {
         msg,
         "now playing",
         client,
-        "Error getting now playing"
+        "Error getting now playing",
+        errorChannel
       );
     }
   } else if (msg.content.startsWith(`${prefix}queue`)) {
@@ -115,7 +130,8 @@ client.on("message", async (msg) => {
         msg,
         "now playing",
         client,
-        "Error stopping song"
+        "Error stopping song",
+        errorChannel
       );
     }
   } else if (msg.content.startsWith(`${prefix}volume`)) {
@@ -123,18 +139,25 @@ client.on("message", async (msg) => {
       volume(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "volume", client, "Error changing volume");
+      throw new BoomboxErrors(
+        msg,
+        "volume",
+        client,
+        "Error changing volume",
+        errorChannel
+      );
     }
   } else if (msg.content.startsWith(`${prefix}help`)) {
     try {
-      help(msg, serverQueue);
+      help(msg);
       return;
     } catch (err) {
       throw new BoomboxErrors(
         msg,
         "help",
         client,
-        "Error displaying help command"
+        "Error displaying help command",
+        errorChannel
       );
     }
   } else if (msg.content.startsWith(`${prefix}invite`)) {
@@ -146,7 +169,8 @@ client.on("message", async (msg) => {
         msg,
         "invite",
         client,
-        "Error displaying bot invite"
+        "Error displaying bot invite",
+        errorChannel
       );
     }
   } else if (msg.content.startsWith(`${prefix}lyrics`)) {
@@ -154,7 +178,13 @@ client.on("message", async (msg) => {
       lyrics(msg, serverQueue);
       return;
     } catch (err) {
-      throw new BoomboxErrors(msg, "lyrics", client, "Error displaying lyrics");
+      throw new BoomboxErrors(
+        msg,
+        "lyrics",
+        client,
+        "Error displaying lyrics",
+        errorChannel
+      );
     }
   } else if (msg.content.startsWith(`${prefix}play`)) {
     try {
@@ -165,6 +195,7 @@ client.on("message", async (msg) => {
     }
   }
 });
+
 
 async function playlist(msg, serverQueue) {
   Metrics.increment("boombox.playlist");
@@ -442,6 +473,7 @@ async function execute(msg, serverQueue) {
               author: {
                 name: client.user.username,
                 icon_url: client.user.avatarURL,
+
               },
               title: song.title,
               url: videoURL,
@@ -481,7 +513,7 @@ async function execute(msg, serverQueue) {
   xmlhttp.send();
 }
 
-function help(msg, serverQueue) {
+function help(msg) {
   Metrics.increment("boombox.help");
   const helpTitle = client.user.username + " help";
 
@@ -769,6 +801,7 @@ function showObject(obj) {
   return result;
 }
 
+
 async function play(guild, song, playlist, parse, msg) {
   const serverQueue = queue.get(guild.id);
 
@@ -781,6 +814,7 @@ async function play(guild, song, playlist, parse, msg) {
   if (playlist === "playlist") {
     playlistQueue(msg, serverQueue, parse);
   }
+
 
   const dispatcher = serverQueue.connection
     .playStream(ytdl(song.url, { filter: "audioonly", dlChunkSize: 0 }))
