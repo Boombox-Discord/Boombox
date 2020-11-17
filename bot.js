@@ -199,19 +199,6 @@ client.on("message", async (msg) => {
         errorChannel
       );
     }
-  } else if (msg.content.startsWith(`${prefix}error`)) {
-    try {
-      await msg.channel.send("");
-      return;
-    } catch (err) {
-      throw new BoomboxErrors(
-        msg,
-        "play",
-        client,
-        "Error playing song.",
-        errorChannel
-      );
-    }
   }
 });
 
