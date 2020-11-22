@@ -264,11 +264,10 @@ async function playlist(msg, serverQueue) {
         ];
       }
       //Play song
-      const songInfo = await ytdl.getInfo(videoURL);
 
       const song = {
         title: videoTitle,
-        url: songInfo.url,
+        url: videoURL,
         imgurl: imgURL,
         geniusURL: geniusSong[0].url,
       };
@@ -309,8 +308,6 @@ async function playlistQueue(msg, serverQueue, parse) {
       songNumberMsg = msg;
     });
   for (var i = 1; i < parse.items.length; i++) {
-    var failedSongs = 0;
-    var songInfo;
     var videoID = parse.items[i].snippet.resourceId.videoId;
     var imgURL = parse.items[i].snippet.thumbnails.high.url;
     var videoTitle = parse.items[i].snippet.title;
@@ -332,40 +329,20 @@ async function playlistQueue(msg, serverQueue, parse) {
         },
       ];
     }
-    try {
-      songInfo = await ytdl.getInfo(videoURL);
-      var songNumber = +i;
-    } catch (err) {
-      failedSongs = +1;
-    }
 
     const song = {
       title: videoTitle,
-      url: songInfo.url,
+      url: videoURL,
       imgurl: imgURL,
       geniusURL: geniusSong[0].url,
     };
+
+    songNumber += 1
 
     serverQueue.songs.push(song);
     songNumberMsg.edit(
       `We have added ${songNumber} songs from the playlist to the queue.`
     );
-  }
-  console.log(failedSongs);
-  if (failedSongs >= 1) {
-    return msg.channel.send({
-      embed: {
-        author: {
-          name: client.user.username,
-          icon_url: client.user.avatarURL,
-        },
-        title: "✅ Done",
-        color: 16711680,
-        description: `We have added ${
-          parse.items.length - failedSongs
-        } songs from this playlist to the queue, and failed to add ${failedSongs} songs.`,
-      },
-    });
   }
   return msg.channel.send({
     embed: {
@@ -467,11 +444,10 @@ async function execute(msg, serverQueue) {
         ];
       }
       //Play song
-      const songInfo = await ytdl.getInfo(videoURL);
 
       const song = {
         title: videoTitle,
-        url: songInfo.url,
+        url: videoURL,
         imgurl: imgURL,
         geniusURL: geniusSong[0].url,
       };
@@ -851,8 +827,10 @@ async function play(guild, song, playlist, parse, msg) {
     playlistQueue(msg, serverQueue, parse);
   }
 
+  const songInfo = await ytdl.getInfo(serverQueue.songs[0].url);
+
   const dispatcher = serverQueue.connection
-    .playStream(ytdl(song.url, { filter: "audioonly", dlChunkSize: 0 }))
+    .playStream(ytdl(songInfo.url, { filter: "audioonly", dlChunkSize: 0 }))
     .on("end", (msg) => {
       serverQueue.songs.shift();
       play(guild, serverQueue.songs[0]);
