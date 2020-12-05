@@ -330,6 +330,11 @@ async function playlistQueue(msg, serverQueue, parse) {
       geniusURL: geniusSong[0].url,
     };
 
+<<<<<<< HEAD
+=======
+    songNumber += 1;
+
+>>>>>>> 5ca422acbe12e983841b665b576bd5104a14149b
     serverQueue.songs.push(song);
   }
   msg.channel.send({
