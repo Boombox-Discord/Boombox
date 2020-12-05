@@ -1,12 +1,7 @@
 version: "3"
 services:
   bot:
-    build: .
-    volumes:
-      - .:/usr/app/ # for dev only
-      - /usr/app/node_modules
-    depends_on:
-      - graphite
+    image: boomboxdev/boombox-bot:latest
   graphite:
     image: graphiteapp/graphite-statsd:latest
     ports:

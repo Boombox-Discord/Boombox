@@ -41,26 +41,62 @@ Want to submit bug reports, feature requests, our just chat with our coumminty?
 
 You can join us on our [Official Discord Server.](https://discord.gg/HKnyEB9)
 
-## Install and Running
+# Install and Running
 
 If you would like to add the bot to your Discord server [click here.](https://discord.com/api/oauth2/authorize?client_id=678819994250772480&permissions=36785152&scope=bot) If you would like to self-host the bot keep reading.
 
 To install run the commands below.
 
-## Docker
+# Docker
 
-First, make a copy of config-example.json and call it config.json. Enter your own discord token, youtube api token, invite link, and Genius API Client Access token. You can also change the prefix here if you wish.
+First, make a copy of config-example.json and call it config.json. Enter your own discord token, youtube api token, invite link, Genius API Client Access token, and error channel. You can also change the prefix here if you wish.
 
-Now run
+## Docker Compose
 
-`docker-compose up -d` and a docker two docker containers will start. One with the bot in it and one with graphite. You can access graphite's web interface at the IP address of it's container.
+Use docker-compose if you don't already have a Graphite and statsD server. To start the bot simply run 
 
-## Local install
+```
+docker-compose up -d
+```
+
+#Docker Image
+
+If you already have a statsd and Graphite server setup you can just the pull the image and run from that. Make sure to enter the correct ip address and port for statsD in the config.json file. To run the contianer run
+
+```
+docker run -d \
+-it \
+--name boombox \
+-v config.json:/usr/src/app boomboxdev/boombox-bot
+```
+
+
+# Local install
 
 First, make a copy of config-example.json and call it config.json. Enter your own discord token, youtube api token, invite link, statsD IP address and port, and Genius API Client Access token. You can also change the prefix here if you wish.
 
-If you don't already have graphite installed you can install it into a docker container with `docker run -d \ --name graphite \ --restart=always \ -p 80:80 \ -p 2003-2004:2003-2004 \ -p 2023-2024:2023-2024 \ -p 8125:8125/udp \ -p 8126:8126 \ graphiteapp/graphite-statsd`
+If you don't already have Graphite and statsD installed you can install it into a docker container with
+
+```
+docker run -d \
+--name graphite \
+--restart=always \
+-p 80:80 \
+-p 8080:8080 \
+-p 2003-2004:2003-2004 \
+-p 2023-2024:2023-2024 \
+-p 8125:8125/udp \
+-p 8126:8126 \
+graphiteapp/graphite-statsd
+```
+
+This will install everything you need for statsd and graphite. You can view the graphite interface at http://<containerip>:8080
+
+Note: statsD and graphite is **NOT** required and the bot will function without to not use it just leave the statsD port and IP address the same as it is in the config-example.json file.
 
 Now run
+```
+npm install
 
-`npm install` and `node bot.js`
+node bot.js
+```
