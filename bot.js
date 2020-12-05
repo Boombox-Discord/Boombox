@@ -300,13 +300,6 @@ async function playlist(msg, serverQueue) {
 }
 
 async function playlistQueue(msg, serverQueue, parse) {
-  var songNumber = 0;
-  var songNumberMsg;
-  msg.channel
-    .send("We have added 0 songs from the playlist to the queue.")
-    .then((msg) => {
-      songNumberMsg = msg;
-    });
   for (var i = 1; i < parse.items.length; i++) {
     var videoID = parse.items[i].snippet.resourceId.videoId;
     var imgURL = parse.items[i].snippet.thumbnails.high.url;
@@ -337,14 +330,9 @@ async function playlistQueue(msg, serverQueue, parse) {
       geniusURL: geniusSong[0].url,
     };
 
-    songNumber += 1
-
     serverQueue.songs.push(song);
-    songNumberMsg.edit(
-      `We have added ${songNumber} songs from the playlist to the queue.`
-    );
   }
-  return msg.channel.send({
+  msg.channel.send({
     embed: {
       author: {
         name: client.user.username,
@@ -355,6 +343,8 @@ async function playlistQueue(msg, serverQueue, parse) {
       description: `We have added all ${parse.items.length} songs from this playlist to the queue!`,
     },
   });
+
+  return queuemsg(msg, serverQueue);
 }
 
 async function execute(msg, serverQueue) {
