@@ -337,7 +337,7 @@ async function playlistQueue(msg, serverQueue, parse) {
       geniusURL: geniusSong[0].url,
     };
 
-    songNumber += 1;
+    songNumber += 1
 
     serverQueue.songs.push(song);
     songNumberMsg.edit(
@@ -433,7 +433,6 @@ async function execute(msg, serverQueue) {
         artist: "",
         optimizeQuery: true,
       };
-
       var geniusSong = await searchSong(optionsSong);
 
       if (geniusSong === null) {
@@ -827,10 +826,8 @@ async function play(guild, song, playlist, parse, msg) {
     playlistQueue(msg, serverQueue, parse);
   }
 
-  const songInfo = await ytdl.getInfo(serverQueue.songs[0].url);
-
   const dispatcher = serverQueue.connection
-    .playStream(ytdl(songInfo.url, { filter: "audioonly", dlChunkSize: 0 }))
+    .playStream(ytdl(song.url, { filter: "audioonly", dlChunkSize: 0 }))
     .on("end", (msg) => {
       serverQueue.songs.shift();
       play(guild, serverQueue.songs[0]);

@@ -1,6 +1,4 @@
-const { DiscordAPIError } = require("discord.js");
-
-class BoomboxErrors extends DiscordAPIError {
+class BoomboxErrors extends Error {
   constructor(msg, command, client, args, errorChannel) {
     super(msg, command, client, args, errorChannel);
     this.name = "Boombox Error";
