@@ -21,11 +21,11 @@ Boombox is a free, open source, music bot for Discord. It is built on JavaScript
 The defualt prefix is "!" but this can be changed in the config.json file if you wish to self host the bot.
 
 | Command     | Usage                             | Description                                                                                                                     |
-| ----------- | :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
+| ----------- | :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------------ | --- |
 | Play        | !play [song name or youtube link] | This will find the song from youtube and start playing it. If there is something currently playing it will add it to the queue. |
 | Skip        | !skip                             | Will skip the currently playing song.                                                                                           |
 | Stop        | !stop                             | Will stop current playing music and delete the queue.                                                                           |
-| Now Playing | !np                               | Displays what song is currently playing.                                                                                        | . |
+| Now Playing | !np                               | Displays what song is currently playing.                                                                                        | .   |
 | Lyrics      | !lyrics                           | Will get the currently playing songs lyrics. Lyrics are provided by Genius.                                                     |
 | Lyrics      | !lyrics [song name]               | Will get the lyrics for the provided song. Lyrics are provided by Genius.                                                       |
 | Queue       | !queue                            | Displays current songs queue.                                                                                                   |
@@ -53,7 +53,7 @@ First, make a copy of config-example.json and call it config.json. Enter your ow
 
 ## Docker Compose
 
-Use docker-compose if you don't already have a Graphite and statsD server. To start the bot simply run 
+Use docker-compose if you don't already have a Graphite and statsD server. To start the bot simply run
 
 ```
 docker-compose up -d
@@ -69,7 +69,6 @@ docker run -d \
 --name boombox \
 -v config.json:/usr/src/app boomboxdev/boombox-bot
 ```
-
 
 # Local install
 
@@ -95,6 +94,7 @@ This will install everything you need for statsd and graphite. You can view the 
 Note: statsD and graphite is **NOT** required and the bot will function without to not use it just leave the statsD port and IP address the same as it is in the config-example.json file.
 
 Now run
+
 ```
 npm install
 
