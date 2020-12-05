@@ -300,6 +300,7 @@ async function playlist(msg, serverQueue) {
 }
 
 async function playlistQueue(msg, serverQueue, parse) {
+  var songNumber;
   for (var i = 1; i < parse.items.length; i++) {
     var videoID = parse.items[i].snippet.resourceId.videoId;
     var imgURL = parse.items[i].snippet.thumbnails.high.url;
