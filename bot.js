@@ -346,7 +346,7 @@ async function playlistQueue(msg, serverQueue, parse) {
     },
   });
 
-  return queuemsg(msg, serverQueue)
+  return queuemsg(msg, serverQueue);
 }
 
 async function execute(msg, serverQueue) {
