@@ -98,7 +98,7 @@ client.on("message", async (msg) => {
 
   if (msg.content.startsWith(`${prefix}playlist`)) {
     try {
-      playlist(msg, serverQueue);
+      playlist(msg, serverQueue, player);
       return;
     } catch (err) {
       throw new BoomboxErrors(
@@ -110,18 +110,18 @@ client.on("message", async (msg) => {
       );
     }
   } else if (msg.content.startsWith(`${prefix}skip`)) {
-    // try {
+    try {
       skip(msg, serverQueue);
       return;
-    // } catch (err) {
-    //   throw new BoomboxErrors(
-    //     msg,
-    //     "skip",
-    //     client,
-    //     "Error skipping song",
-    //     errorChannel
-    //   );
-    // }
+    } catch (err) {
+      throw new BoomboxErrors(
+        msg,
+        "skip",
+        client,
+        "Error skipping song",
+        errorChannel
+      );
+    }
   } else if (msg.content.startsWith(`${prefix}stop`)) {
     try {
       stop(msg, serverQueue);
@@ -229,7 +229,7 @@ client.on("message", async (msg) => {
   }
 });
 
-async function playlist(msg, serverQueue) {
+async function playlist(msg, serverQueue, player) {
   Metrics.increment("boombox.playlist");
 
   const voiceChannel = msg.member.voice.channel;
@@ -303,7 +303,7 @@ async function playlist(msg, serverQueue) {
         const queueContruct = {
           textChannel: msg.channel,
           voiceChannel: voiceChannel,
-          connection: null,
+          player: player,
           songs: [],
           volume: 5,
           playing: true,
@@ -313,8 +313,7 @@ async function playlist(msg, serverQueue) {
 
         queueContruct.songs.push(song);
 
-        var connection = await voiceChannel.join();
-        queueContruct.connection = connection;
+        await player.connect(voiceChannel.id);
         await play(msg.guild, queueContruct.songs[0], "playlist", parse, msg);
       } else {
         playlistQueue(msg, serverQueue, parse);
@@ -485,22 +484,8 @@ async function execute(msg, serverQueue, player) {
         queueContruct.songs.push(song);
 
         try {
+          await player.connect(voiceChannel.id);
           play(msg.guild, queueContruct.songs[0], null, null, null);
-          return msg.channel.send({
-            embed: {
-              author: {
-                name: client.user.username,
-                icon_url: client.user.avatarURL(),
-              },
-              title: song.title,
-              url: videoURL,
-              color: 16711680,
-              description: `${song.title} is now playing!`,
-              thumbnail: {
-                url: song.imgurl,
-              },
-            },
-          });
         } catch (err) {
           queue.delete(msg.guild.id);
           return msg.channel.send(err);
@@ -607,7 +592,7 @@ function skip(msg, serverQueue) {
     return msg.channel.send("There is no song that I could skip!");
   }
   serverQueue.songs.shift();
-  clearTimeout(timeout)
+  clearTimeout(timeout);
   play(msg.guild, serverQueue.songs[0], null, null, null);
 }
 
@@ -622,7 +607,8 @@ function stop(msg, serverQueue) {
     return msg.channel.send("There is no song currently playing to stop!");
   }
   serverQueue.songs = [];
-  serverQueue.connection.dispatcher.end(msg);
+  clearTimeout(timeout);
+  play(msg.guild, serverQueue.songs[0], null, null, null);
 }
 
 function volume(msg, serverQueue) {
@@ -838,9 +824,8 @@ async function play(guild, song, playlist, parse, msg) {
 
   if (!serverQueue.songs[0]) {
     serverQueue.textChannel.send("No more songs in the queue! Leaving voice channel.")
-    return;
-    // queue.delete(guild.id);
-    // return await player.destroy(true)
+    queue.delete(guild.id);
+    return await player.destroy(true)
   }
 
   const searchQuery = `ytsearch:${serverQueue.songs[0].title}`
@@ -858,13 +843,29 @@ async function play(guild, song, playlist, parse, msg) {
 
   const results = await player.manager.search(searchQuery);
   const {track, info} = results.tracks[0];
-  console.log(info);
 
-  await player.connect(serverQueue.voiceChannel.id);
+  serverQueue.textChannel.send({
+    embed: {
+      author: {
+        name: client.user.username,
+        icon_url: client.user.avatarURL(),
+      },
+      title: serverQueue.songs[0].title,
+      url: serverQueue.songs[0].url,
+      color: 16711680,
+      description: `${serverQueue.songs[0].title} is now playing!`,
+      thumbnail: {
+        url: serverQueue.songs[0].imgurl,
+      },
+    },
+  });
 
   await player.play(track);
 
+  waitForSong(serverQueue, info, guild)
+}
 
+function waitForSong(serverQueue, info, guild) {
   timeout = setTimeout( async function() {
     serverQueue.songs.shift()
     if (!serverQueue.songs[0]) {

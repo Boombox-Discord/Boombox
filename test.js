@@ -17,7 +17,6 @@ const {
   lavalinkIP,
   lavalinkPort,
   lavalinkPassword,
-  clientID,
 } = require("./config.json"); //skipcq: JS-0266
 
 const searchSong = require("genius-lyrics-api/lib/searchSong");
