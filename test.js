@@ -4,7 +4,7 @@ const ytdl = require("ytdl-core");
 const Lynx = require("lynx");
 const lyricsAPI = require("genius-lyrics-api"); // skipcq: JS-0128
 const { Manager } = require("lavaclient");
-const redis = require('redis');
+const redis = require("redis");
 
 const {
   prefix,
@@ -19,20 +19,18 @@ const {
   lavalinkPort,
   lavalinkPassword,
   redisPort,
-  redisIP
+  redisIP,
 } = require("./config.json"); //skipcq: JS-0266
-
 
 clientRedis = redis.createClient(redisPort, redisIP, redis);
 
 var serverQueue;
-var key = 'guild_770511689258237973'
+var key = "guild_770511689258237973";
 
 function getRedis(key, callback) {
-  clientRedis.get(key, function(err, reply) {
-    callback(reply)
-  })
+  clientRedis.get(key, function (err, reply) {
+    callback(reply);
+  });
 }
-
 
 // console.log(serverQueue)

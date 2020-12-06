@@ -4,7 +4,7 @@ const ytdl = require("ytdl-core");
 const Lynx = require("lynx");
 const lyricsAPI = require("genius-lyrics-api"); // skipcq: JS-0128
 const { Manager, Player } = require("lavaclient");
-const redis = require('redis');
+const redis = require("redis");
 
 const {
   prefix,
@@ -19,7 +19,7 @@ const {
   lavalinkPort,
   lavalinkPassword,
   redisIP,
-  redisPort
+  redisPort,
 } = require("./config.json"); //skipcq: JS-0266
 
 const searchSong = require("genius-lyrics-api/lib/searchSong");
@@ -39,7 +39,7 @@ const client = new Discord.Client();
 
 const clientRedis = redis.createClient(redisPort, redisIP, redis);
 
-clientRedis.on("error", function(error) {
+clientRedis.on("error", function (error) {
   console.error(error);
 });
 
@@ -88,7 +88,6 @@ client.on("guildCreate", (guild) => {
   });
 });
 
-
 client.on("ready", async () => {
   await manager.init(client.user.id);
   console.log(`Logged in as ${client.user.tag}!`);
@@ -103,149 +102,149 @@ client.on("message", async (msg) => {
     return;
   }
 
-  await getRedis(`guild_${msg.guild.id}`, async function(reply) {
-    var serverQueue = JSON.parse(reply)
+  await getRedis(`guild_${msg.guild.id}`, async function (reply) {
+    var serverQueue = JSON.parse(reply);
 
     const player = await manager.create(msg.guild.id);
 
-  if (msg.content.startsWith(`${prefix}playlist`)) {
-    try {
-      playlist(msg, serverQueue, player);
-      return;
-    } catch (err) {
-      throw new BoomboxErrors(
-        msg,
-        "playlist",
-        client,
-        "Error playing song from youtube playlist.",
-        errorChannel
-      );
+    if (msg.content.startsWith(`${prefix}playlist`)) {
+      try {
+        playlist(msg, serverQueue, player);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "playlist",
+          client,
+          "Error playing song from youtube playlist.",
+          errorChannel
+        );
+      }
+    } else if (msg.content.startsWith(`${prefix}skip`)) {
+      try {
+        skip(msg, serverQueue, player);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "skip",
+          client,
+          "Error skipping song",
+          errorChannel
+        );
+      }
+    } else if (msg.content.startsWith(`${prefix}stop`)) {
+      try {
+        stop(msg, serverQueue, player);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "stop",
+          client,
+          "Error stopping song",
+          errorChannel
+        );
+      }
+    } else if (msg.content.startsWith(`${prefix}np`)) {
+      try {
+        np(msg, serverQueue);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "now playing",
+          client,
+          "Error getting now playing",
+          errorChannel
+        );
+      }
+    } else if (msg.content.startsWith(`${prefix}queue`)) {
+      try {
+        queuemsg(msg, serverQueue);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "queue",
+          client,
+          "Error stopping song",
+          errorChannel
+        );
+      }
+    } else if (msg.content.startsWith(`${prefix}volume`)) {
+      try {
+        volume(msg, serverQueue, player);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "volume",
+          client,
+          "Error changing volume",
+          errorChannel
+        );
+      }
+    } else if (msg.content.startsWith(`${prefix}help`)) {
+      try {
+        help(msg);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "help",
+          client,
+          "Error displaying help command",
+          errorChannel
+        );
+      }
+    } else if (msg.content.startsWith(`${prefix}invite`)) {
+      try {
+        invite(msg);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "invite",
+          client,
+          "Error displaying bot invite",
+          errorChannel
+        );
+      }
+    } else if (msg.content.startsWith(`${prefix}lyrics`)) {
+      try {
+        lyrics(msg, serverQueue);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "lyrics",
+          client,
+          "Error displaying lyrics",
+          errorChannel
+        );
+      }
+    } else if (msg.content.startsWith(`${prefix}play`)) {
+      try {
+        execute(msg, serverQueue, player);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "play",
+          client,
+          "Error playing song.",
+          errorChannel
+        );
+      }
     }
-  } else if (msg.content.startsWith(`${prefix}skip`)) {
-    try {
-      skip(msg, serverQueue, player);
-      return;
-    } catch (err) {
-      throw new BoomboxErrors(
-        msg,
-        "skip",
-        client,
-        "Error skipping song",
-        errorChannel
-      );
-    }
-  } else if (msg.content.startsWith(`${prefix}stop`)) {
-    try {
-      stop(msg, serverQueue, player);
-      return;
-    } catch (err) {
-      throw new BoomboxErrors(
-        msg,
-        "stop",
-        client,
-        "Error stopping song",
-        errorChannel
-      );
-    }
-  } else if (msg.content.startsWith(`${prefix}np`)) {
-    try {
-      np(msg, serverQueue);
-      return;
-    } catch (err) {
-      throw new BoomboxErrors(
-        msg,
-        "now playing",
-        client,
-        "Error getting now playing",
-        errorChannel
-      );
-    }
-  } else if (msg.content.startsWith(`${prefix}queue`)) {
-    try {
-      queuemsg(msg, serverQueue);
-      return;
-    } catch (err) {
-      throw new BoomboxErrors(
-        msg,
-        "queue",
-        client,
-        "Error stopping song",
-        errorChannel
-      );
-    }
-  } else if (msg.content.startsWith(`${prefix}volume`)) {
-    try {
-      volume(msg, serverQueue, player);
-      return;
-    } catch (err) {
-      throw new BoomboxErrors(
-        msg,
-        "volume",
-        client,
-        "Error changing volume",
-        errorChannel
-      );
-    }
-  } else if (msg.content.startsWith(`${prefix}help`)) {
-    try {
-      help(msg);
-      return;
-    } catch (err) {
-      throw new BoomboxErrors(
-        msg,
-        "help",
-        client,
-        "Error displaying help command",
-        errorChannel
-      );
-    }
-  } else if (msg.content.startsWith(`${prefix}invite`)) {
-    try {
-      invite(msg);
-      return;
-    } catch (err) {
-      throw new BoomboxErrors(
-        msg,
-        "invite",
-        client,
-        "Error displaying bot invite",
-        errorChannel
-      );
-    }
-  } else if (msg.content.startsWith(`${prefix}lyrics`)) {
-    try {
-      lyrics(msg, serverQueue);
-      return;
-    } catch (err) {
-      throw new BoomboxErrors(
-        msg,
-        "lyrics",
-        client,
-        "Error displaying lyrics",
-        errorChannel
-      );
-    }
-  } else if (msg.content.startsWith(`${prefix}play`)) {
-    try {
-      execute(msg, serverQueue, player);
-      return;
-    } catch (err) {
-      throw new BoomboxErrors(
-        msg,
-        "play",
-        client,
-        "Error playing song.",
-        errorChannel
-      );
-    }
-  }
   });
 });
 
 async function getRedis(key, callback) {
-  clientRedis.get(key, function(err, reply) {
-    callback(reply)
-  })
+  clientRedis.get(key, function (err, reply) {
+    callback(reply);
+  });
 }
 
 async function playlist(msg, serverQueue, player) {
@@ -331,8 +330,20 @@ async function playlist(msg, serverQueue, player) {
         queue.set(msg.guild.id, queueContruct);
 
         queueContruct.songs.push(song);
-        clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(queueContruct), 'EX', 86400);
-        await play(msg.guild, queueContruct.songs[0], "playlist", parse, msg, player);
+        clientRedis.set(
+          `guild_${msg.guild.id}`,
+          JSON.stringify(queueContruct),
+          "EX",
+          86400
+        );
+        await play(
+          msg.guild,
+          queueContruct.songs[0],
+          "playlist",
+          parse,
+          msg,
+          player
+        );
       } else {
         playlistQueue(msg, serverQueue, parse);
       }
@@ -378,7 +389,12 @@ async function playlistQueue(msg, serverQueue, parse) {
     songNumber += 1;
 
     serverQueue.songs.push(song);
-    clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(serverQueue), 'EX', 86400);
+    clientRedis.set(
+      `guild_${msg.guild.id}`,
+      JSON.stringify(serverQueue),
+      "EX",
+      86400
+    );
   }
   msg.channel.send({
     embed: {
@@ -496,7 +512,12 @@ async function execute(msg, serverQueue, player) {
           playing: true,
         };
         queueContruct.songs.push(song);
-        clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(queueContruct), 'EX', 86400);
+        clientRedis.set(
+          `guild_${msg.guild.id}`,
+          JSON.stringify(queueContruct),
+          "EX",
+          86400
+        );
 
         try {
           play(msg.guild, queueContruct.songs[0], null, null, msg, player);
@@ -506,7 +527,12 @@ async function execute(msg, serverQueue, player) {
         }
       } else {
         serverQueue.songs.push(song);
-        clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(serverQueue), 'EX', 86400);
+        clientRedis.set(
+          `guild_${msg.guild.id}`,
+          JSON.stringify(serverQueue),
+          "EX",
+          86400
+        );
         return msg.channel.send({
           embed: {
             author: {
@@ -607,7 +633,12 @@ function skip(msg, serverQueue, player) {
     return msg.channel.send("There is no song that I could skip!");
   }
   serverQueue.songs.shift();
-  clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(serverQueue), 'EX', 86400);
+  clientRedis.set(
+    `guild_${msg.guild.id}`,
+    JSON.stringify(serverQueue),
+    "EX",
+    86400
+  );
   clearTimeout(timeout);
   play(msg.guild, serverQueue.songs[0], null, null, msg, player);
 }
@@ -623,7 +654,12 @@ function stop(msg, serverQueue, player) {
     return msg.channel.send("There is no song currently playing to stop!");
   }
   serverQueue.songs = [];
-  clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(serverQueue), 'EX', 86400);
+  clientRedis.set(
+    `guild_${msg.guild.id}`,
+    JSON.stringify(serverQueue),
+    "EX",
+    86400
+  );
   clearTimeout(timeout);
   play(msg.guild, serverQueue.songs[0], null, null, msg, player);
 }
@@ -836,13 +872,11 @@ function showObject(obj) {
 }
 
 async function play(guild, song, playlist, parse, msg, player) {
-  await getRedis(`guild_${guild.id}`, async function(reply) {
-    var serverQueue = JSON.parse(reply)
+  await getRedis(`guild_${guild.id}`, async function (reply) {
+    var serverQueue = JSON.parse(reply);
 
     if (!song) {
-      msg.channel.send(
-        "No more songs in the queue! Leaving voice channel."
-      );
+      msg.channel.send("No more songs in the queue! Leaving voice channel.");
       clientRedis.del(`guild_${guild.id}`);
       return await player.destroy(true);
     }
@@ -877,21 +911,22 @@ async function play(guild, song, playlist, parse, msg, player) {
 
     waitForSong(serverQueue, info, guild, msg);
   });
-
-  
 }
 
 function waitForSong(serverQueue, info, guild, msg) {
   timeout = setTimeout(async function () {
     serverQueue.songs.shift();
     if (!serverQueue.songs[0]) {
-      msg.channel.send(
-        "No more songs in the queue! Leaving voice channel."
-      );
+      msg.channel.send("No more songs in the queue! Leaving voice channel.");
       clientRedis.del(`guild_${guild.id}`);
       return await player.destroy(true);
     } else {
-      clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(serverQueue), 'EX', 86400);
+      clientRedis.set(
+        `guild_${msg.guild.id}`,
+        JSON.stringify(serverQueue),
+        "EX",
+        86400
+      );
       play(guild, serverQueue.songs[0], null, null, null, msg);
       return msg.channelsend({
         embed: {
