@@ -59,7 +59,7 @@ Use docker-compose if you don't already have a Graphite and statsD server. To st
 docker-compose up -d
 ```
 
-#Docker Image
+# Docker Image
 
 If you already have a statsd and Graphite server setup you can just the pull the image and run from that. Make sure to enter the correct ip address and port for statsD in the config.json file. To run the contianer run
 
