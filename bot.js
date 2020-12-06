@@ -1,6 +1,5 @@
 const Discord = require("discord.js");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-const ytdl = require("ytdl-core");
 const Lynx = require("lynx");
 const lyricsAPI = require("genius-lyrics-api"); // skipcq: JS-0128
 const { Manager, Player } = require("lavaclient");
