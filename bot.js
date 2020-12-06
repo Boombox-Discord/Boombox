@@ -3,7 +3,7 @@ const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const ytdl = require("ytdl-core");
 const Lynx = require("lynx");
 const lyricsAPI = require("genius-lyrics-api"); // skipcq: JS-0128
-const { Manager, Player } = require('lavaclient');
+const { Manager, Player } = require("lavaclient");
 
 const {
   prefix,
@@ -25,11 +25,11 @@ const BoomboxErrors = require("./errors/errors");
 
 const nodes = [
   {
-      id: "main",
-      host: lavalinkIP,
-      port: lavalinkPort,
-      password: lavalinkPassword
-  }
+    id: "main",
+    host: lavalinkIP,
+    port: lavalinkPort,
+    password: lavalinkPassword,
+  },
 ];
 
 const client = new Discord.Client();
@@ -42,11 +42,11 @@ const manager = new Manager(nodes, {
   shards: 1,
 
   send(id, data) {
-      const guild = client.guilds.cache.get(id);
-      if (guild) guild.shard.send(data);
-      return;
-  }
-})
+    const guild = client.guilds.cache.get(id);
+    if (guild) guild.shard.send(data);
+    return;
+  },
+});
 
 var Metrics = new Lynx(statsdURL, statsdPort);
 
@@ -80,7 +80,7 @@ client.on("guildCreate", (guild) => {
 });
 
 client.on("ready", async () => {
-  await manager.init(client.user.id)
+  await manager.init(client.user.id);
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setActivity(`for ${prefix}help`, { type: "WATCHING" });
 });
@@ -625,7 +625,7 @@ function volume(msg, serverQueue) {
   if (args[1] >= 101 || args[1] <= 0) {
     return msg.channel.send("Please select a number between 1 and 5.");
   }
-  serverQueue.player.setVolume(args[1])
+  serverQueue.player.setVolume(args[1]);
   msg.channel.send("I have set the volume to " + args[1]);
 }
 
@@ -823,26 +823,29 @@ async function play(guild, song, playlist, parse, msg) {
   const player = serverQueue.player;
 
   if (!serverQueue.songs[0]) {
-    serverQueue.textChannel.send("No more songs in the queue! Leaving voice channel.")
+    serverQueue.textChannel.send(
+      "No more songs in the queue! Leaving voice channel."
+    );
     queue.delete(guild.id);
-    return await player.destroy(true)
+    return await player.destroy(true);
   }
 
-  const searchQuery = `ytsearch:${serverQueue.songs[0].title}`
+  const searchQuery = `ytsearch:${serverQueue.songs[0].title}`;
 
   if (!song) {
-    serverQueue.textChannel.send("No more songs in the queue! Leaving voice channel.")
+    serverQueue.textChannel.send(
+      "No more songs in the queue! Leaving voice channel."
+    );
     queue.delete(guild.id);
-    return await player.destroy(true)
+    return await player.destroy(true);
   }
 
   if (playlist === "playlist") {
     playlistQueue(msg, serverQueue, parse);
   }
 
-
   const results = await player.manager.search(searchQuery);
-  const {track, info} = results.tracks[0];
+  const { track, info } = results.tracks[0];
 
   serverQueue.textChannel.send({
     embed: {
@@ -862,23 +865,25 @@ async function play(guild, song, playlist, parse, msg) {
 
   await player.play(track);
 
-  waitForSong(serverQueue, info, guild)
+  waitForSong(serverQueue, info, guild);
 }
 
 function waitForSong(serverQueue, info, guild) {
-  timeout = setTimeout( async function() {
-    serverQueue.songs.shift()
+  timeout = setTimeout(async function () {
+    serverQueue.songs.shift();
     if (!serverQueue.songs[0]) {
-      serverQueue.textChannel.send("No more songs in the queue! Leaving voice channel.")
+      serverQueue.textChannel.send(
+        "No more songs in the queue! Leaving voice channel."
+      );
       queue.delete(guild.id);
-      return await player.destroy(true)
+      return await player.destroy(true);
     } else {
-      play(guild, serverQueue.songs[0], null, null, null)
+      play(guild, serverQueue.songs[0], null, null, null);
       return serverQueue.textChannel.send({
         embed: {
           author: {
             name: client.user.username,
-            icon_url: client.user.avatarURL()
+            icon_url: client.user.avatarURL(),
           },
           title: serverQueue.songs[0].title,
           url: serverQueue.songs[0].videoURL,
@@ -886,16 +891,17 @@ function waitForSong(serverQueue, info, guild) {
           description: `${serverQueue.songs[0].title} is now playing!`,
           thumbnail: {
             url: serverQueue.songs[0].imgurl,
-          }
-        }
-      })
+          },
+        },
+      });
     }
-  }, info.length)
+  }, info.length);
 }
 
-manager.on("socketError", ({ id }, error) => console.error(`${id} ran into an error`, error));
+manager.on("socketError", ({ id }, error) =>
+  console.error(`${id} ran into an error`, error)
+);
 manager.on("socketReady", (node) => console.log(`${node.id} connected.`));
-
 
 client.ws.on("VOICE_STATE_UPDATE", (upd) => manager.stateUpdate(upd));
 client.ws.on("VOICE_SERVER_UPDATE", (upd) => manager.serverUpdate(upd));
