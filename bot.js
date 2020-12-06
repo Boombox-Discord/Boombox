@@ -4,6 +4,7 @@ const ytdl = require("ytdl-core");
 const Lynx = require("lynx");
 const lyricsAPI = require("genius-lyrics-api"); // skipcq: JS-0128
 const { Manager, Player } = require("lavaclient");
+const redis = require('redis');
 
 const {
   prefix,
@@ -17,6 +18,8 @@ const {
   lavalinkIP,
   lavalinkPort,
   lavalinkPassword,
+  redisIP,
+  redisPort
 } = require("./config.json"); //skipcq: JS-0266
 
 const searchSong = require("genius-lyrics-api/lib/searchSong");
@@ -33,6 +36,12 @@ const nodes = [
 ];
 
 const client = new Discord.Client();
+
+const clientRedis = redis.createClient(redisPort, redisIP, redis);
+
+clientRedis.on("error", function(error) {
+  console.error(error);
+});
 
 const queue = new Map();
 
@@ -79,6 +88,7 @@ client.on("guildCreate", (guild) => {
   });
 });
 
+
 client.on("ready", async () => {
   await manager.init(client.user.id);
   console.log(`Logged in as ${client.user.tag}!`);
@@ -93,8 +103,10 @@ client.on("message", async (msg) => {
     return;
   }
 
-  const serverQueue = queue.get(msg.guild.id);
-  const player = await manager.create(msg.guild.id);
+  await getRedis(`guild_${msg.guild.id}`, async function(reply) {
+    var serverQueue = JSON.parse(reply)
+
+    const player = await manager.create(msg.guild.id);
 
   if (msg.content.startsWith(`${prefix}playlist`)) {
     try {
@@ -111,7 +123,7 @@ client.on("message", async (msg) => {
     }
   } else if (msg.content.startsWith(`${prefix}skip`)) {
     try {
-      skip(msg, serverQueue);
+      skip(msg, serverQueue, player);
       return;
     } catch (err) {
       throw new BoomboxErrors(
@@ -124,7 +136,7 @@ client.on("message", async (msg) => {
     }
   } else if (msg.content.startsWith(`${prefix}stop`)) {
     try {
-      stop(msg, serverQueue);
+      stop(msg, serverQueue, player);
       return;
     } catch (err) {
       throw new BoomboxErrors(
@@ -163,7 +175,7 @@ client.on("message", async (msg) => {
     }
   } else if (msg.content.startsWith(`${prefix}volume`)) {
     try {
-      volume(msg, serverQueue);
+      volume(msg, serverQueue, player);
       return;
     } catch (err) {
       throw new BoomboxErrors(
@@ -227,7 +239,14 @@ client.on("message", async (msg) => {
       );
     }
   }
+  });
 });
+
+async function getRedis(key, callback) {
+  clientRedis.get(key, function(err, reply) {
+    callback(reply)
+  })
+}
 
 async function playlist(msg, serverQueue, player) {
   Metrics.increment("boombox.playlist");
@@ -312,9 +331,8 @@ async function playlist(msg, serverQueue, player) {
         queue.set(msg.guild.id, queueContruct);
 
         queueContruct.songs.push(song);
-
-        await player.connect(voiceChannel.id);
-        await play(msg.guild, queueContruct.songs[0], "playlist", parse, msg);
+        clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(queueContruct), 'EX', 86400);
+        await play(msg.guild, queueContruct.songs[0], "playlist", parse, msg, player);
       } else {
         playlistQueue(msg, serverQueue, parse);
       }
@@ -360,6 +378,7 @@ async function playlistQueue(msg, serverQueue, parse) {
     songNumber += 1;
 
     serverQueue.songs.push(song);
+    clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(serverQueue), 'EX', 86400);
   }
   msg.channel.send({
     embed: {
@@ -469,29 +488,25 @@ async function execute(msg, serverQueue, player) {
         imgurl: imgURL,
         geniusURL: geniusSong[0].url,
       };
-
       if (!serverQueue) {
         const queueContruct = {
           textChannel: msg.channel,
           voiceChannel: voiceChannel,
-          player: player,
           songs: [],
           playing: true,
         };
-
-        queue.set(msg.guild.id, queueContruct);
-
         queueContruct.songs.push(song);
+        clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(queueContruct), 'EX', 86400);
 
         try {
-          await player.connect(voiceChannel.id);
-          play(msg.guild, queueContruct.songs[0], null, null, null);
+          play(msg.guild, queueContruct.songs[0], null, null, msg, player);
         } catch (err) {
-          queue.delete(msg.guild.id);
+          clientRedis.del(`guild_${msg.guild.id}`);
           return msg.channel.send(err);
         }
       } else {
         serverQueue.songs.push(song);
+        clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(serverQueue), 'EX', 86400);
         return msg.channel.send({
           embed: {
             author: {
@@ -581,7 +596,7 @@ function help(msg) {
   });
 }
 
-function skip(msg, serverQueue) {
+function skip(msg, serverQueue, player) {
   Metrics.increment("boombox.skip");
   if (!msg.member.voice.channel) {
     return msg.channel.send(
@@ -592,11 +607,12 @@ function skip(msg, serverQueue) {
     return msg.channel.send("There is no song that I could skip!");
   }
   serverQueue.songs.shift();
+  clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(serverQueue), 'EX', 86400);
   clearTimeout(timeout);
-  play(msg.guild, serverQueue.songs[0], null, null, null);
+  play(msg.guild, serverQueue.songs[0], null, null, msg, player);
 }
 
-function stop(msg, serverQueue) {
+function stop(msg, serverQueue, player) {
   Metrics.increment("boombox.stop");
   if (!msg.member.voice.channel) {
     return msg.channel.send(
@@ -607,11 +623,12 @@ function stop(msg, serverQueue) {
     return msg.channel.send("There is no song currently playing to stop!");
   }
   serverQueue.songs = [];
+  clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(serverQueue), 'EX', 86400);
   clearTimeout(timeout);
-  play(msg.guild, serverQueue.songs[0], null, null, null);
+  play(msg.guild, serverQueue.songs[0], null, null, msg, player);
 }
 
-function volume(msg, serverQueue) {
+function volume(msg, serverQueue, player) {
   Metrics.increment("boombox.volume");
   if (!msg.member.voice.channel) {
     return msg.channel.send(
@@ -625,7 +642,7 @@ function volume(msg, serverQueue) {
   if (args[1] >= 101 || args[1] <= 0) {
     return msg.channel.send("Please select a number between 1 and 5.");
   }
-  serverQueue.player.setVolume(args[1]);
+  player.setVolume(args[1]);
   msg.channel.send("I have set the volume to " + args[1]);
 }
 
@@ -818,68 +835,65 @@ function showObject(obj) {
   return result;
 }
 
-async function play(guild, song, playlist, parse, msg) {
-  const serverQueue = queue.get(guild.id);
-  const player = serverQueue.player;
+async function play(guild, song, playlist, parse, msg, player) {
+  await getRedis(`guild_${guild.id}`, async function(reply) {
+    var serverQueue = JSON.parse(reply)
 
-  if (!serverQueue.songs[0]) {
-    serverQueue.textChannel.send(
-      "No more songs in the queue! Leaving voice channel."
-    );
-    queue.delete(guild.id);
-    return await player.destroy(true);
-  }
+    if (!song) {
+      msg.channel.send(
+        "No more songs in the queue! Leaving voice channel."
+      );
+      clientRedis.del(`guild_${guild.id}`);
+      return await player.destroy(true);
+    }
 
-  const searchQuery = `ytsearch:${serverQueue.songs[0].title}`;
+    if (playlist === "playlist") {
+      playlistQueue(msg, serverQueue, parse);
+    }
 
-  if (!song) {
-    serverQueue.textChannel.send(
-      "No more songs in the queue! Leaving voice channel."
-    );
-    queue.delete(guild.id);
-    return await player.destroy(true);
-  }
+    const searchQuery = `ytsearch:${serverQueue.songs[0].title}`;
+    const results = await player.manager.search(searchQuery);
+    const { track, info } = results.tracks[0];
 
-  if (playlist === "playlist") {
-    playlistQueue(msg, serverQueue, parse);
-  }
+    await player.connect(serverQueue.voiceChannel.id);
 
-  const results = await player.manager.search(searchQuery);
-  const { track, info } = results.tracks[0];
-
-  serverQueue.textChannel.send({
-    embed: {
-      author: {
-        name: client.user.username,
-        icon_url: client.user.avatarURL(),
+    msg.channel.send({
+      embed: {
+        author: {
+          name: client.user.username,
+          icon_url: client.user.avatarURL(),
+        },
+        title: serverQueue.songs[0].title,
+        url: serverQueue.songs[0].url,
+        color: 16711680,
+        description: `${serverQueue.songs[0].title} is now playing!`,
+        thumbnail: {
+          url: serverQueue.songs[0].imgurl,
+        },
       },
-      title: serverQueue.songs[0].title,
-      url: serverQueue.songs[0].url,
-      color: 16711680,
-      description: `${serverQueue.songs[0].title} is now playing!`,
-      thumbnail: {
-        url: serverQueue.songs[0].imgurl,
-      },
-    },
+    });
+
+    await player.play(track);
+
+    waitForSong(serverQueue, info, guild, msg);
   });
 
-  await player.play(track);
-
-  waitForSong(serverQueue, info, guild);
+  
 }
 
-function waitForSong(serverQueue, info, guild) {
+function waitForSong(serverQueue, info, guild, msg) {
   timeout = setTimeout(async function () {
     serverQueue.songs.shift();
     if (!serverQueue.songs[0]) {
-      serverQueue.textChannel.send(
+      msg.channel.send(
         "No more songs in the queue! Leaving voice channel."
       );
-      queue.delete(guild.id);
+      clientRedis.del(`guild_${guild.id}`);
       return await player.destroy(true);
     } else {
-      play(guild, serverQueue.songs[0], null, null, null);
-      return serverQueue.textChannel.send({
+      clientRedis.set(`guild_${msg.guild.id}`, JSON.stringify(serverQueue), 'EX', 86400);
+      play(guild, serverQueue.songs[0], null, null, null, msg);
+      return msg.channelsend({
         embed: {
           author: {
             name: client.user.username,

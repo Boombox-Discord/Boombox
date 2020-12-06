@@ -29,6 +29,7 @@
     "genius-lyrics-api": "^3.0.3",
     "lavaclient": "^3.1.2",
     "lynx": "^0.2.0",
+    "redis": "^3.0.2",
     "standard": "^16.0.3",
     "xmlhttprequest": "^1.8.0",
     "ytdl-core": "^4.1.2"
