@@ -30,7 +30,7 @@
     "lynx": "^0.2.0",
     "standard": "^16.0.3",
     "xmlhttprequest": "^1.8.0",
-    "ytdl-core": "^4.1.4"
+    "ytdl-core": "^4.1.6"
   },
   "devDependencies": {
     "prettier": "2.2.1"
