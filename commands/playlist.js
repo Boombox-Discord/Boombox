@@ -51,6 +51,10 @@ async function playlist(msg, serverQueue, player, client) {
       var videoTitle = parse.items[0].snippet.title;
       var videoURL = "https://www.youtube.com/watch?v=" + videoID;
 
+      const searchQuery = `ytsearch:${videoTitle}`;
+      const results = await player.manager.search(searchQuery);
+      const { track, info } = results.tracks[0];
+
       var optionsSong = {
         apiKey: geniusApiKey,
         title: videoTitle,
@@ -74,6 +78,8 @@ async function playlist(msg, serverQueue, player, client) {
         url: videoURL,
         imgurl: imgURL,
         geniusURL: geniusSong[0].url,
+        track: track,
+        info: info,
       };
 
       if (!serverQueue) {
@@ -103,7 +109,7 @@ async function playlist(msg, serverQueue, player, client) {
           client
         );
       } else {
-        playlistQueue(msg, serverQueue, parse, client);
+        playlistQueue(msg, serverQueue, parse, client, player);
       }
     }
   };

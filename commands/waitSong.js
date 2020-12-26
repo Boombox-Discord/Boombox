@@ -1,7 +1,7 @@
 const { clientRedis } = require("../utils/utils");
 const modifyTimeout = require("../utils/functions");
 
-function waitForSong(serverQueue, info, guild, msg, player) {
+function waitForSong(serverQueue, length, guild, msg, player) {
   modifyTimeout(
     setTimeout(async function () {
       serverQueue.songs.shift();
@@ -33,7 +33,7 @@ function waitForSong(serverQueue, info, guild, msg, player) {
           },
         });
       }
-    }, info.length)
+    }, length)
   );
 }
 module.exports = waitForSong;

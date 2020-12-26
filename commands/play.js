@@ -1,9 +1,8 @@
 const play = require("./playSong");
 const { Metrics, clientRedis } = require("../utils/utils");
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const searchSong = require("genius-lyrics-api/lib/searchSong");
 
-const { youtubeApi, geniusApiKey } = require("../config.json");
+const { geniusApiKey } = require("../config.json");
 
 async function execute(msg, serverQueue, player, client) {
   Metrics.increment("boombox.play");
@@ -30,6 +29,8 @@ async function execute(msg, serverQueue, player, client) {
 
   video += args[args.length - 1];
 
+  console.log(video);
+
   msg.channel.send({
     embed: {
       author: {
@@ -42,120 +43,89 @@ async function execute(msg, serverQueue, player, client) {
     },
   });
 
-  const urlGet =
-    "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=" +
-    video +
-    "&key=" +
-    youtubeApi;
+  const searchQuery = `ytsearch:${video}`;
+  const results = await player.manager.search(searchQuery);
+  const { track, info } = results.tracks[0];
 
-  var xmlhttp = new XMLHttpRequest();
+  if (info.isStream) {
+    return msg.channel.send(
+      "Sorry that is a live video. Please try a video that is not live."
+    );
+  }
 
-  xmlhttp.onreadystatechange = async function () {
-    if (this.readyState === 4 && this.status === 200) {
-      //Use parse() method to convert JSON string to JSON object
-      var str = this.responseText;
-      var parse = JSON.parse(str);
-      if (parse.pageInfo.totalResults === 0) {
-        return msg.channel.send(
-          "Sorry we couldn't find any songs called " +
-            video +
-            ". Please try again or paste a link to the youtube video."
-        );
-      }
-      if (
-        parse.items[0].snippet.liveBroadcastContent === "live" ||
-        parse.items[0].snippet.liveBroadcastContent === "upcoming"
-      ) {
-        return msg.channel.send(
-          "Sorry that is a live video. Please try a video that is not live."
-        );
-      }
-      var videoID = parse.items[0].id.videoId;
-      var imgURL = parse.items[0].snippet.thumbnails.high.url;
-      var videoTitle = parse.items[0].snippet.title;
-      const videoURL = "https://www.youtube.com/watch?v=" + videoID;
+  console.log(info);
 
-      var optionsSong = {
-        apiKey: geniusApiKey,
-        title: video,
-        artist: "",
-        optimizeQuery: true,
-      };
-      var geniusSong = await searchSong(optionsSong);
-
-      if (geniusSong === null) {
-        geniusSong = [
-          {
-            url: "Nothing found.",
-          },
-        ];
-      }
-      //Play song
-
-      const song = {
-        title: videoTitle,
-        url: videoURL,
-        imgurl: imgURL,
-        geniusURL: geniusSong[0].url,
-      };
-      if (!serverQueue) {
-        const queueContruct = {
-          textChannel: msg.channel,
-          voiceChannel: voiceChannel,
-          songs: [],
-          playing: true,
-        };
-        queueContruct.songs.push(song);
-        clientRedis.set(
-          `guild_${msg.guild.id}`,
-          JSON.stringify(queueContruct),
-          "EX",
-          86400
-        );
-
-        try {
-          play(
-            msg.guild,
-            queueContruct.songs[0],
-            null,
-            null,
-            msg,
-            player,
-            client
-          );
-        } catch (err) {
-          clientRedis.del(`guild_${msg.guild.id}`);
-          return msg.channel.send(err);
-        }
-      } else {
-        serverQueue.songs.push(song);
-        clientRedis.set(
-          `guild_${msg.guild.id}`,
-          JSON.stringify(serverQueue),
-          "EX",
-          86400
-        );
-        return msg.channel.send({
-          embed: {
-            author: {
-              name: client.user.username,
-              icon_url: client.user.avatarURL(),
-            },
-            title: song.title,
-            url: videoURL,
-            color: 16711680,
-            description: `${song.title} has been added to queue!`,
-            thumbnail: {
-              url: song.imgurl,
-            },
-          },
-        });
-      }
-    }
+  var optionsSong = {
+    apiKey: geniusApiKey,
+    title: video,
+    artist: "",
+    optimizeQuery: true,
   };
-  xmlhttp.open("GET", urlGet, true);
+  var geniusSong = await searchSong(optionsSong);
 
-  xmlhttp.send();
+  if (geniusSong === null) {
+    geniusSong = [
+      {
+        url: "Nothing found.",
+      },
+    ];
+  }
+  //Play song
+
+  const song = {
+    title: info.title,
+    url: info.url,
+    imgurl: `https://i.ytimg.com/vi/${info.identifier}/hqdefault.jpg`,
+    geniusURL: geniusSong[0].url,
+    track: track,
+    info: info,
+  };
+
+  if (!serverQueue) {
+    const queueContruct = {
+      textChannel: msg.channel,
+      voiceChannel: voiceChannel,
+      songs: [],
+      playing: true,
+    };
+    queueContruct.songs.push(song);
+    clientRedis.set(
+      `guild_${msg.guild.id}`,
+      JSON.stringify(queueContruct),
+      "EX",
+      86400
+    );
+
+    try {
+      play(msg.guild, queueContruct.songs[0], null, null, msg, player, client);
+    } catch (err) {
+      clientRedis.del(`guild_${msg.guild.id}`);
+      return msg.channel.send(err);
+    }
+  } else {
+    serverQueue.songs.push(song);
+    clientRedis.set(
+      `guild_${msg.guild.id}`,
+      JSON.stringify(serverQueue),
+      "EX",
+      86400
+    );
+    return msg.channel.send({
+      embed: {
+        author: {
+          name: client.user.username,
+          icon_url: client.user.avatarURL(),
+        },
+        title: song.title,
+        url: song.url,
+        color: 16711680,
+        description: `${song.title} has been added to queue!`,
+        thumbnail: {
+          url: song.imgurl,
+        },
+      },
+    });
+  }
 }
 
 module.exports = execute;

@@ -15,12 +15,8 @@ async function play(guild, song, playlist, parse, msg, player, client) {
     }
 
     if (playlist === "playlist") {
-      playlistQueue(msg, serverQueue, parse, client);
+      playlistQueue(msg, serverQueue, parse, client, player);
     }
-
-    const searchQuery = `ytsearch:${serverQueue.songs[0].title}`;
-    const results = await player.manager.search(searchQuery);
-    const { track, info } = results.tracks[0];
 
     await player.connect(serverQueue.voiceChannel.id);
 
@@ -40,9 +36,15 @@ async function play(guild, song, playlist, parse, msg, player, client) {
       },
     });
 
-    await player.play(track);
+    await player.play(serverQueue.songs[0].track);
 
-    waitForSong(serverQueue, info, guild, msg, player);
+    waitForSong(
+      serverQueue,
+      serverQueue.songs[0].info.length,
+      guild,
+      msg,
+      player
+    );
   });
 }
 

@@ -6,17 +6,10 @@ const { Manager, Player } = require("lavaclient");
 const {
   prefix,
   token,
-  youtubeApi,
-  inviteLink,
-  statsdURL,
-  statsdPort,
-  geniusApiKey,
   errorChannel,
   lavalinkIP,
   lavalinkPort,
   lavalinkPassword,
-  redisIP,
-  redisPort,
 } = require("./config.json"); //skipcq: JS-0266
 
 const BoomboxErrors = require("./errors/errors");
@@ -30,6 +23,7 @@ const volume = require("./commands/volume");
 const help = require("./commands/help");
 const invite = require("./commands/invite");
 const lyrics = require("./commands/lyrics");
+const pause = require("./commands/pause");
 const { clientRedis } = require("./utils/utils");
 const getRedis = require("./utils/redis");
 
@@ -232,6 +226,19 @@ client.on("message", async (msg) => {
           errorChannel
         );
       }
+    } else if (msg.content.startsWith(`${prefix}pause`)) {
+      // try {
+      pause(msg, serverQueue, player);
+      return;
+      // } catch (err) {
+      //   throw new BoomboxErrors(
+      //     msg,
+      //     "pause",
+      //     client,
+      //     "Error pausing song.",
+      //     errorChannel
+      //   );
+      // }
     }
   });
 });

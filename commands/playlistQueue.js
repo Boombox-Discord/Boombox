@@ -3,13 +3,17 @@ const searchSong = require("genius-lyrics-api/lib/searchSong");
 
 const { geniusApiKey } = require("../config.json"); //skipcq: JS-0266
 
-async function playlistQueue(msg, serverQueue, parse, client) {
+async function playlistQueue(msg, serverQueue, parse, client, player) {
   var songNumber;
   for (var i = 1; i < parse.items.length; i++) {
     var videoID = parse.items[i].snippet.resourceId.videoId;
     var imgURL = parse.items[i].snippet.thumbnails.high.url;
     var videoTitle = parse.items[i].snippet.title;
     var videoURL = "https://www.youtube.com/watch?v=" + videoID;
+
+    const searchQuery = `ytsearch:${videoTitle}`;
+    const results = await player.manager.search(searchQuery);
+    const { track, info } = results.tracks[0];
 
     var optionsSong = {
       apiKey: geniusApiKey,
@@ -33,6 +37,8 @@ async function playlistQueue(msg, serverQueue, parse, client) {
       url: videoURL,
       imgurl: imgURL,
       geniusURL: geniusSong[0].url,
+      track: track,
+      info: info,
     };
 
     songNumber += 1;

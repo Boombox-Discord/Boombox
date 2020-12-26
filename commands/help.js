@@ -63,6 +63,10 @@ function help(msg, client) {
           name: `${prefix}invite`,
           value: "Sends an invite link for the bot.",
         },
+        {
+          name: `${prefix}pause`,
+          value: "Will pause the currently playing song.",
+        },
       ],
     },
   });
