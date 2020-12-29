@@ -18,9 +18,7 @@ async function play(guild, song, playlist, parse, msg, player, client) {
       playlistQueue(msg, serverQueue, parse, client, player);
     }
 
-
     if (serverQueue.connected) {
-
     } else if (!serverQueue.connected) {
       await player.connect(serverQueue.voiceChannel.id);
       serverQueue.connected = true;
