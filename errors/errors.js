@@ -5,7 +5,7 @@ class BoomboxErrors extends Error {
     msg.channel.send(
       "Sorry an error has occured. Please try again later, or submit a bug report on our support server."
     );
-    client.channels.get(errorChannel).send({
+    client.channels.cache.get(errorChannel).send({
       embed: {
         color: 16711680,
         timestamp: msg.createdAt,

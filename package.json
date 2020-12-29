@@ -25,12 +25,13 @@
   "homepage": "https://github.com/AjayACST/Boombox#readme",
   "dependencies": {
     "@discordjs/opus": "^0.3.3",
-    "discord.js": "^11.6.4",
+    "discord.js": "^12.5.1",
     "genius-lyrics-api": "^3.0.3",
+    "lavaclient": "^3.1.2",
     "lynx": "^0.2.0",
+    "redis": "^3.0.2",
     "standard": "^16.0.3",
-    "xmlhttprequest": "^1.8.0",
-    "ytdl-core": "^4.2.1"
+    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
     "prettier": "2.2.1"

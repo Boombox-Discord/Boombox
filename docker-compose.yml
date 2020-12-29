@@ -1,7 +1,15 @@
 version: "3"
+
 services:
   bot:
-    image: boomboxdev/boombox-bot:latest
+    build: .
+    volumes:
+      - .:/usr/app/ # for dev only
+      - /usr/app/node_modules
+    depends_on:
+      - graphite
+      - redis
+      - lavalink
   graphite:
     image: graphiteapp/graphite-statsd:latest
     ports:
@@ -10,3 +18,9 @@ services:
       - "2023-2024:2023-2024"
       - "8125:8125/udp"
       - "8126:8126"
+  redis:
+    image: redis
+  lavalink:
+    image: fredboat/lavalink:master
+    volumes:
+      - "./lavalink-config.yml:/opt/Lavalink/application.yml"
