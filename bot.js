@@ -26,7 +26,7 @@ const lyrics = require("./commands/lyrics");
 const pause = require("./commands/pause");
 const { clientRedis } = require("./utils/utils");
 const getRedis = require("./utils/redis");
-const remove = require('./commands/remove');
+const remove = require("./commands/remove");
 
 const client = new Discord.Client();
 
@@ -151,8 +151,8 @@ client.on("message", async (msg) => {
       }
     } else if (msg.content.startsWith(`${prefix}queue`)) {
       // try {
-        queuemsg(msg, serverQueue, client);
-        return;
+      queuemsg(msg, serverQueue, client);
+      return;
       // } catch (err) {
       //   throw new BoomboxErrors(
       //     msg,
@@ -229,8 +229,8 @@ client.on("message", async (msg) => {
       }
     } else if (msg.content.startsWith(`${prefix}pause`)) {
       try {
-      pause(msg, serverQueue, player);
-      return;
+        pause(msg, serverQueue, player);
+        return;
       } catch (err) {
         throw new BoomboxErrors(
           msg,
@@ -242,8 +242,8 @@ client.on("message", async (msg) => {
       }
     } else if (msg.content.startsWith(`${prefix}remove`)) {
       try {
-      remove(serverQueue, msg);
-      return;
+        remove(serverQueue, msg);
+        return;
       } catch (err) {
         throw new BoomboxErrors(
           msg,
