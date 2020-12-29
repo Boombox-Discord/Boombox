@@ -152,8 +152,8 @@ client.on("message", async (msg) => {
       }
     } else if (msg.content.startsWith(`${prefix}queue`)) {
       try {
-      queuemsg(msg, serverQueue, client);
-      return;
+        queuemsg(msg, serverQueue, client);
+        return;
       } catch (err) {
         throw new BoomboxErrors(
           msg,
@@ -230,8 +230,8 @@ client.on("message", async (msg) => {
       }
     } else if (msg.content.startsWith(`${prefix}pause`)) {
       // try {
-        pause(msg, serverQueue, player, client, play);
-        return;
+      pause(msg, serverQueue, player, client, play);
+      return;
       // } catch (err) {
       //   throw new BoomboxErrors(
       //     msg,
