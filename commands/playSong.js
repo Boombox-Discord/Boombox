@@ -44,7 +44,8 @@ async function play(guild, song, playlist, parse, msg, player, client) {
       guild,
       msg,
       player,
-      false
+      false,
+      client
     );
   });
 }

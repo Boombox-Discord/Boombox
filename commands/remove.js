@@ -22,7 +22,7 @@ async function remove(serverQueue, msg) {
     );
   }
   var argsNum = parseInt(args[1]);
-  deletedSong = serverQueue.songs[argsNum - 1].title;
+  var deletedSong = serverQueue.songs[argsNum - 1].title;
 
   serverQueue.songs.splice(argsNum - 1, 1);
   clientRedis.set(
