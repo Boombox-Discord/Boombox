@@ -21,7 +21,7 @@ Boombox is a free, open source, music bot for Discord. It is built on JavaScript
 The defualt prefix is "!" but this can be changed in the config.json file if you wish to self host the bot.
 
 | Command     | Usage                             | Description                                                                                                                     |
-| ----------- | :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
+| ----------- | :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------------ | --- |
 | Play        | !play [song name or youtube link] | This will find the song from youtube and start playing it. If there is something currently playing it will add it to the queue. |
 | Skip        | !skip                             | Will skip the currently playing song.                                                                                           |
 | Stop        | !stop                             | Will stop current playing music and delete the queue.                                                                           |
@@ -31,9 +31,9 @@ The defualt prefix is "!" but this can be changed in the config.json file if you
 | Queue       | !queue                            | Displays current songs queue.                                                                                                   |
 | Volume      | !volume                           | Set's the volume. Use a number between 1 and 5.                                                                                 |
 | Invite      | !invite                           | Sends an invite link for the bot.                                                                                               |
-| Playlist    | !playlist [youtube playlist url]  | This command will add all songs from a youtube playlist into the queue.|
-| Pause | !pause | Will pause the currently playing song. |
-| Remove | !remove [position in queue] | Will remove that song from the queue. | 
+| Playlist    | !playlist [youtube playlist url]  | This command will add all songs from a youtube playlist into the queue.                                                         |
+| Pause       | !pause                            | Will pause the currently playing song.                                                                                          |
+| Remove      | !remove [position in queue]       | Will remove that song from the queue.                                                                                           |
 
 ![GIF of commands](https://boombox.quirky.codes/IMG/Header.gif)
 
