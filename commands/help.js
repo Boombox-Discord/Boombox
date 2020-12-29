@@ -67,6 +67,10 @@ function help(msg, client) {
           name: `${prefix}pause`,
           value: "Will pause the currently playing song.",
         },
+        {
+          name: `${prefix}remove [position in queue]`,
+          value: "Will remove that song from the queue.",
+        },
       ],
     },
   });
