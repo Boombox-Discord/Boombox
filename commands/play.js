@@ -29,7 +29,6 @@ async function execute(msg, serverQueue, player, client) {
 
   video += args[args.length - 1];
 
-
   msg.channel.send({
     embed: {
       author: {
