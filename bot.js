@@ -24,6 +24,7 @@ const help = require("./commands/help");
 const invite = require("./commands/invite");
 const lyrics = require("./commands/lyrics");
 const pause = require("./commands/pause");
+const play = require("./commands/playSong");
 const { clientRedis } = require("./utils/utils");
 const getRedis = require("./utils/redis");
 const remove = require("./commands/remove");
@@ -112,7 +113,7 @@ client.on("message", async (msg) => {
       }
     } else if (msg.content.startsWith(`${prefix}skip`)) {
       try {
-        skip(msg, serverQueue, player, client);
+        skip(msg, serverQueue, player, client, play);
         return;
       } catch (err) {
         throw new BoomboxErrors(
@@ -150,18 +151,18 @@ client.on("message", async (msg) => {
         );
       }
     } else if (msg.content.startsWith(`${prefix}queue`)) {
-      // try {
+      try {
       queuemsg(msg, serverQueue, client);
       return;
-      // } catch (err) {
-      //   throw new BoomboxErrors(
-      //     msg,
-      //     "queue",
-      //     client,
-      //     "Error stopping song",
-      //     errorChannel
-      //   );
-      // }
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "queue",
+          client,
+          "Error stopping song",
+          errorChannel
+        );
+      }
     } else if (msg.content.startsWith(`${prefix}volume`)) {
       try {
         volume(msg, serverQueue, player);
@@ -228,18 +229,18 @@ client.on("message", async (msg) => {
         );
       }
     } else if (msg.content.startsWith(`${prefix}pause`)) {
-      try {
-        pause(msg, serverQueue, player);
+      // try {
+        pause(msg, serverQueue, player, client, play);
         return;
-      } catch (err) {
-        throw new BoomboxErrors(
-          msg,
-          "pause",
-          client,
-          "Error pausing song.",
-          errorChannel
-        );
-      }
+      // } catch (err) {
+      //   throw new BoomboxErrors(
+      //     msg,
+      //     "pause",
+      //     client,
+      //     "Error pausing song.",
+      //     errorChannel
+      //   );
+      // }
     } else if (msg.content.startsWith(`${prefix}remove`)) {
       try {
         remove(serverQueue, msg);

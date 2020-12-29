@@ -19,7 +19,7 @@ function stop(msg, serverQueue, player, client) {
     "EX",
     86400
   );
-  waitSong(null, null, null, null, null, true);
+  waitSong(null, msg.guild, msg, player, true, client, null);
   play(msg.guild, null, null, null, msg, player, client);
 }
 
