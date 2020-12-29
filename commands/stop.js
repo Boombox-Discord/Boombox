@@ -20,7 +20,7 @@ function stop(msg, serverQueue, player, client) {
     86400
   );
   waitSong(null, null, null, null, null, true);
-  play(msg.guild, serverQueue.songs[0], null, null, msg, player, client);
+  play(msg.guild, null, null, null, msg, player, client);
 }
 
 module.exports = stop;

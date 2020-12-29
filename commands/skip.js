@@ -19,7 +19,7 @@ function skip(msg, serverQueue, player, client) {
     "EX",
     86400
   );
-  waitSong(null, null, null, null, null, true);
+  waitSong(null, null, null, null, null, true); //stop current wait for song
   play(msg.guild, serverQueue.songs[0], null, null, msg, player, client);
 }
 
