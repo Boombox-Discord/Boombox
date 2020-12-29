@@ -1,6 +1,6 @@
 const play = require("./playSong");
 const { Metrics, clientRedis } = require("../utils/utils");
-const stopTimeout = require("../utils/functions");
+const waitSong = require("./waitSong");
 
 function stop(msg, serverQueue, player, client) {
   Metrics.increment("boombox.stop");
@@ -19,7 +19,7 @@ function stop(msg, serverQueue, player, client) {
     "EX",
     86400
   );
-  stopTimeout();
+  waitSong(null, null, null, null, null, true);
   play(msg.guild, serverQueue.songs[0], null, null, msg, player, client);
 }
 

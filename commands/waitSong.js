@@ -1,9 +1,13 @@
 const { clientRedis } = require("../utils/utils");
-const modifyTimeout = require("../utils/functions");
 
-function waitForSong(serverQueue, length, guild, msg, player) {
-  modifyTimeout(
-    setTimeout(async function () {
+var queueTime;
+
+function waitForSong(serverQueue, length, guild, msg, player, stopTimeout) {
+  if (stopTimeout) {
+    clearTimeout(queueTime);
+    return;
+  }
+    queueTime = setTimeout(async function () {
       serverQueue.songs.shift();
       if (!serverQueue.songs[0]) {
         msg.channel.send("No more songs in the queue! Leaving voice channel.");
@@ -34,6 +38,5 @@ function waitForSong(serverQueue, length, guild, msg, player) {
         });
       }
     }, length)
-  );
 }
 module.exports = waitForSong;

@@ -1,5 +1,4 @@
 const { Metrics } = require("../utils/utils");
-const stopTimeout = require("../utils/functions");
 const waitForSong = require("./waitSong");
 
 function pause(msg, serverQueue, player) {
@@ -14,7 +13,7 @@ function pause(msg, serverQueue, player) {
     return msg.channel.send("There is currently no song playing!");
   }
   if (!player.paused) {
-    stopTimeout();
+    waitForSong(null, null, null, null, null, true);
     player.pause(true);
     return msg.channel.send("I have paused the music!");
   } else {
@@ -23,7 +22,7 @@ function pause(msg, serverQueue, player) {
     const timeLeft = length - position;
     player.resume();
     const guild = msg.guild;
-    waitForSong(serverQueue, timeLeft, guild, msg, player);
+    waitForSong(serverQueue, timeLeft, guild, msg, player, false);
   }
 }
 module.exports = pause;
