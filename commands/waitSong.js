@@ -1,9 +1,17 @@
 const { clientRedis } = require("../utils/utils");
-const play = require('./playSong');
+const play = require("./playSong");
 
 var queueTime;
 
-function waitForSong(serverQueue, length, guild, msg, player, stopTimeout, client) {
+function waitForSong(
+  serverQueue,
+  length,
+  guild,
+  msg,
+  player,
+  stopTimeout,
+  client
+) {
   if (stopTimeout) {
     clearTimeout(queueTime);
     return;
