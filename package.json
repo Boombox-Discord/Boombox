@@ -26,7 +26,7 @@
   "dependencies": {
     "@discordjs/opus": "^0.3.3",
     "discord.js": "^12.5.1",
-    "genius-lyrics-api": "^3.0.4",
+    "genius-lyrics-api": "^3.0.5",
     "lavaclient": "^3.1.2",
     "lynx": "^0.2.0",
     "redis": "^3.0.2",
