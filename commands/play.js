@@ -29,8 +29,6 @@ async function execute(msg, serverQueue, player, client) {
 
   video += args[args.length - 1];
 
-  console.log(video);
-
   msg.channel.send({
     embed: {
       author: {
@@ -52,8 +50,6 @@ async function execute(msg, serverQueue, player, client) {
       "Sorry that is a live video. Please try a video that is not live."
     );
   }
-
-  console.log(info);
 
   var optionsSong = {
     apiKey: geniusApiKey,

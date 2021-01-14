@@ -26,6 +26,7 @@ const lyrics = require("./commands/lyrics");
 const pause = require("./commands/pause");
 const { clientRedis } = require("./utils/utils");
 const getRedis = require("./utils/redis");
+const remove = require("./commands/remove");
 
 const client = new Discord.Client();
 
@@ -149,18 +150,18 @@ client.on("message", async (msg) => {
         );
       }
     } else if (msg.content.startsWith(`${prefix}queue`)) {
-      try {
-        queuemsg(msg, serverQueue, client);
-        return;
-      } catch (err) {
-        throw new BoomboxErrors(
-          msg,
-          "queue",
-          client,
-          "Error stopping song",
-          errorChannel
-        );
-      }
+      // try {
+      queuemsg(msg, serverQueue, client);
+      return;
+      // } catch (err) {
+      //   throw new BoomboxErrors(
+      //     msg,
+      //     "queue",
+      //     client,
+      //     "Error stopping song",
+      //     errorChannel
+      //   );
+      // }
     } else if (msg.content.startsWith(`${prefix}volume`)) {
       try {
         volume(msg, serverQueue, player);
@@ -227,18 +228,31 @@ client.on("message", async (msg) => {
         );
       }
     } else if (msg.content.startsWith(`${prefix}pause`)) {
-      // try {
-      pause(msg, serverQueue, player);
-      return;
-      // } catch (err) {
-      //   throw new BoomboxErrors(
-      //     msg,
-      //     "pause",
-      //     client,
-      //     "Error pausing song.",
-      //     errorChannel
-      //   );
-      // }
+      try {
+        pause(msg, serverQueue, player);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "pause",
+          client,
+          "Error pausing song.",
+          errorChannel
+        );
+      }
+    } else if (msg.content.startsWith(`${prefix}remove`)) {
+      try {
+        remove(serverQueue, msg);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "remove",
+          client,
+          "Error removing song.",
+          errorChannel
+        );
+      }
     }
   });
 });

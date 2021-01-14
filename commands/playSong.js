@@ -43,7 +43,9 @@ async function play(guild, song, playlist, parse, msg, player, client) {
       serverQueue.songs[0].info.length,
       guild,
       msg,
-      player
+      player,
+      false,
+      client
     );
   });
 }

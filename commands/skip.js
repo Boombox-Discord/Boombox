@@ -1,5 +1,5 @@
 const { Metrics, clientRedis } = require("../utils/utils");
-const stopTimeout = require("../utils/functions");
+const waitSong = require("./waitSong");
 const play = require("./playSong");
 
 function skip(msg, serverQueue, player, client) {
@@ -19,7 +19,7 @@ function skip(msg, serverQueue, player, client) {
     "EX",
     86400
   );
-  stopTimeout();
+  waitSong(null, null, null, null, null, true); //stop current wait for song
   play(msg.guild, serverQueue.songs[0], null, null, msg, player, client);
 }
 
