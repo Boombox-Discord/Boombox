@@ -22,7 +22,7 @@ function pause(msg, serverQueue, player, client, play) {
     const timeLeft = length - position;
     player.resume();
     const guild = msg.guild;
-    waitForSong(serverQueue, timeLeft, guild, msg, player, false);
+    waitForSong(timeLeft, guild, msg, player, false, client, play);
   }
 }
 module.exports = pause;
