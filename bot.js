@@ -94,9 +94,10 @@ client.on("message", async (msg) => {
   }
 
   await getRedis(`guild_${msg.guild.id}`, async function (err, reply) {
-
     if (err) {
-      msg.channel.send("Sorry, an error has occured connecting to the database! Please try again later.")
+      msg.channel.send(
+        "Sorry, an error has occured connecting to the database! Please try again later."
+      );
     }
     var serverQueue = JSON.parse(reply);
 
@@ -234,8 +235,8 @@ client.on("message", async (msg) => {
       }
     } else if (msg.content.startsWith(`${prefix}pause`)) {
       try {
-      pause(msg, serverQueue, player, client, play);
-      return;
+        pause(msg, serverQueue, player, client, play);
+        return;
       } catch (err) {
         throw new BoomboxErrors(
           msg,
