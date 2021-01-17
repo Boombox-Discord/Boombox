@@ -86,19 +86,15 @@ client.on("ready", async () => {
 });
 
 client.on("message", async (msg) => {
-  console.log("1");
   if (msg.author.bot) {
-    console.log("2");
     return;
   }
   if (!msg.content.startsWith(prefix)) {
-    console.log("3");
     return;
   }
 
   await getRedis(`guild_${msg.guild.id}`, async function (err, reply) {
 
-    console.log("4");
     if (err) {
       msg.channel.send("Sorry, an error has occured connecting to the database! Please try again later.")
     }
@@ -187,7 +183,6 @@ client.on("message", async (msg) => {
     } else if (msg.content.startsWith(`${prefix}help`)) {
       try {
         help(msg, client);
-        console.log("5");
         return;
       } catch (err) {
         throw new BoomboxErrors(
