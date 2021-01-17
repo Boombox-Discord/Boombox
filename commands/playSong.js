@@ -5,7 +5,7 @@ const getRedis = require("../utils/redis");
 const playlistQueue = require("./playlistQueue");
 
 async function play(guild, song, playlist, parse, msg, player, client) {
-  await getRedis(`guild_${guild.id}`, async function (reply) {
+  await getRedis(`guild_${guild.id}`, async function (err, reply) {
     var serverQueue = JSON.parse(reply);
 
     if (!song) {

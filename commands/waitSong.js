@@ -10,7 +10,7 @@ function waitForSong(length, guild, msg, player, stopTimeout, client, play) {
     return "Hello";
   } else {
     queueTime = setTimeout(async function () {
-      await getRedis(`guild_${guild.id}`, async function (reply) {
+      await getRedis(`guild_${guild.id}`, async function (err, reply) {
         var serverQueue = JSON.parse(reply);
         serverQueue.songs.shift();
         if (!serverQueue.songs[0]) {

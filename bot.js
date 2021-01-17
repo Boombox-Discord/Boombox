@@ -86,14 +86,22 @@ client.on("ready", async () => {
 });
 
 client.on("message", async (msg) => {
+  console.log("1");
   if (msg.author.bot) {
+    console.log("2");
     return;
   }
   if (!msg.content.startsWith(prefix)) {
+    console.log("3");
     return;
   }
 
-  await getRedis(`guild_${msg.guild.id}`, async function (reply) {
+  await getRedis(`guild_${msg.guild.id}`, async function (err, reply) {
+
+    console.log("4");
+    if (err) {
+      msg.channel.send("Sorry, an error has occured connecting to the database! Please try again later.")
+    }
     var serverQueue = JSON.parse(reply);
 
     const player = await manager.create(msg.guild.id);
@@ -179,6 +187,7 @@ client.on("message", async (msg) => {
     } else if (msg.content.startsWith(`${prefix}help`)) {
       try {
         help(msg, client);
+        console.log("5");
         return;
       } catch (err) {
         throw new BoomboxErrors(
@@ -229,18 +238,18 @@ client.on("message", async (msg) => {
         );
       }
     } else if (msg.content.startsWith(`${prefix}pause`)) {
-      // try {
+      try {
       pause(msg, serverQueue, player, client, play);
       return;
-      // } catch (err) {
-      //   throw new BoomboxErrors(
-      //     msg,
-      //     "pause",
-      //     client,
-      //     "Error pausing song.",
-      //     errorChannel
-      //   );
-      // }
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "pause",
+          client,
+          "Error pausing song.",
+          errorChannel
+        );
+      }
     } else if (msg.content.startsWith(`${prefix}remove`)) {
       try {
         remove(serverQueue, msg);
