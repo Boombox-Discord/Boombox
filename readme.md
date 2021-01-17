@@ -14,7 +14,7 @@
 
 ## About
 
-Boombox is a free, open source, music bot for Discord. It is built on JavaScript and uses Discord.js, and ytdl.
+Boombox is a free, open source, music bot for Discord. It is built on JavaScript and uses Discord.js, and Lavalink and Lavaclient.
 
 ## Commands
 
