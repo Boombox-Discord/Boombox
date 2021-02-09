@@ -1,5 +1,3 @@
 config.json
 node_modules
 lavalink-config.yml
-newrelic.js
-newrelic_agent.log
