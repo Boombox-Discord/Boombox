@@ -11,7 +11,11 @@ const {
 
 var Metrics = new Lynx(statsdURL, statsdPort);
 
-const clientRedis = redis.createClient(redisPort, redisIP, redisPassword);
+const clientRedis = redis.createClient({
+  host: redisIP,
+  port: redisPort,
+  auth_pass: redisPassword
+});
 
 clientRedis.on("error", function (error) {
   console.log("ankglsjndfkg");
