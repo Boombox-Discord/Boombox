@@ -11,5 +11,6 @@
   "lavalinkPort": "2333",
   "lavalinkPassword": "Supper cool password",
   "redisIP": "redis",
-  "redisPort": "6379"
+  "redisPort": "6379",
+  "redisPassword": "password"
 }
