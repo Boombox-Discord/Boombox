@@ -14,7 +14,7 @@ var Metrics = new Lynx(statsdURL, statsdPort);
 const clientRedis = redis.createClient({
   host: redisIP,
   port: redisPort,
-  auth_pass: redisPassword
+  auth_pass: redisPassword,
 });
 
 clientRedis.on("error", function (error) {
