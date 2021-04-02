@@ -25,7 +25,7 @@
   "homepage": "https://github.com/AjayACST/Boombox#readme",
   "dependencies": {
     "@discordjs/opus": "^0.5.0",
-    "discord.js": "^12.5.1",
+    "discord.js": "^12.5.2",
     "genius-lyrics-api": "^3.0.6",
     "lavaclient": "^3.2.6",
     "lynx": "^0.2.0",
