@@ -28,6 +28,7 @@ const play = require("./commands/playSong");
 const { clientRedis } = require("./utils/utils");
 const getRedis = require("./utils/redis");
 const remove = require("./commands/remove");
+const executefile = require("./commands/playFile");
 
 const client = new Discord.Client();
 
@@ -124,6 +125,19 @@ client.on("message", async (msg) => {
         throw new BoomboxErrors(
           msg,
           "skip",
+          client,
+          "Error skipping song",
+          errorChannel
+        );
+      }
+    } else if (msg.content.startsWith(`${prefix}playfile`)) {
+      try {
+        executefile(msg, serverQueue, player, client);
+        return;
+      } catch (err) {
+        throw new BoomboxErrors(
+          msg,
+          "executefile",
           client,
           "Error skipping song",
           errorChannel
