@@ -12,7 +12,7 @@ function volume(msg, serverQueue, player) {
   }
   const args = msg.content.split(" ");
   if (args[1] >= 101 || args[1] <= 0) {
-    return msg.channel.send("Please select a number between 1 and 5.");
+    return msg.channel.send("Please select a number between 1 and 100.");
   }
   player.setVolume(args[1]);
   msg.channel.send("I have set the volume to " + args[1]);
