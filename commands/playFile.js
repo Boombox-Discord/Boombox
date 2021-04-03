@@ -18,23 +18,24 @@ async function executefile(msg, serverQueue, player, client) {
     );
   }
 
-  const files = (msg.attachments).array();
+  const files = msg.attachments.array();
   const file = files[0];
 
   if (!file) {
-    return msg.channel.send("You need to attach a MP3 file to play!")
+    return msg.channel.send("You need to attach a MP3 file to play!");
   }
 
   if (file.length == 0) {
-    return msg.channel.send("You need to attach a MP3 file to play!")
+    return msg.channel.send("You need to attach a MP3 file to play!");
   }
 
-
   const splitName = file.name.split(".");
-    const fileEx = splitName[splitName.length-1];
-    if (!fileEx === "mp3") {
-      return msg.channel.send("That is not an MP3 file! Boombox currently only supports MP3 files.")
-    }
+  const fileEx = splitName[splitName.length - 1];
+  if (!fileEx === "mp3") {
+    return msg.channel.send(
+      "That is not an MP3 file! Boombox currently only supports MP3 files."
+    );
+  }
 
   msg.channel.send({
     embed: {
