@@ -1,6 +1,6 @@
 {
   "name": "boombox",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A free, and open source discord music bot, based on discord.js and ytdl",
   "main": "bot.js",
   "scripts": {
