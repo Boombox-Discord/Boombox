@@ -1,8 +1,5 @@
 const play = require("./playSong");
 const { Metrics, clientRedis } = require("../utils/utils");
-const searchSong = require("genius-lyrics-api/lib/searchSong");
-
-const { geniusApiKey } = require("../config.json");
 
 async function executefile(msg, serverQueue, player, client) {
   Metrics.increment("boombox.playfile");
