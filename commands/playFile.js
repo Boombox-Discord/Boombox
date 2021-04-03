@@ -32,7 +32,6 @@ async function executefile(msg, serverQueue, player, client) {
   const splitName = file.name.split(".");
   const fileEx = splitName[splitName.length - 1];
   if (fileEx === "mp3" || fileEx === "wav") {
-
     msg.channel.send({
       embed: {
         author: {
@@ -44,12 +43,12 @@ async function executefile(msg, serverQueue, player, client) {
         description: "Please wait, we are loading the file.",
       },
     });
-  
+
     const searchQuery = file.url;
     const results = await player.manager.search(searchQuery);
     const { track, info } = results.tracks[0];
     //Play songa
-  
+
     const song = {
       title: info.title,
       url: null,
@@ -58,7 +57,7 @@ async function executefile(msg, serverQueue, player, client) {
       track: track,
       info: info,
     };
-  
+
     if (!serverQueue) {
       const queueContruct = {
         textChannel: msg.channel,
@@ -74,9 +73,17 @@ async function executefile(msg, serverQueue, player, client) {
         "EX",
         86400
       );
-  
+
       try {
-        play(msg.guild, queueContruct.songs[0], null, null, msg, player, client);
+        play(
+          msg.guild,
+          queueContruct.songs[0],
+          null,
+          null,
+          msg,
+          player,
+          client
+        );
       } catch (err) {
         clientRedis.del(`guild_${msg.guild.id}`);
         return msg.channel.send(err);
@@ -106,10 +113,8 @@ async function executefile(msg, serverQueue, player, client) {
       });
     }
   } else {
-    return msg.channel.send("That is not a valid file.")
+    return msg.channel.send("That is not a valid file.");
   }
-
-  
 }
 
 module.exports = executefile;
