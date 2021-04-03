@@ -31,84 +31,85 @@ async function executefile(msg, serverQueue, player, client) {
 
   const splitName = file.name.split(".");
   const fileEx = splitName[splitName.length - 1];
-  if (fileEx !== "mp3" || fileEx !== "wav") {
-    return msg.channel.send(
-      "That is not an MP3 or wav file! Boombox currently only supports MP3 files."
-    );
-  }
+  if (fileEx === "mp3" || fileEx === "wav") {
 
-  msg.channel.send({
-    embed: {
-      author: {
-        name: client.user.username,
-        icon_url: client.user.avatarURL(),
-      },
-      title: "🔍 Loading...",
-      color: 16711680,
-      description: "Please wait, we are loading the file.",
-    },
-  });
-
-  const searchQuery = file.url;
-  const results = await player.manager.search(searchQuery);
-  const { track, info } = results.tracks[0];
-  //Play songa
-
-  const song = {
-    title: info.title,
-    url: null,
-    imgurl: null,
-    geniusURL: null,
-    track: track,
-    info: info,
-  };
-
-  if (!serverQueue) {
-    const queueContruct = {
-      textChannel: msg.channel,
-      voiceChannel: voiceChannel,
-      connected: false,
-      songs: [],
-      playing: true,
-    };
-    queueContruct.songs.push(song);
-    clientRedis.set(
-      `guild_${msg.guild.id}`,
-      JSON.stringify(queueContruct),
-      "EX",
-      86400
-    );
-
-    try {
-      play(msg.guild, queueContruct.songs[0], null, null, msg, player, client);
-    } catch (err) {
-      clientRedis.del(`guild_${msg.guild.id}`);
-      return msg.channel.send(err);
-    }
-  } else {
-    serverQueue.songs.push(song);
-    clientRedis.set(
-      `guild_${msg.guild.id}`,
-      JSON.stringify(serverQueue),
-      "EX",
-      86400
-    );
-    return msg.channel.send({
+    msg.channel.send({
       embed: {
         author: {
           name: client.user.username,
           icon_url: client.user.avatarURL(),
         },
-        title: song.title,
-        url: song.url,
+        title: "🔍 Loading...",
         color: 16711680,
-        description: `${song.title} has been added to queue!`,
-        thumbnail: {
-          url: song.imgurl,
-        },
+        description: "Please wait, we are loading the file.",
       },
     });
+  
+    const searchQuery = file.url;
+    const results = await player.manager.search(searchQuery);
+    const { track, info } = results.tracks[0];
+    //Play songa
+  
+    const song = {
+      title: info.title,
+      url: null,
+      imgurl: null,
+      geniusURL: null,
+      track: track,
+      info: info,
+    };
+  
+    if (!serverQueue) {
+      const queueContruct = {
+        textChannel: msg.channel,
+        voiceChannel: voiceChannel,
+        connected: false,
+        songs: [],
+        playing: true,
+      };
+      queueContruct.songs.push(song);
+      clientRedis.set(
+        `guild_${msg.guild.id}`,
+        JSON.stringify(queueContruct),
+        "EX",
+        86400
+      );
+  
+      try {
+        play(msg.guild, queueContruct.songs[0], null, null, msg, player, client);
+      } catch (err) {
+        clientRedis.del(`guild_${msg.guild.id}`);
+        return msg.channel.send(err);
+      }
+    } else {
+      serverQueue.songs.push(song);
+      clientRedis.set(
+        `guild_${msg.guild.id}`,
+        JSON.stringify(serverQueue),
+        "EX",
+        86400
+      );
+      return msg.channel.send({
+        embed: {
+          author: {
+            name: client.user.username,
+            icon_url: client.user.avatarURL(),
+          },
+          title: song.title,
+          url: song.url,
+          color: 16711680,
+          description: `${song.title} has been added to queue!`,
+          thumbnail: {
+            url: song.imgurl,
+          },
+        },
+      });
+    }
+  } else {
+    return msg.channel.send("That is not a valid file.")
   }
+
+  
 }
 
 module.exports = executefile;
