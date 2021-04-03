@@ -25,7 +25,7 @@ async function executefile(msg, serverQueue, player, client) {
     return msg.channel.send("You need to attach a MP3 file to play!");
   }
 
-  if (file.length == 0) {
+  if (file.length === 0) {
     return msg.channel.send("You need to attach a MP3 file to play!");
   }
 
@@ -45,7 +45,7 @@ async function executefile(msg, serverQueue, player, client) {
       },
       title: "🔍 Loading...",
       color: 16711680,
-      description: `Please wait, we are loading the file.`,
+      description: "Please wait, we are loading the file.",
     },
   });
 
