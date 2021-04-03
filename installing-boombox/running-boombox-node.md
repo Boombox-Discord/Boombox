@@ -19,6 +19,3 @@ You can now start the bot by running:
 ```bash
 npm start
 ```
-
-
-
