@@ -71,6 +71,10 @@ function help(msg, client) {
           name: `${prefix}remove [position in queue]`,
           value: "Will remove that song from the queue.",
         },
+        {
+          name: `${prefix}playfile {mp3 attachment}`,
+          value: "Will play a file from the attached MP3 file.",
+        },
       ],
     },
   });
