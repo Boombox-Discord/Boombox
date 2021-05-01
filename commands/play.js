@@ -41,7 +41,13 @@ async function execute(msg, serverQueue, player, client) {
     },
   });
 
-  const searchQuery = `ytsearch:${video}`;
+  if (video.startsWith("https://youtube.com/")) {
+    const searchQuery = video;
+  } else {
+    const searchQuery = `ytsearch:${video}`;
+  }
+
+  
   const results = await player.manager.search(searchQuery);
   const { track, info } = results.tracks[0];
 
