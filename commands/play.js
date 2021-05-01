@@ -47,7 +47,6 @@ async function execute(msg, serverQueue, player, client) {
     var searchQuery = `ytsearch:${video}`;
   }
 
-  
   const results = await player.manager.search(searchQuery);
   const { track, info } = results.tracks[0];
 
