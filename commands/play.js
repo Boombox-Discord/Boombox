@@ -41,10 +41,10 @@ async function execute(msg, serverQueue, player, client) {
     },
   });
 
-  if (video.startsWith("https://youtube.com/")) {
-    const searchQuery = video;
+  if (video.startsWith("https://www.youtube.com/")) {
+    var searchQuery = video;
   } else {
-    const searchQuery = `ytsearch:${video}`;
+    var searchQuery = `ytsearch:${video}`;
   }
 
   
