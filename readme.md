@@ -49,16 +49,17 @@
 </details>
 
 ## About The Project
+
 ![gif of Boombox commands](https://boomboxdiscord.dev/IMG/Header.gif)
 
 Boombox is a free and open source music bot for Discord built on Disocrd.js. Boombox uses Lavalink as it's music server and redis as it's database. All commands on Boombox are free and will always be free to use.
 
 ### Commands
 
-Below is a table of all of Boombox's commands. 
+Below is a table of all of Boombox's commands.
 
 | Command Name | Usage                             | Description                                                                                                                  |
-|--------------|-----------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| ------------ | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | Play         | !play [song name or youtube link] | This will find the song from youtube and start playing. If there is something currently playing it will add it to the queue. |
 | Skip         | !skip                             | Will skip the currently playing song.                                                                                        |
 | Stop         | !stop                             | Will stop currently playing song and delete the queue.                                                                       |
@@ -84,15 +85,15 @@ Make sure you have Docker and docker-compose installed. You can find instruction
 ### Docker Install
 
 1. Clone the repo
-    ```sh
-    git clone https://github.com/Boombox-Discord/Boombox.git
-    ```
+   ```sh
+   git clone https://github.com/Boombox-Discord/Boombox.git
+   ```
 2. Rename config-example.json to config.json and insert your own values. Leave the redis, and statsD config fields as they are. Also rename lavalink-config-example.yml to lavalink-config.yml and replace password with something different. Make sure to put this password in the config.json file under lavalinkPassword.
 
 3. Run docker-compose
-    ```sh
-    docker-compose up -d
-    ```
+   ```sh
+   docker-compose up -d
+   ```
 
 ### Other ways to install
 
