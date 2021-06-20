@@ -1,6 +1,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const { Manager } = require('erela.js');
+const {clientRedis, getRedis} = require('./utils/redis');
 
 const {prefix, token, lavalinkIP, lavalinkPort, lavalinkPassword} = require('./config.json');
 
@@ -33,11 +34,24 @@ client.manager = new Manager({
 
         client.channels.cache.get(player.textChannel).send(newQueueEmbed);
     })
-    .on("trackEnd", (player) => {
-        client.channels.cache.get(player.textChannel).send('No more songs in queue, leaving voice channel!')
-        player.destroy();
-        // need to add go to next song, remove from redis if queue no more.
-    })
+    .on("queueEnd", async player => {
+
+        await getRedis(`guild_${player.guild}`, async function (err, reply) {
+            var serverQueue = JSON.parse(reply);
+        
+            serverQueue.songs.shift()
+        
+            if (!serverQueue.songs[0]){
+                clientRedis.del(`guild_${player.guild}`);
+                player.destroy();
+                return client.channels.cache.get(player.textChannel).send('No more songs in queue, leaving voice channel!');
+            } else {
+                clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue), "EX", 86400);
+                const response = await client.manager.search(serverQueue.songs[0].url);
+                player.play(response.tracks[0])
+            }
+        })
+    });
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -54,7 +68,7 @@ client.once('ready', () => {
 
 client.on("raw", (d) => client.manager.updateVoiceState(d));
 
-client.on('message',async message => {
+client.on('message', async message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);

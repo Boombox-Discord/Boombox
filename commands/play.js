@@ -49,7 +49,6 @@ module.exports = {
 			title: response.tracks[0].title,
 			url: response.tracks[0].uri,
 			thumbnail: response.tracks[0].thumbnail,
-			track: response.tracks[0].track,
 		}
 
 		await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
@@ -59,15 +58,15 @@ module.exports = {
 
 			var serverQueue = JSON.parse(reply);
 
-			const player = manager.create({
-				guild: message.guild.id,
-				voiceChannel: voiceChannel.id,
-				textChannel: message.channel.id,
-			});
 
-			
 
 			if (!serverQueue) {
+				const player = manager.create({
+					guild: message.guild.id,
+					voiceChannel: voiceChannel.id,
+					textChannel: message.channel.id,
+				});
+
 				player.connect();
 				serverQueue = {
 					textChannel: message.channel,
@@ -86,7 +85,7 @@ module.exports = {
 					.setTitle(songQueue.title)
 					.setURL(songQueue.url)
 					.setAuthor(message.client.user.username, message.client.user.avatarURL())
-					.setDescription(`[${songQueue.title}](${songQueue.url}) is now playing and is number ${serverQueue.songs.length} in the queue!`)
+					.setDescription(`[${songQueue.title}](${songQueue.url}) has been added to the queue and is number ${serverQueue.songs.length} in the queue!`)
 					.setThumbnail(songQueue.thumbnail);
 				
 				return message.channel.send(addQueueEmbed)
