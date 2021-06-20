@@ -7,19 +7,15 @@ module.exports = {
     args: true,
     usage: '<youtube URL or video name>',
 	guildOnly: true,
+	voice: true,
 	async execute(message, args) {
 		const manager = message.client.manager;
 		const voiceChannel = message.member.voice.channel;
-
-		if (!voiceChannel) {
-			return message.reply('You need to be in a voice channel to request music!');
-		}
 		const permissions = voiceChannel.permissionsFor(message.client.user);
 
 		if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
 			message.reply("I don't have permission to join or speak in that voice channel!");
 		}
-
 
 		var video = "";
 		var query = ""

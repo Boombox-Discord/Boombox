@@ -37,9 +37,12 @@ client.manager = new Manager({
     .on("queueEnd", async player => {
 
         await getRedis(`guild_${player.guild}`, async function (err, reply) {
+            if (err) {
+				throw new Error("Error with redis");
+			}
             var serverQueue = JSON.parse(reply);
         
-            serverQueue.songs.shift()
+            serverQueue.songs.shift();
         
             if (!serverQueue.songs[0]){
                 clientRedis.del(`guild_${player.guild}`);
@@ -90,6 +93,12 @@ client.on('message', async message => {
             .addField(`The proper usage for the ${command.name} command is:`, `${prefix}${command.name} ${command.usage}`)
 
         return message.channel.send(argsEmbed)
+    }
+
+    if (command.voice) {
+        if (!message.member.voice.channel) {
+			return message.reply('You need to be in a voice channel to request music!');
+		}
     }
 
     try {

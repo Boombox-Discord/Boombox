@@ -5,6 +5,8 @@ module.exports = {
     name: 'help',
     description: "List's all available commands and info for the commands.",
     usage: '[command name]',
+    guildOnly: false,
+    voice: true,
     execute(message, args) {
         const data = [];
 		const { commands } = message.client;
@@ -16,7 +18,12 @@ module.exports = {
                 .setAuthor(message.client.user.username, message.client.user.avatarURL())
                 .setDescription(`Below are all avilable commands for ${message.client.user.username}`)
             commands.map((command) => {
-                helpEmbed.addField(`${prefix}${command.name} ${command.usage}`, command.description)
+                if (!command.usage) {
+                    helpEmbed.addField(`${prefix}${command.name}`, command.description);
+                } else {
+                    helpEmbed.addField(`${prefix}${command.name} ${command.usage}`, command.description);
+                }
+                
             })
         
             return message.author.send(helpEmbed)
@@ -44,9 +51,14 @@ module.exports = {
             .setDescription(`Usage for command ${command.name}.`)
             .addFields(
                 {name: 'Command Name', value: command.name},
-                {name: 'Description', value: command.description},
-                {name: 'Usage', value: `${prefix}${command.name} ${command.usage}`}
+                {name: 'Description', value: command.description}
             )
+
+            if (!command.usage) {
+                helpCommandEmbed.addField("Usage", `${prefix}${command.name}`)
+            } else {
+                helpCommandEmbed.addField("Usage", `${prefix}${command.name} ${command.usage}`)
+            }
 
         message.channel.send(helpCommandEmbed);
     }
