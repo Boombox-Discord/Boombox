@@ -16,4 +16,11 @@ clientRedis.on("error", function (error) {
   console.error(error);
 });
 
+async function getRedis(key, callback) {
+  clientRedis.get(key, function (err, reply) {
+    callback(err, reply);
+  });
+}
+
+exports.getRedis = getRedis;
 exports.clientRedis = clientRedis;

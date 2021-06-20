@@ -21,7 +21,23 @@ client.manager = new Manager({
     },
 })
     .on("nodeConnect", node => console.log(`Node ${node.options.identifier} connected`))
-    .on("nodeError", (node, error) => console.log(`Node ${node.options.identifier} had an error: ${error.message}`));
+    .on("nodeError", (node, error) => console.log(`Node ${node.options.identifier} had an error: ${error.message}`))
+    .on("trackStart", (player, track) => {
+        const newQueueEmbed = new Discord.MessageEmbed()
+            .setColor('#ed1c24')
+            .setTitle(track.title)
+            .setURL(track.uri)
+            .setAuthor(client.user.username, client.user.avatarURL())
+            .setDescription(`[${track.title}](${track.uri}) is now playing and is number 1 in the queue!`)
+            .setThumbnail(track.thumbnail);
+
+        client.channels.cache.get(player.textChannel).send(newQueueEmbed);
+    })
+    .on("trackEnd", (player) => {
+        client.channels.cache.get(player.textChannel).send('No more songs in queue, leaving voice channel!')
+        player.destroy();
+        // need to add go to next song, remove from redis if queue no more.
+    })
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 

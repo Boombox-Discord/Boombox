@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const clientRedis = require('../utils/redis');
+const {clientRedis, getRedis} = require('../utils/redis');
 
 module.exports = {
 	name: 'play',
@@ -20,9 +20,6 @@ module.exports = {
 			message.reply("I don't have permission to join or speak in that voice channel!");
 		}
 
-		clientRedis.get(voiceChannel.id, function(err, result) {
-			if (err) { throw err; }
-		})
 
 		var video = "";
 		var query = ""
@@ -45,8 +42,55 @@ module.exports = {
 		message.channel.send(searchEmbed);
 
 		const response = await manager.search(query);
-		if (!response[1].isStream) {
+		if (response.tracks[0].isStream) {
 			return message.reply("Sorry, that video is a livestream!");
 		}
+		const songQueue = {
+			title: response.tracks[0].title,
+			url: response.tracks[0].uri,
+			thumbnail: response.tracks[0].thumbnail,
+			track: response.tracks[0].track,
+		}
+
+		await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
+			if (err) {
+				throw new Error("Error with redis");
+			}
+
+			var serverQueue = JSON.parse(reply);
+
+			const player = manager.create({
+				guild: message.guild.id,
+				voiceChannel: voiceChannel.id,
+				textChannel: message.channel.id,
+			});
+
+			
+
+			if (!serverQueue) {
+				player.connect();
+				serverQueue = {
+					textChannel: message.channel,
+					voiceChannel: voiceChannel,
+					songs: []
+				};
+				serverQueue.songs.push(songQueue);
+				clientRedis.set(`guild_${message.guild.id}`, JSON.stringify(serverQueue), "EX", 86400);
+				player.play(response.tracks[0]);
+			} else {
+				serverQueue.songs.push(songQueue);
+				clientRedis.set(`guild_${message.guild.id}`, JSON.stringify(serverQueue), "EX", 86400);
+
+				const addQueueEmbed = new Discord.MessageEmbed()
+					.setColor('#ed1c24')
+					.setTitle(songQueue.title)
+					.setURL(songQueue.url)
+					.setAuthor(message.client.user.username, message.client.user.avatarURL())
+					.setDescription(`[${songQueue.title}](${songQueue.url}) is now playing and is number ${serverQueue.songs.length} in the queue!`)
+					.setThumbnail(songQueue.thumbnail);
+				
+				return message.channel.send(addQueueEmbed)
+			}
+		})
 	},
 };
