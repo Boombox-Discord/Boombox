@@ -45,7 +45,7 @@ module.exports = {
             .addFields(
                 {name: 'Command Name', value: command.name},
                 {name: 'Description', value: command.description},
-                {name: 'Usage', value: `${prefix}${command.name} ${command.description}`}
+                {name: 'Usage', value: `${prefix}${command.name} ${command.usage}`}
             )
 
         message.channel.send(helpCommandEmbed);

@@ -1,9 +1,27 @@
 const fs = require('fs');
 const Discord = require('discord.js');
-const {prefix, token, lavalinkIP, lavalinkPort} = require('./config.json');
+const { Manager } = require('erela.js');
+
+const {prefix, token, lavalinkIP, lavalinkPort, lavalinkPassword} = require('./config.json');
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
+
+client.manager = new Manager({
+    nodes: [
+        {
+            host: lavalinkIP,
+            port: lavalinkPort,
+            password: lavalinkPassword
+        }
+    ],
+    send(id, payload) {
+        const guild = client.guilds.cache.get(id);
+        if (guild) guild.shard.send(payload)
+    },
+})
+    .on("nodeConnect", node => console.log(`Node ${node.options.identifier} connected`))
+    .on("nodeError", (node, error) => console.log(`Node ${node.options.identifier} had an error: ${error.message}`));
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -14,10 +32,13 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    client.manager.init(client.user.id);
     client.user.setActivity(`for ${prefix}help`, { type: 'WATCHING' });
 });
 
-client.on('message', message => {
+client.on("raw", (d) => client.manager.updateVoiceState(d));
+
+client.on('message',async message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
@@ -39,11 +60,10 @@ client.on('message', message => {
             .addField(`The proper usage for the ${command.name} command is:`, `${prefix}${command.name} ${command.usage}`)
 
         return message.channel.send(argsEmbed)
-        // return message.channel.send(`You didn't provide any arguments. \n The proper usage is: ${prefix}${command.name} ${command.usage}`);
     }
 
     try {
-        command.execute(message, args);
+        await command.execute(message, args);
     } catch (err) {
         console.error(err)
         message.reply('There was an error trying to execute that command!');
