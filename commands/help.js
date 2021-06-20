@@ -5,8 +5,6 @@ module.exports = {
     name: 'help',
     description: "List's all available commands and info for the commands.",
     usage: '[command name]',
-    guildOnly: false,
-    voice: true,
     execute(message, args) {
         const data = [];
 		const { commands } = message.client;
@@ -51,13 +49,14 @@ module.exports = {
             .setDescription(`Usage for command ${command.name}.`)
             .addFields(
                 {name: 'Command Name', value: command.name},
-                {name: 'Description', value: command.description}
+                {name: 'Description', value: command.description},
+                {name: 'Usage', value: `${prefix}${command.name} ${command.usage}`}
             )
 
             if (!command.usage) {
                 helpCommandEmbed.addField("Usage", `${prefix}${command.name}`)
             } else {
-                helpCommandEmbed.addField("Usage", `${prefix}${command.name} ${command.usage}`)
+                helpCommandEmbed.addField("Usage", `${prefix}${command.name}`)
             }
 
         message.channel.send(helpCommandEmbed);

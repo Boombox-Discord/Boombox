@@ -1,10 +1,6 @@
 const redis = require("redis");
 
-const {
-  redisIP,
-  redisPort,
-  redisPassword,
-} = require("../config.json"); //skipcq: JS-0266
+const { redisIP, redisPort, redisPassword } = require("../config.json"); //skipcq: JS-0266
 
 const clientRedis = redis.createClient({
   host: redisIP,
