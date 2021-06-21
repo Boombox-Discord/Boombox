@@ -2,25 +2,6 @@ const Discord = require("discord.js");
 const { clientRedis, getRedis } = require("../utils/redis");
 
 module.exports = {
-<<<<<<< HEAD
-	name: 'play',
-	description: 'Plays a song from youtube.',
-    args: true,
-    usage: '<youtube URL or video name>',
-	guildOnly: true,
-	voice: true,
-	async execute(message, args) {
-		const manager = message.client.manager;
-		const voiceChannel = message.member.voice.channel;
-		const permissions = voiceChannel.permissionsFor(message.client.user);
-
-		if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-			message.reply("I don't have permission to join or speak in that voice channel!");
-		}
-		
-		var video = "";
-		var query = ""
-=======
   name: "play",
   description: "Plays a song from youtube.",
   args: true,
@@ -51,7 +32,6 @@ module.exports = {
       }
       query = `ytsearch:${video}`;
     }
->>>>>>> af9fa98075fae2f670602a532c738af47f88ee3c
 
     const searchEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")

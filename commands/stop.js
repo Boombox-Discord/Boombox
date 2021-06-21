@@ -11,14 +11,9 @@ module.exports = {
 
     const player = manager.get(message.guild.id);
 
-        if (!player) {
-            return message.reply("There is currently no song playing!")
-        }
-        
-        await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
-            if (err) {
-				throw new Error("Error with redis");
-			}
+    if (!player) {
+        return message.reply("There is currently no song playing!")
+    }
 
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
@@ -26,6 +21,7 @@ module.exports = {
       }
 
       var serverQueue = JSON.parse(reply);
+
       serverQueue.songs = [];
       clientRedis.set(
         `guild_${message.guild.id}`,
@@ -36,5 +32,5 @@ module.exports = {
     });
 
     player.stop();
-  },
+  }
 };

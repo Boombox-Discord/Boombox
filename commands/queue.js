@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const { clientRedis, getRedis } = require("../utils/redis");
-const { PagesBuilder } = require("discord.js-pages");
+const DiscordPages = require("discord-pages");
 
 module.exports = {
   name: "queue",
@@ -18,7 +18,7 @@ module.exports = {
       if (!serverQueue.songs[0]) {
         return message.reply("There is currently no songs in the queue!");
       }
-      var size = 2;
+      var size = 10;
       var songsArray = [];
       //split array into groups of 10
       for (var i = 0; i < serverQueue.songs.length; i += size) {
@@ -26,22 +26,30 @@ module.exports = {
       }
 
       var songCount = 0;
-      let embedDesc;
-      var embedPages = [];
+      var embedDesc = "";
+      var embedPagesArray = [];
 
-      for (const songGroup in songsArray) {
-        const queueEmbed = new Discord.MessageEmbed();
+      for (let i=0; i < songsArray.length; i++) {
+        const songEmbed = new Discord.MessageEmbed()
+          .setColor("#ed1c24")
+          .setTitle('Currnet Songs In The Queue')
+          .setAuthor(message.client.user.username, message.client.user.avatarURL())
+          .setThumbnail(serverQueue.songs[0].thumbnail);
 
-        for (const single in songsArray[songGroup]) {
-          songCount += 1;
-
-          embedDesc += `${songsArray[songGroup][single].title} \n`;
-        }
-        queueEmbed.setDescription(embedDesc);
-        embedDesc = "";
-        embedPages.push(queueEmbed);
+          for (let j=0; j< songsArray[i].length; j++) {
+            songCount++;
+            embedDesc += `${songCount}. ${songsArray[i][j].title} \n`;
+          }
+          songEmbed.setDescription(embedDesc);
+          embedDesc = "";
+          embedPagesArray.push(songEmbed)
       }
-      // console.log(songsArray[0][0]);
+      const embedPages = new DiscordPages({
+        pages: embedPagesArray,
+        channel: message.channel,
+      });
+
+      embedPages.createPages();
     });
   },
 };
