@@ -29,20 +29,23 @@ module.exports = {
       var embedDesc = "";
       var embedPagesArray = [];
 
-      for (let i=0; i < songsArray.length; i++) {
+      for (let i = 0; i < songsArray.length; i++) {
         const songEmbed = new Discord.MessageEmbed()
           .setColor("#ed1c24")
-          .setTitle('Currnet Songs In The Queue')
-          .setAuthor(message.client.user.username, message.client.user.avatarURL())
+          .setTitle("Currnet Songs In The Queue")
+          .setAuthor(
+            message.client.user.username,
+            message.client.user.avatarURL()
+          )
           .setThumbnail(serverQueue.songs[0].thumbnail);
 
-          for (let j=0; j< songsArray[i].length; j++) {
-            songCount++;
-            embedDesc += `${songCount}. ${songsArray[i][j].title} \n`;
-          }
-          songEmbed.setDescription(embedDesc);
-          embedDesc = "";
-          embedPagesArray.push(songEmbed)
+        for (let j = 0; j < songsArray[i].length; j++) {
+          songCount++;
+          embedDesc += `${songCount}. ${songsArray[i][j].title} \n`;
+        }
+        songEmbed.setDescription(embedDesc);
+        embedDesc = "";
+        embedPagesArray.push(songEmbed);
       }
       const embedPages = new DiscordPages({
         pages: embedPagesArray,

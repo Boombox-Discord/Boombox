@@ -1,4 +1,4 @@
-const {clientRedis, getRedis} = require('../utils/redis');
+const { clientRedis, getRedis } = require("../utils/redis");
 
 module.exports = {
   name: "stop",
@@ -12,7 +12,7 @@ module.exports = {
     const player = manager.get(message.guild.id);
 
     if (!player) {
-        return message.reply("There is currently no song playing!")
+      return message.reply("There is currently no song playing!");
     }
 
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
@@ -32,5 +32,5 @@ module.exports = {
     });
 
     player.stop();
-  }
+  },
 };
