@@ -63,13 +63,12 @@ module.exports = {
       .addFields(
         { name: "Command Name", value: command.name },
         { name: "Description", value: command.description },
-        { name: "Usage", value: `${prefix}${command.name} ${command.usage}` }
       );
 
     if (!command.usage) {
       helpCommandEmbed.addField("Usage", `${prefix}${command.name}`);
     } else {
-      helpCommandEmbed.addField("Usage", `${prefix}${command.name}`);
+      helpCommandEmbed.addField("Usage", `${prefix}${command.name} ${command.usage}`);
     }
 
     message.channel.send(helpCommandEmbed);
