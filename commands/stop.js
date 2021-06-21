@@ -1,4 +1,3 @@
-const Discord = require('discord.js');
 const {clientRedis, getRedis} = require('../utils/redis');
 
 module.exports = {
@@ -13,7 +12,7 @@ module.exports = {
         const player = manager.get(message.guild.id)
 
         if (!player) {
-            message.reply("There is currently no song playing!")
+            return message.reply("There is currently no song playing!")
         }
         
         await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
@@ -26,6 +25,6 @@ module.exports = {
             clientRedis.set(`guild_${message.guild.id}`, JSON.stringify(serverQueue), "EX", 86400);
         })
 
-        player.stop();
+        return player.stop();
     }
 }

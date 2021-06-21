@@ -25,6 +25,7 @@
   "homepage": "https://github.com/AjayACST/Boombox#readme",
   "dependencies": {
     "discord.js": "^12.5.3",
+    "discord.js-pages": "^1.2.2",
     "erela.js": "^2.3.3",
     "redis": "^3.1.2"
   },

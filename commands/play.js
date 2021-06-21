@@ -11,14 +11,12 @@ module.exports = {
 	async execute(message, args) {
 		const manager = message.client.manager;
 		const voiceChannel = message.member.voice.channel;
-
 		const permissions = voiceChannel.permissionsFor(message.client.user);
 
 		if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
 			message.reply("I don't have permission to join or speak in that voice channel!");
 		}
-
-
+		
 		var video = "";
 		var query = ""
 
