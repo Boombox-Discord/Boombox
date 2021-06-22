@@ -3,8 +3,8 @@ const { clientRedis, getRedis } = require("../utils/redis");
 
 module.exports = {
   name: "play",
-  description: "Plays a song from youtube.",
-  args: true,
+  description: "Plays a song from youtube or uploaded file.",
+  args: false,
   usage: "<youtube URL or video name>",
   guildOnly: true,
   voice: true,
@@ -23,7 +23,13 @@ module.exports = {
     var video = "";
     var query = "";
 
-    if (args[0].startsWith("https://")) {
+    const files = message.attachments.array();
+    const file = files[0]
+
+    if (file) {
+      video = file.name;
+      query = file.url;
+    } else if (args[0].startsWith("https://")){
       video = args[0];
       query = args[0];
     } else {
@@ -46,11 +52,21 @@ module.exports = {
     if (response.tracks[0].isStream) {
       return message.reply("Sorry, that video is a livestream!");
     }
-    const songQueue = {
-      title: response.tracks[0].title,
-      url: response.tracks[0].uri,
-      thumbnail: response.tracks[0].thumbnail,
-    };
+
+    if (file) {
+      var songQueue = {
+        title: file.name,
+        url: response.tracks[0].uri,
+        thumbnail: response.tracks[0].thumbnail,
+      };
+    } else {
+      var songQueue = {
+        title: response.tracks[0].title,
+        url: response.tracks[0].uri,
+        thumbnail: response.tracks[0].thumbnail,
+      };
+    }
+
 
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
@@ -67,6 +83,7 @@ module.exports = {
         });
 
         player.connect();
+        
         serverQueue = {
           textChannel: message.channel,
           voiceChannel: voiceChannel,

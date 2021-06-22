@@ -123,7 +123,7 @@ client.on("message", async (message) => {
   if (command.voice) {
     if (!message.member.voice.channel) {
       return message.reply(
-        "You need to be in a voice channel to request music!"
+        "You need to be in a voice channel to run that command!"
       );
     }
   }
