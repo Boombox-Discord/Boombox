@@ -24,12 +24,12 @@ module.exports = {
     var query = "";
 
     const files = message.attachments.array();
-    const file = files[0]
+    const file = files[0];
 
     if (file) {
       video = file.name;
       query = file.url;
-    } else if (args[0].startsWith("https://")){
+    } else if (args[0].startsWith("https://")) {
       video = args[0];
       query = args[0];
     } else {
@@ -67,7 +67,6 @@ module.exports = {
       };
     }
 
-
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
@@ -83,7 +82,7 @@ module.exports = {
         });
 
         player.connect();
-        
+
         serverQueue = {
           textChannel: message.channel,
           voiceChannel: voiceChannel,
