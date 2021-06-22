@@ -20,7 +20,7 @@ module.exports = {
     }
 
     if (isNaN(args[0])) {
-      return message.channel.send('That is not a valid number!');
+      return message.channel.send("That is not a valid number!");
     }
 
     player.setVolume(args[0]);
