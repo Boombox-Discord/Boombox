@@ -19,6 +19,10 @@ module.exports = {
       return message.reply("Please select a number between 1 and 100!");
     }
 
+    if (isNaN(args[0])) {
+      return message.channel.send('That is not a valid number!');
+    }
+
     player.setVolume(args[0]);
     const embed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
