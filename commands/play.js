@@ -4,7 +4,7 @@ const { clientRedis, getRedis } = require("../utils/redis");
 module.exports = {
   name: "play",
   description: "Plays a song from youtube or uploaded file.",
-  args: false,
+  args: true,
   usage: "<youtube URL or video name>",
   guildOnly: true,
   voice: true,
@@ -15,7 +15,7 @@ module.exports = {
     const permissions = voiceChannel.permissionsFor(message.client.user);
 
     if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-      message.reply(
+      return message.reply(
         "I don't have permission to join or speak in that voice channel!"
       );
     }

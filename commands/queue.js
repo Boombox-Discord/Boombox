@@ -15,7 +15,7 @@ module.exports = {
       }
       var serverQueue = JSON.parse(reply);
 
-      if (!serverQueue.songs[0]) {
+      if (!serverQueue) {
         return message.reply("There is currently no songs in the queue!");
       }
       var size = 10;
