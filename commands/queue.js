@@ -9,25 +9,26 @@ module.exports = {
   guildOnly: true,
   voice: true,
   async execute(message, args) {
+    let serverQueue;
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with Redis");
       }
-      var serverQueue = JSON.parse(reply);
+      serverQueue = JSON.parse(reply);
 
       if (!serverQueue) {
         return message.reply("There is currently no songs in the queue!");
       }
-      var size = 10;
-      var songsArray = [];
+      let size = 10;
+      let songsArray = [];
       //split array into groups of 10
-      for (var i = 0; i < serverQueue.songs.length; i += size) {
+      for (let i = 0; i < serverQueue.songs.length; i += size) {
         songsArray.push(serverQueue.songs.slice(i, i + size));
       }
 
-      var songCount = 0;
-      var embedDesc = "";
-      var embedPagesArray = [];
+      let songCount = 0;
+      let embedDesc = "";
+      let embedPagesArray = [];
 
       for (let i = 0; i < songsArray.length; i++) {
         const songEmbed = new Discord.MessageEmbed()

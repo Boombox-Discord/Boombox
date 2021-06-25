@@ -20,8 +20,8 @@ module.exports = {
       );
     }
 
-    var video = "";
-    var query = "";
+    let video = "";
+    let query = "";
 
     const files = message.attachments.array();
     const file = files[0];
@@ -52,22 +52,22 @@ module.exports = {
     if (response.tracks[0].isStream) {
       return message.reply("Sorry, that video is a livestream!");
     }
-
+    let songQueue;
     if (file) {
-      var songQueue = {
+      songQueue = {
         title: file.name,
         url: response.tracks[0].uri,
         thumbnail: response.tracks[0].thumbnail,
       };
     } else {
-      var songQueue = {
+      songQueue = {
         title: response.tracks[0].title,
         url: response.tracks[0].uri,
         thumbnail: response.tracks[0].thumbnail,
       };
     }
 
-    var serverQueue;
+    let serverQueue;
 
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {

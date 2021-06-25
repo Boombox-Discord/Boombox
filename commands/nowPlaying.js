@@ -15,12 +15,14 @@ module.exports = {
       return message.reply("There is currently no songs playing!");
     }
 
+    let serverQueue;
+
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
 
-      var serverQueue = JSON.parse(reply);
+      serverQueue = JSON.parse(reply);
 
       const npEmbed = new Discord.MessageEmbed()
         .setColor("#ed1c24")

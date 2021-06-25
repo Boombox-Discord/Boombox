@@ -41,15 +41,15 @@ module.exports = {
       );
     }
 
-    var songQueue = {
+    let songQueue = {
       title: response.tracks[0].title,
       url: response.tracks[0].uri,
       thumbnail: response.tracks[0].thumbnail,
     };
 
     // by defualt set the for loop for playlist to zero so we start at the start of the playlist
-    var forNumb = 0;
-    var serverQueue;
+    let forNumb = 0;
+    let serverQueue;
 
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
@@ -66,7 +66,7 @@ module.exports = {
         });
         player.connect();
 
-        var serverQueue = {
+        serverQueue = {
           textChannel: message.channel,
           voiceChannel: voiceChannel,
           songs: [],
@@ -80,13 +80,13 @@ module.exports = {
         forNumb = 1;
       }
 
-      var errorSongs = 0;
+      let errorSongs = 0;
 
       for (let i = forNumb; i < response.tracks.length; i++) {
         if (response.tracks[0].isStream) {
           errorSongs++;
         }
-        var songsAdd = {
+        let songsAdd = {
           title: response.tracks[i].title,
           url: response.tracks[i].uri,
           thumbnail: response.tracks[i].thumbnail,
