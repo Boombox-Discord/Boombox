@@ -12,12 +12,11 @@ const {
   lavalinkPort,
   lavalinkPassword,
   sentryDSN,
-  sentryEnv
+  sentryEnv,
 } = require("./config.json");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
-
 
 Sentry.init({
   dsn: sentryDSN,
