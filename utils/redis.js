@@ -1,3 +1,4 @@
+"use strict";
 const redis = require("redis");
 
 const { redisIP, redisPort, redisPassword } = require("../config.json"); //skipcq: JS-0266

@@ -1,3 +1,4 @@
+"use strict";
 const Discord = require("discord.js");
 const { clientReids, getRedis, clientRedis } = require("../utils/redis");
 
@@ -49,7 +50,6 @@ module.exports = {
 
     // by defualt set the for loop for playlist to zero so we start at the start of the playlist
     let forNumb = 0;
-    serverQueue;
 
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
@@ -68,7 +68,7 @@ module.exports = {
 
         serverQueue = {
           textChannel: message.channel,
-          voiceChannel: voiceChannel,
+          voiceChannel: voiceChannel, //skipcq: JS-0240
           songs: [],
         };
 

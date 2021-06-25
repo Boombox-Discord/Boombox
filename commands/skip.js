@@ -1,3 +1,4 @@
+"use strict";
 module.exports = {
   name: "skip",
   description: "Skips the current playing song.",

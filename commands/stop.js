@@ -1,3 +1,4 @@
+"use strict";
 const { clientRedis, getRedis } = require("../utils/redis");
 
 module.exports = {
@@ -15,14 +16,13 @@ module.exports = {
       return message.reply("There is currently no song playing!");
     }
 
-    let serverQueue;
 
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
 
-      serverQueue = JSON.parse(reply);
+      let serverQueue = JSON.parse(reply);
 
       serverQueue.songs = [];
       clientRedis.set(

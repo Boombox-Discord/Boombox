@@ -1,3 +1,4 @@
+"use strict";
 const Discord = require("discord.js");
 
 module.exports = {
@@ -24,16 +25,15 @@ module.exports = {
           message.client.user.avatarURL()
         );
       return message.channel.send(messageEmbed);
-    } else {
-      player.pause(true);
-      const messageEmbed = new Discord.MessageEmbed()
-        .setColor("#ed1c24")
-        .setTitle("⏸️ I have paused the media!")
-        .setAuthor(
-          message.client.user.username,
-          message.client.user.avatarURL()
-        );
-      return message.channel.send(messageEmbed);
     }
+    player.pause(true);
+    const messageEmbed = new Discord.MessageEmbed()
+      .setColor("#ed1c24")
+      .setTitle("⏸️ I have paused the media!")
+      .setAuthor(
+        message.client.user.username,
+        message.client.user.avatarURL()
+      );
+    return message.channel.send(messageEmbed);
   },
 };

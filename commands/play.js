@@ -1,3 +1,4 @@
+"use strict";
 const Discord = require("discord.js");
 const { clientRedis, getRedis } = require("../utils/redis");
 
@@ -67,7 +68,6 @@ module.exports = {
       };
     }
 
-    serverQueue;
 
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
@@ -87,7 +87,7 @@ module.exports = {
 
         serverQueue = {
           textChannel: message.channel,
-          voiceChannel: voiceChannel,
+          voiceChannel: voiceChannel, //skipcq: JS-0240
           songs: [],
         };
         serverQueue.songs.push(songQueue);

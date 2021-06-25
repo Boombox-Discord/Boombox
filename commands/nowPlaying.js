@@ -1,3 +1,4 @@
+"use strict";
 const Discord = require("discord.js");
 const { getRedis } = require("../utils/redis");
 
@@ -21,7 +22,7 @@ module.exports = {
         throw new Error("Error with redis");
       }
 
-      let serverQueue = JSON.parse(reply);
+      const serverQueue = JSON.parse(reply);
 
       const npEmbed = new Discord.MessageEmbed()
         .setColor("#ed1c24")

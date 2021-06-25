@@ -1,3 +1,4 @@
+"use strict";
 const fs = require("fs");
 const Discord = require("discord.js");
 const { Manager } = require("erela.js");
@@ -62,12 +63,11 @@ client.manager = new Manager({
     client.channels.cache.get(player.textChannel).send(newQueueEmbed);
   })
   .on("queueEnd", async (player) => {
-    serverQueue;
     await getRedis(`guild_${player.guild}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
-      let serverQueue = JSON.parse(reply);
+      const serverQueue = JSON.parse(reply);
 
       serverQueue.songs.shift();
 
@@ -77,16 +77,15 @@ client.manager = new Manager({
         return client.channels.cache
           .get(player.textChannel)
           .send("No more songs in queue, leaving voice channel!");
-      } else {
-        clientRedis.set(
-          `guild_${player.guild}`,
-          JSON.stringify(serverQueue),
-          "EX",
-          86400
-        );
-        const response = await client.manager.search(serverQueue.songs[0].url);
-        player.play(response.tracks[0]);
       }
+      clientRedis.set(
+        `guild_${player.guild}`,
+        JSON.stringify(serverQueue),
+        "EX",
+        86400
+      );
+      const response = await client.manager.search(serverQueue.songs[0].url);
+      player.play(response.tracks[0]);
     });
   });
 

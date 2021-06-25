@@ -1,3 +1,4 @@
+"use strict";
 const Discord = require("discord.js");
 const { clientRedis, getRedis } = require("../utils/redis");
 const DiscordPages = require("discord-pages");
@@ -9,18 +10,17 @@ module.exports = {
   guildOnly: true,
   voice: true,
   async execute(message, args) {
-    serverQueue;
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with Redis");
       }
-      let serverQueue = JSON.parse(reply);
+      const serverQueue = JSON.parse(reply);
 
       if (!serverQueue) {
         return message.reply("There is currently no songs in the queue!");
       }
-      let size = 10;
-      let songsArray = [];
+      const size = 10;
+      const songsArray = [];
       //split array into groups of 10
       for (let i = 0; i < serverQueue.songs.length; i += size) {
         songsArray.push(serverQueue.songs.slice(i, i + size));
@@ -28,7 +28,7 @@ module.exports = {
 
       let songCount = 0;
       let embedDesc = "";
-      let embedPagesArray = [];
+      const embedPagesArray = [];
 
       for (let i = 0; i < songsArray.length; i++) {
         const songEmbed = new Discord.MessageEmbed()

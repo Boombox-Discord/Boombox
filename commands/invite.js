@@ -1,3 +1,4 @@
+"use strict";
 const { inviteLink } = require("../config.json");
 const Discord = require("discord.js");
 
