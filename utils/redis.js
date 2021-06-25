@@ -9,7 +9,7 @@ const clientRedis = redis.createClient({
 });
 
 clientRedis.on("error", function (error) {
-  console.error(error);
+  console.error(error); //skipcq: JS-0002
 });
 
 async function getRedis(key, callback) {
