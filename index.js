@@ -38,12 +38,12 @@ client.manager = new Manager({
   },
 })
   .on("nodeConnect", (node) =>
-    console.log(`Node ${node.options.identifier} connected`)
+    console.log(`Node ${node.options.identifier} connected`) //skipcq: JS-0002
   )
   .on("nodeError", (node, error) =>
     console.log(
       `Node ${node.options.identifier} had an error: ${error.message}`
-    )
+    ) //skipcq: JS-0002
   )
   .on("trackStart", (player, track) => {
     const newQueueEmbed = new Discord.MessageEmbed()
@@ -96,7 +96,7 @@ for (const file of commandFiles) {
 }
 
 client.once("ready", () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  console.log(`Logged in as ${client.user.tag}!`); //skipcq: JS-0002
   client.manager.init(client.user.id);
   client.user.setActivity(`for ${prefix}help`, { type: "WATCHING" });
 });
@@ -148,7 +148,7 @@ client.on("message", async (message) => {
   try {
     await command.execute(message, args);
   } catch (err) {
-    console.error(err);
+    console.error(err); //skipcq: JS-0002
     message.reply("There was an error trying to execute that command!");
     Sentry.captureException(err);
   } finally {
