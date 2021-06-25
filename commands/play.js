@@ -68,7 +68,6 @@ module.exports = {
       };
     }
 
-
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with redis");

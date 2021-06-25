@@ -16,7 +16,6 @@ module.exports = {
       return message.reply("There is currently no songs in the queue!");
     }
 
-
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with Redis");
