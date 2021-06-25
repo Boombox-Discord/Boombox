@@ -2,6 +2,8 @@ const fs = require("fs");
 const Discord = require("discord.js");
 const { Manager } = require("erela.js");
 const { clientRedis, getRedis } = require("./utils/redis");
+const Sentry = require("@sentry/node");
+const Tracing = require("@sentry/tracing");
 
 const {
   prefix,
@@ -9,10 +11,19 @@ const {
   lavalinkIP,
   lavalinkPort,
   lavalinkPassword,
+  sentryDSN,
+  sentryEnv
 } = require("./config.json");
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
+
+
+Sentry.init({
+  dsn: sentryDSN,
+  tracesSampleRate: 1.0,
+  environment: sentryEnv,
+});
 
 client.manager = new Manager({
   nodes: [
@@ -91,6 +102,8 @@ client.once("ready", () => {
   client.user.setActivity(`for ${prefix}help`, { type: "WATCHING" });
 });
 
+// send voice events to lavalink library
+
 client.on("raw", (d) => client.manager.updateVoiceState(d));
 
 client.on("message", async (message) => {
@@ -128,11 +141,20 @@ client.on("message", async (message) => {
     }
   }
 
+  const transaction = Sentry.startTransaction({
+    op: "command",
+    name: "Command ran on Boombox",
+  });
+
   try {
     await command.execute(message, args);
+    foo();
   } catch (err) {
     console.error(err);
     message.reply("There was an error trying to execute that command!");
+    Sentry.captureException(err);
+  } finally {
+    transaction.finish();
   }
 });
 
