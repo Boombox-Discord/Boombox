@@ -67,12 +67,14 @@ module.exports = {
       };
     }
 
+    var serverQueue;
+
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
 
-      var serverQueue = JSON.parse(reply);
+      serverQueue = JSON.parse(reply);
 
       if (!serverQueue) {
         const player = manager.create({
