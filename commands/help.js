@@ -20,7 +20,7 @@ module.exports = {
         .setDescription(
           `Below are all avilable commands for ${message.client.user.username}`
         );
-      commands.map((command) => {
+      commands.forEach((command) => {
         if (!command.usage) {
           helpEmbed.addField(`${prefix}${command.name}`, command.description);
         } else {

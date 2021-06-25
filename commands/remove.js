@@ -23,7 +23,7 @@ module.exports = {
       }
       serverQueue = JSON.parse(reply);
 
-      if (args[0] == 1) {
+      if (args[0] === 1) {
         return message.reply("I cannot remove the current song playing.");
       }
 
@@ -37,7 +37,7 @@ module.exports = {
         return message.channel.send("That is not a valid number!");
       }
 
-      const argsNum = parseInt(args[0]);
+      const argsNum = parseInt(args[0], 10);
       const deletedSong = serverQueue.songs[argsNum - 1].title;
 
       serverQueue.songs.splice(argsNum - 1, 1);
