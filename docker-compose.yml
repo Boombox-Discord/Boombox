@@ -7,17 +7,8 @@ services:
       - .:/usr/app/ # for dev only
       - /usr/app/node_modules
     depends_on:
-      - graphite
       - redis
       - lavalink
-  graphite:
-    image: graphiteapp/graphite-statsd:latest
-    ports:
-      - "80:80"
-      - "2003-2004:2003-2004"
-      - "2023-2024:2023-2024"
-      - "8125:8125/udp"
-      - "8126:8126"
   redis:
     image: redis
   lavalink:

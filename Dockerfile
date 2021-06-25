@@ -12,4 +12,4 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-CMD [ "node", "bot.js" ]
+CMD [ "node", "index.js" ]
