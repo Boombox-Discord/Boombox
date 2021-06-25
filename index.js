@@ -37,13 +37,16 @@ client.manager = new Manager({
     if (guild) guild.shard.send(payload);
   },
 })
-  .on("nodeConnect", (node) =>
-    console.log(`Node ${node.options.identifier} connected`) //skipcq: JS-0002
+  .on(
+    "nodeConnect",
+    (node) => console.log(`Node ${node.options.identifier} connected`) //skipcq: JS-0002
   )
-  .on("nodeError", (node, error) =>
-    console.log(
-      `Node ${node.options.identifier} had an error: ${error.message}`
-    ) //skipcq: JS-0002
+  .on(
+    "nodeError",
+    (node, error) =>
+      console.log(
+        `Node ${node.options.identifier} had an error: ${error.message}`
+      ) //skipcq: JS-0002
   )
   .on("trackStart", (player, track) => {
     const newQueueEmbed = new Discord.MessageEmbed()
