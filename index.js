@@ -147,7 +147,6 @@ client.on("message", async (message) => {
 
   try {
     await command.execute(message, args);
-    foo();
   } catch (err) {
     console.error(err);
     message.reply("There was an error trying to execute that command!");
