@@ -34,7 +34,7 @@ module.exports = {
       query = args[0];
     } else {
       for (let i = 0; i < args.length; i++) {
-        video +=  `${args[i]}  `;
+        video += `${args[i]}  `;
       }
       query = `ytsearch:${video}`;
     }
