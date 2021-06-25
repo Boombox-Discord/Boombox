@@ -52,7 +52,7 @@ module.exports = {
     if (response.tracks[0].isStream) {
       return message.reply("Sorry, that video is a livestream!");
     }
-    let songQueue;
+    let songQueue; //skipcq: JS-0119
     if (file) {
       songQueue = {
         title: file.name,
@@ -67,14 +67,14 @@ module.exports = {
       };
     }
 
-    let serverQueue;
+    serverQueue;
 
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
 
-      serverQueue = JSON.parse(reply);
+      let serverQueue = JSON.parse(reply);
 
       if (!serverQueue) {
         const player = manager.create({

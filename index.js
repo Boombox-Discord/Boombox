@@ -62,12 +62,12 @@ client.manager = new Manager({
     client.channels.cache.get(player.textChannel).send(newQueueEmbed);
   })
   .on("queueEnd", async (player) => {
-    let serverQueue;
+    serverQueue;
     await getRedis(`guild_${player.guild}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
-      serverQueue = JSON.parse(reply);
+      let serverQueue = JSON.parse(reply);
 
       serverQueue.songs.shift();
 

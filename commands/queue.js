@@ -9,12 +9,12 @@ module.exports = {
   guildOnly: true,
   voice: true,
   async execute(message, args) {
-    let serverQueue;
+    serverQueue;
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with Redis");
       }
-      serverQueue = JSON.parse(reply);
+      let serverQueue = JSON.parse(reply);
 
       if (!serverQueue) {
         return message.reply("There is currently no songs in the queue!");

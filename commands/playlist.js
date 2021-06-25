@@ -49,14 +49,14 @@ module.exports = {
 
     // by defualt set the for loop for playlist to zero so we start at the start of the playlist
     let forNumb = 0;
-    let serverQueue;
+    serverQueue;
 
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
 
-      serverQueue = JSON.parse(reply);
+      let serverQueue = JSON.parse(reply);
 
       if (!serverQueue) {
         const player = manager.create({

@@ -15,13 +15,13 @@ module.exports = {
       return message.reply("There is currently no songs in the queue!");
     }
 
-    let serverQueue;
+    serverQueue;
 
     await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with Redis");
       }
-      serverQueue = JSON.parse(reply);
+      let serverQueue = JSON.parse(reply);
 
       if (args[0] === 1) {
         return message.reply("I cannot remove the current song playing.");
