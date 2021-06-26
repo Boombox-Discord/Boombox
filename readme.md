@@ -84,17 +84,19 @@ Make sure you have Docker and docker-compose installed. You can find instruction
 
 ### Docker Install
 
- 1. Clone the repo
-   ```sh
-   git clone https://github.com/Boombox-Discord/Boombox.git
-   ```
+1.  Clone the repo
 
- 2. Rename config-example.json to config.json and insert your own values. Leave the redis, and statsD config fields as they are. Also rename lavalink-config-example.yml to lavalink-config.yml and replace password with something different. Make sure to put this password in the config.json file under lavalinkPassword.
+```sh
+git clone https://github.com/Boombox-Discord/Boombox.git
+```
 
- 3. Run docker-compose
-   ```sh
-   docker-compose up -d
-   ```
+2.  Rename config-example.json to config.json and insert your own values. Leave the redis, and statsD config fields as they are. Also rename lavalink-config-example.yml to lavalink-config.yml and replace password with something different. Make sure to put this password in the config.json file under lavalinkPassword.
+
+3.  Run docker-compose
+
+```sh
+docker-compose up -d
+```
 
 ### Other ways to install
 
