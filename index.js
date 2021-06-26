@@ -14,7 +14,7 @@ const {
   lavalinkPassword,
   sentryDSN,
   sentryEnv,
-} = require("./config.json");
+} = require("./config.json"); //skipcq: JS-0266
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -82,7 +82,7 @@ client.manager = new Manager({
         `guild_${player.guild}`,
         JSON.stringify(serverQueue),
         "EX",
-        86400
+        86400 //skipcq: JS-0074
       );
       const response = await client.manager.search(serverQueue.songs[0].url);
       player.play(response.tracks[0]);

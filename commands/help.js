@@ -1,5 +1,5 @@
 "use strict";
-const { prefix } = require("../config.json");
+const { prefix } = require("../config.json"); //skipcq: JS-0266
 const Discord = require("discord.js");
 
 module.exports = {

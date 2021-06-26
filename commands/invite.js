@@ -1,5 +1,5 @@
 "use strict";
-const { inviteLink } = require("../config.json");
+const { inviteLink } = require("../config.json"); //skipcq: JS-0266
 const Discord = require("discord.js");
 
 module.exports = {
