@@ -29,7 +29,7 @@ module.exports = {
       .setColor("#ed1c24")
       .setTitle("🔍 Searching For Video")
       .setAuthor(message.client.user.username, message.client.user.avatarURL())
-      .setDescription(`Please wait we are searching for that playlist.`);
+      .setDescription("Please wait we are searching for that playlist.");
     message.channel.send(searchEmbed);
 
     const response = await manager.search(args[0]);

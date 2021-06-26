@@ -35,7 +35,9 @@ client.manager = new Manager({
   ],
   send(id, payload) {
     const guild = client.guilds.cache.get(id);
-    if (guild) guild.shard.send(payload);
+    if (guild) {
+      guild.shard.send(payload);
+    } 
   },
 })
   .on(
@@ -109,14 +111,18 @@ client.once("ready", () => {
 client.on("raw", (d) => client.manager.updateVoiceState(d));
 
 client.on("message", async (message) => {
-  if (!message.content.startsWith(prefix) || message.author.bot) return;
+  if (!message.content.startsWith(prefix) || message.author.bot) {
+    return;
+  }
 
   const args = message.content.slice(prefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
 
   const command = client.commands.get(commandName);
 
-  if (!command) return;
+  if (!command) {
+    return;
+  }
 
   if (command.guildOnly && message.channel.type === "dm") {
     return message.reply("I can't execute this command inside DMs!");
