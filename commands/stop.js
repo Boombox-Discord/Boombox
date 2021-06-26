@@ -32,6 +32,6 @@ module.exports = {
       );
     });
 
-    player.stop();
+    return player.stop();
   },
 };
