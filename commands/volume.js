@@ -16,7 +16,7 @@ module.exports = {
       return message.reply("There is currently no songs playing!");
     }
 
-    if (args[0] >= 101 || args[1] <= 0) {
+    if (args[0] >= 101 || args[1] <= 0) { //skipcq: JS-0074
       return message.reply("Please select a number between 1 and 100!");
     }
 

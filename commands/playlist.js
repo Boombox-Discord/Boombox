@@ -97,7 +97,7 @@ module.exports = {
         `guild_${message.guild.id}`,
         JSON.stringify(serverQueue),
         "EX",
-        86400
+        86400 //skipcq: JS-0074
       );
 
       const playlistEmbed = new Discord.MessageEmbed()
