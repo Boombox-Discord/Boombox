@@ -33,13 +33,13 @@ module.exports = {
     message.channel.send(searchEmbed);
 
     const response = await manager.search(args[0]);
-    if (response.tracks[0].isStream) {
-      return message.reply("Sorry, that video is a livestream!");
-    }
     if (!response) {
       return message.reply(
         "Sorry, an error has occurred, please try again later!"
       );
+    }
+    if (response.tracks[0].isStream) {
+      return message.reply("Sorry, that video is a livestream!");
     }
 
     const songQueue = {
