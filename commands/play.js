@@ -1,133 +1,124 @@
-const play = require("./playSong");
-const { Metrics, clientRedis } = require("../utils/utils");
-const searchSong = require("genius-lyrics-api/lib/searchSong");
+"use strict";
+const Discord = require("discord.js");
+const { clientRedis, getRedis } = require("../utils/redis");
 
-const { geniusApiKey } = require("../config.json");
+module.exports = {
+  name: "play",
+  description: "Plays a song from youtube or uploaded file.",
+  args: true,
+  usage: "<youtube URL or video name>",
+  guildOnly: true,
+  voice: true,
+  async execute(message, args) {
+    const manager = message.client.manager;
+    const voiceChannel = message.member.voice.channel;
 
-async function execute(msg, serverQueue, player, client) {
-  Metrics.increment("boombox.play");
+    const permissions = voiceChannel.permissionsFor(message.client.user);
 
-  const args = msg.content.split(" ");
-
-  const voiceChannel = msg.member.voice.channel;
-  if (!voiceChannel) {
-    return msg.channel.send("You need to be in a voice channel to play music!");
-  }
-  const permissions = voiceChannel.permissionsFor(msg.client.user);
-  if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-    return msg.channel.send(
-      "I need the permissions to join and speak in your voice channel!"
-    );
-  }
-
-  var argsSlice = args.slice(1, -1);
-  var i;
-  var video = "";
-  for (i = 0; i < argsSlice.length; i++) {
-    video += argsSlice[i] + " ";
-  }
-
-  video += args[args.length - 1];
-
-  msg.channel.send({
-    embed: {
-      author: {
-        name: client.user.username,
-        icon_url: client.user.avatarURL(),
-      },
-      title: "🔍 Searching...",
-      color: 16711680,
-      description: `Please wait, we are searching YouTube for a song called ${video}.`,
-    },
-  });
-
-  if (video.startsWith("https://www.youtube.com/")) {
-    var searchQuery = video;
-  } else {
-    var searchQuery = `ytsearch:${video}`;
-  }
-
-  const results = await player.manager.search(searchQuery);
-  const { track, info } = results.tracks[0];
-
-  if (info.isStream) {
-    return msg.channel.send(
-      "Sorry that is a live video. Please try a video that is not live."
-    );
-  }
-
-  var optionsSong = {
-    apiKey: geniusApiKey,
-    title: video,
-    artist: "",
-    optimizeQuery: true,
-  };
-  var geniusSong = await searchSong(optionsSong);
-
-  if (geniusSong === null) {
-    geniusSong = [
-      {
-        url: "Nothing found.",
-      },
-    ];
-  }
-  //Play song
-
-  const song = {
-    title: info.title,
-    url: info.url,
-    imgurl: `https://i.ytimg.com/vi/${info.identifier}/hqdefault.jpg`,
-    geniusURL: geniusSong[0].url,
-    track: track,
-    info: info,
-  };
-
-  if (!serverQueue) {
-    const queueContruct = {
-      textChannel: msg.channel,
-      voiceChannel: voiceChannel,
-      connected: false,
-      songs: [],
-      playing: true,
-    };
-    queueContruct.songs.push(song);
-    clientRedis.set(
-      `guild_${msg.guild.id}`,
-      JSON.stringify(queueContruct),
-      "EX",
-      86400
-    );
-
-    try {
-      play(msg.guild, queueContruct.songs[0], null, null, msg, player, client);
-    } catch (err) {
-      clientRedis.del(`guild_${msg.guild.id}`);
-      return msg.channel.send(err);
+    if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+      return message.reply(
+        "I don't have permission to join or speak in that voice channel!"
+      );
     }
-  } else {
-    serverQueue.songs.push(song);
-    clientRedis.set(
-      `guild_${msg.guild.id}`,
-      JSON.stringify(serverQueue),
-      "EX",
-      86400
-    );
-    return msg.channel.send({
-      embed: {
-        author: {
-          name: client.user.username,
-          icon_url: client.user.avatarURL(),
-        },
-        title: song.title,
-        url: song.url,
-        color: 16711680,
-        description: `${song.title} has been added to queue!`,
-        thumbnail: {
-          url: song.imgurl,
-        },
-      },
-    });
-  }
-}
 
-module.exports = execute;
+    let video = "";
+    let query = "";
+
+    const files = message.attachments.array();
+    const file = files[0];
+
+    if (file) {
+      video = file.name;
+      query = file.url;
+    } else if (args[0].startsWith("https://")) {
+      video = args[0];
+      query = args[0];
+    } else {
+      for (let i = 0; i < args.length; i++) {
+        video += `${args[i]}  `;
+      }
+      query = `ytsearch:${video}`;
+    }
+
+    const searchEmbed = new Discord.MessageEmbed()
+      .setColor("#ed1c24")
+      .setTitle("🔍 Searching For Video")
+      .setAuthor(message.client.user.username, message.client.user.avatarURL())
+      .setDescription(
+        `Please wait we are searching for a song called ${video}`
+      );
+    message.channel.send(searchEmbed);
+
+    const response = await manager.search(query);
+    if (response.tracks[0].isStream) {
+      return message.reply("Sorry, that video is a livestream!");
+    }
+
+    const songQueue = file
+      ? {
+          title: file.name,
+          url: response.tracks[0].uri,
+          thumbnail: response.tracks[0].thumbnail,
+        }
+      : {
+          title: response.tracks[0].title,
+          url: response.tracks[0].uri,
+          thumbnail: response.tracks[0].thumbnail,
+        };
+
+    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+      if (err) {
+        throw new Error("Error with redis");
+      }
+
+      let serverQueue = JSON.parse(reply);
+
+      if (!serverQueue) {
+        const player = manager.create({
+          guild: message.guild.id,
+          voiceChannel: voiceChannel.id,
+          textChannel: message.channel.id,
+        });
+
+        player.connect();
+
+        serverQueue = {
+          textChannel: message.channel,
+          voiceChannel: voiceChannel, //skipcq: JS-0240
+          songs: [],
+        };
+        serverQueue.songs.push(songQueue);
+        clientRedis.set(
+          `guild_${message.guild.id}`,
+          JSON.stringify(serverQueue),
+          "EX",
+          86400 //skipcq: JS-0074
+        );
+        player.play(response.tracks[0]);
+      } else {
+        serverQueue.songs.push(songQueue);
+        clientRedis.set(
+          `guild_${message.guild.id}`,
+          JSON.stringify(serverQueue),
+          "EX",
+          86400 //skipcq: JS-0074
+        );
+
+        const addQueueEmbed = new Discord.MessageEmbed()
+          .setColor("#ed1c24")
+          .setTitle(songQueue.title)
+          .setURL(songQueue.url)
+          .setAuthor(
+            message.client.user.username,
+            message.client.user.avatarURL()
+          )
+          .setDescription(
+            `[${songQueue.title}](${songQueue.url}) has been added to the queue and is number ${serverQueue.songs.length} in the queue!`
+          )
+          .setThumbnail(songQueue.thumbnail);
+
+        return message.channel.send(addQueueEmbed);
+      }
+    });
+  },
+};

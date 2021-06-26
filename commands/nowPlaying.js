@@ -1,29 +1,39 @@
-const { Metrics } = require("../utils/utils");
+"use strict";
+const Discord = require("discord.js");
+const { getRedis } = require("../utils/redis");
 
-function np(msg, serverQueue, client) {
-  Metrics.increment("boombox.np");
-  if (!msg.member.voice.channel) {
-    return msg.channel.send(
-      "You have to be in a voice channel to see what is currently playing!"
-    );
-  }
-  if (!serverQueue) {
-    return msg.channel.send("There is currently no song playing!");
-  }
-  return msg.channel.send({
-    embed: {
-      author: {
-        name: client.user.username,
-        icon_url: client.user.avatarURL(),
-      },
-      title: "Currnet song playing",
-      color: 16711680,
-      description: serverQueue.songs[0].title + " is currently playing!",
-      thumbnail: {
-        url: serverQueue.songs["0"].imgurl,
-      },
-    },
-  });
-}
+module.exports = {
+  name: "np",
+  description: "Shows the media that is currently playing.",
+  args: false,
+  guildOnly: true,
+  voice: true,
+  async execute(message, args) {
+    const manager = message.client.manager;
+    const player = manager.get(message.guild.id);
 
-module.exports = np;
+    if (!player) {
+      return message.reply("There is currently no songs playing!");
+    }
+
+    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+      if (err) {
+        throw new Error("Error with redis");
+      }
+
+      const serverQueue = JSON.parse(reply);
+
+      const npEmbed = new Discord.MessageEmbed()
+        .setColor("#ed1c24")
+        .setAuthor(
+          message.client.user.username,
+          message.client.user.avatarURL()
+        )
+        .setTitle(`${serverQueue.songs[0].title} Is Now Playing!`)
+        .setURL(serverQueue.songs[0].url)
+        .setThumbnail(serverQueue.songs[0].thumbnail);
+
+      return message.channel.send(npEmbed);
+    });
+  },
+};

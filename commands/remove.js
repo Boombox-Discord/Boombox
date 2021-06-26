@@ -1,37 +1,62 @@
-const { Metrics, clientRedis } = require("../utils/utils");
+"use strict";
+const { getRedis, clientRedis } = require("../utils/redis");
+const Discord = require("discord.js");
 
-async function remove(serverQueue, msg) {
-  Metrics.increment("boombox.remove");
-  if (!msg.member.voice.channel) {
-    return msg.channel.send(
-      "You have to be in a voice channel to remove a song from the queue!"
-    );
-  }
-  if (!serverQueue) {
-    return msg.channel.send("There is currently no queue!");
-  }
-  const args = msg.content.split(" ");
-  if (serverQueue.songs.length > args[1] || args[1] < 0) {
-    return msg.channel.send(
-      `Sorry, the queue is only ${serverQueue.songs.length} songs long!`
-    );
-  }
-  if (!args[1]) {
-    return msg.channel.send(
-      "You did not provide a track to remove from the queue!"
-    );
-  }
-  var argsNum = parseInt(args[1]);
-  var deletedSong = serverQueue.songs[argsNum - 1].title;
+module.exports = {
+  name: "remove",
+  description: "Removes a specifc song from the queue",
+  args: false,
+  guildOnly: true,
+  voice: true,
+  async execute(message, args) {
+    const manager = message.client.manager;
+    const player = manager.get(message.guild.id);
 
-  serverQueue.songs.splice(argsNum - 1, 1);
-  clientRedis.set(
-    `guild_${msg.guild.id}`,
-    JSON.stringify(serverQueue),
-    "EX",
-    86400
-  );
-  return msg.channel.send(`Ok, I have removed ${deletedSong} from the queue!`);
-}
+    if (!player) {
+      return message.reply("There is currently no songs in the queue!");
+    }
 
-module.exports = remove;
+    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+      if (err) {
+        throw new Error("Error with Redis");
+      }
+      const serverQueue = JSON.parse(reply);
+
+      if (args[0] === 1) {
+        return message.reply("I cannot remove the current song playing.");
+      }
+
+      if (args[0] > serverQueue.songs.length || args[0] < 0) {
+        return message.reply(
+          `The queue is only ${serverQueue.songs.length} songs long!`
+        );
+      }
+
+      if (isNaN(args[0])) {
+        return message.channel.send("That is not a valid number!");
+      }
+
+      const argsNum = parseInt(args[0], 10);
+      const deletedSong = serverQueue.songs[argsNum - 1].title;
+
+      serverQueue.songs.splice(argsNum - 1, 1);
+
+      clientRedis.set(
+        `guild_${message.guild.id}`,
+        JSON.stringify(serverQueue),
+        "EX",
+        86400 //skipcq: JS-0074
+      );
+
+      const replyEmbed = new Discord.MessageEmbed()
+        .setColor("#ed1c24")
+        .setTitle(`${deletedSong} Has Been Removed From The Queue!`)
+        .setAuthor(
+          message.client.user.ussername,
+          message.client.user.avatarURL()
+        );
+
+      return message.channel.send(replyEmbed);
+    });
+  },
+};

@@ -1,83 +1,77 @@
-const { Metrics } = require("../utils/utils");
-
+"use strict";
 const { prefix } = require("../config.json"); //skipcq: JS-0266
+const Discord = require("discord.js");
 
-function help(msg, client) {
-  Metrics.increment("boombox.help");
-  const helpTitle = client.user.username + " help";
+module.exports = {
+  name: "help",
+  description: "List's all available commands and info for the commands.",
+  usage: "[command name]",
+  execute(message, args) {
+    const { commands } = message.client;
 
-  return msg.channel.send({
-    embed: {
-      title: helpTitle,
-      author: {
-        name: client.user.username,
-        icon_url: client.user.avatarURL,
-      },
-      color: 16711680,
-      fields: [
-        {
-          name: `${prefix}help`,
-          value: "Displays this command",
-        },
-        {
-          name: `${prefix}play [song name or url]`,
-          value:
-            "This command will play a song. If a song is currently playing it will add it to the queue. You can type a song name or paste a link to the YouTube video.",
-        },
-        {
-          name: `${prefix}playlist [youtube playlist url]`,
-          value:
-            "This command will add all songs from a youtube playlist into the queue.",
-        },
-        {
-          name: `${prefix}skip`,
-          value: "Will skip the current song.",
-        },
-        {
-          name: `${prefix}stop`,
-          value: "Will stop all music and delete the queue.",
-        },
-        {
-          name: `${prefix}np`,
-          value: "Displays what song is currently playing.",
-        },
-        {
-          name: `${prefix}lyrics`,
-          value:
-            "Will get the currently playing songs lyrics. Lyrics are provided by Genius.",
-        },
-        {
-          name: `${prefix}lyrics [song name]`,
-          value:
-            "Will get the lyrics for the provided song. Lyrics are provided by Genius.",
-        },
-        {
-          name: `${prefix}queue`,
-          value: "Displays current queue.",
-        },
-        {
-          name: `${prefix}volume`,
-          value: "Set's the volume. Use a number between 1 and 100.",
-        },
-        {
-          name: `${prefix}invite`,
-          value: "Sends an invite link for the bot.",
-        },
-        {
-          name: `${prefix}pause`,
-          value: "Will pause the currently playing song.",
-        },
-        {
-          name: `${prefix}remove [position in queue]`,
-          value: "Will remove that song from the queue.",
-        },
-        {
-          name: `${prefix}playfile {mp3 attachment}`,
-          value: "Will play a file from the attached MP3 file.",
-        },
-      ],
-    },
-  });
-}
+    if (!args.length) {
+      const helpEmbed = new Discord.MessageEmbed()
+        .setColor("#ed1c24")
+        .setTitle(`${message.client.user.username} Help`)
+        .setAuthor(
+          message.client.user.username,
+          message.client.user.avatarURL()
+        )
+        .setDescription(
+          `Below are all avilable commands for ${message.client.user.username}`
+        );
+      commands.forEach((command) => {
+        if (!command.usage) {
+          helpEmbed.addField(`${prefix}${command.name}`, command.description);
+        } else {
+          helpEmbed.addField(
+            `${prefix}${command.name} ${command.usage}`,
+            command.description
+          );
+        }
+      });
 
-module.exports = help;
+      return message.author
+        .send(helpEmbed)
+        .then(() => {
+          if (message.channel.type === "dm") {
+            return;
+          }
+          message.reply("I've sent you a DM with all my commands!");
+        })
+        .catch((error) => {
+          message.reply(
+            "it seems like I can't DM you! Do you have DMs disabled?"
+          );
+        });
+    }
+
+    const name = args[0].toLowerCase();
+    const command = commands.get(name);
+
+    if (!command) {
+      return message.reply("That's not a valid command!");
+    }
+
+    const helpCommandEmbed = new Discord.MessageEmbed()
+      .setColor("#ed1c24")
+      .setTitle(`Help For Command ${command.name}`)
+      .setAuthor(message.client.user.username, message.client.user.avatarURL())
+      .setDescription(`Usage for command ${command.name}.`)
+      .addFields(
+        { name: "Command Name", value: command.name },
+        { name: "Description", value: command.description }
+      );
+
+    if (!command.usage) {
+      helpCommandEmbed.addField("Usage", `${prefix}${command.name}`);
+    } else {
+      helpCommandEmbed.addField(
+        "Usage",
+        `${prefix}${command.name} ${command.usage}`
+      );
+    }
+
+    message.channel.send(helpCommandEmbed);
+  },
+};

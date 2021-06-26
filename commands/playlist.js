@@ -1,121 +1,127 @@
-const play = require("./playSong");
-const { Metrics, clientRedis } = require("../utils/utils");
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-const searchSong = require("genius-lyrics-api/lib/searchSong");
-const playlistQueue = require("./playlistQueue");
+"use strict";
+const Discord = require("discord.js");
+const { getRedis, clientRedis } = require("../utils/redis");
 
-const { youtubeApi, geniusApiKey } = require("../config.json");
+module.exports = {
+  name: "playlist",
+  description: "Plays all songs from a youtube playlist.",
+  args: true,
+  usage: "<youtube URL>",
+  guildOnly: true,
+  voice: true,
+  async execute(message, args) {
+    const manager = message.client.manager;
+    const voiceChannel = message.member.voice.channel;
 
-async function playlist(msg, serverQueue, player, client) {
-  Metrics.increment("boombox.playlist");
+    const permissions = voiceChannel.permissionsFor(message.client.user);
 
-  const voiceChannel = msg.member.voice.channel;
-  if (!voiceChannel) {
-    return msg.channel.send("You need to be in a voice channel to play music!");
-  }
-  const permissions = voiceChannel.permissionsFor(msg.client.user);
-  if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-    return msg.channel.send(
-      "I need the permissions to join and speak in your voice channel!"
-    );
-  }
+    if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+      return message.reply(
+        "I don't have permission to join or speak in that voice channel!"
+      );
+    }
 
-  const args = msg.content.split("&list=");
+    if (!args[0].startsWith("https://")) {
+      return message.reply("You did not supply a link to a youtube playlist!");
+    }
 
-  msg.channel.send({
-    embed: {
-      author: {
-        name: client.user.username,
-        icon_url: client.user.avatarURL,
-      },
-      title: "🔍 Searching...",
-      color: 16711680,
-      description: `Please wait, we are adding all songs from that playlist into the queue. This can take awhile depending on how many songs are in the playlist.`,
-    },
-  });
+    const searchEmbed = new Discord.MessageEmbed()
+      .setColor("#ed1c24")
+      .setTitle("🔍 Searching For Video")
+      .setAuthor(message.client.user.username, message.client.user.avatarURL())
+      .setDescription("Please wait we are searching for that playlist.");
+    message.channel.send(searchEmbed);
 
-  const urlGet =
-    "https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=1000&playlistId=" +
-    args[1] +
-    "&key=" +
-    youtubeApi;
+    const response = await manager.search(args[0]);
+    if (!response) {
+      return message.reply(
+        "Sorry, an error has occurred, please try again later!"
+      );
+    }
+    if (response.tracks[0].isStream) {
+      return message.reply("Sorry, that video is a livestream!");
+    }
 
-  var xmlhttp = new XMLHttpRequest();
+    const songQueue = {
+      title: response.tracks[0].title,
+      url: response.tracks[0].uri,
+      thumbnail: response.tracks[0].thumbnail,
+    };
 
-  xmlhttp.onreadystatechange = async function () {
-    if ((this.readyState === 4) & (this.status === 200)) {
-      var str = this.responseText;
-      var parse = JSON.parse(str);
-      var videoID = parse.items[0].snippet.resourceId.videoId;
-      var imgURL = parse.items[0].snippet.thumbnails.high.url;
-      var videoTitle = parse.items[0].snippet.title;
-      var videoURL = "https://www.youtube.com/watch?v=" + videoID;
+    // by defualt set the for loop for playlist to zero so we start at the start of the playlist
+    let forNumb = 0;
 
-      const searchQuery = `ytsearch:${videoTitle}`;
-      const results = await player.manager.search(searchQuery);
-      const { track, info } = results.tracks[0];
-
-      var optionsSong = {
-        apiKey: geniusApiKey,
-        title: videoTitle,
-        artist: "",
-        optimizeQuery: true,
-      };
-
-      var geniusSong = await searchSong(optionsSong);
-
-      if (geniusSong === null) {
-        geniusSong = [
-          {
-            url: "Nothing found.",
-          },
-        ];
+    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+      if (err) {
+        throw new Error("Error with redis");
       }
-      //Play song
 
-      const song = {
-        title: videoTitle,
-        url: videoURL,
-        imgurl: imgURL,
-        geniusURL: geniusSong[0].url,
-        track: track,
-        info: info,
-      };
+      let serverQueue = JSON.parse(reply);
 
       if (!serverQueue) {
-        const queueContruct = {
-          textChannel: msg.channel,
-          voiceChannel: voiceChannel,
-          player: player,
+        const player = manager.create({
+          guild: message.guild.id,
+          voiceChannel: voiceChannel.id,
+          textChannel: message.channel.id,
+        });
+        player.connect();
+
+        serverQueue = {
+          textChannel: message.channel,
+          voiceChannel: voiceChannel, //skipcq: JS-0240
           songs: [],
-          volume: 5,
-          playing: true,
         };
 
-        queueContruct.songs.push(song);
-        clientRedis.set(
-          `guild_${msg.guild.id}`,
-          JSON.stringify(queueContruct),
-          "EX",
-          86400
+        serverQueue.songs.push(songQueue);
+        //play the first song
+        player.play(response.tracks[0]);
+
+        //There were no songs already in the queue so we have already added the first song skip that song in the for loop
+        forNumb = 1;
+      }
+
+      let errorSongs = 0;
+
+      for (let i = forNumb; i < response.tracks.length; i++) {
+        if (response.tracks[0].isStream) {
+          errorSongs++;
+        }
+        const songsAdd = {
+          title: response.tracks[i].title,
+          url: response.tracks[i].uri,
+          thumbnail: response.tracks[i].thumbnail,
+        };
+        serverQueue.songs.push(songsAdd);
+      }
+      clientRedis.set(
+        `guild_${message.guild.id}`,
+        JSON.stringify(serverQueue),
+        "EX",
+        86400 //skipcq: JS-0074
+      );
+
+      const playlistEmbed = new Discord.MessageEmbed()
+        .setColor("#ed1c24")
+        .setTitle(
+          "I have added all the songs from that playlist into the queue."
+        )
+        .setAuthor(
+          message.client.user.username,
+          message.client.user.avatarURL()
         );
-        await play(
-          msg.guild,
-          queueContruct.songs[0],
-          "playlist",
-          parse,
-          msg,
-          player,
-          client
+      if (errorSongs > 0) {
+        playlistEmbed.setDescription(
+          `I have added ${
+            response.tracks.length - errorSongs
+          } to the queue and had an erorr adding ${errorSongs}!`
         );
       } else {
-        playlistQueue(msg, serverQueue, parse, client, player);
+        playlistEmbed.setDescription(
+          `I have added ${response.tracks.length} to the queue!`
+        );
       }
-    }
-  };
-  xmlhttp.open("GET", urlGet, true);
 
-  xmlhttp.send();
-}
-
-module.exports = playlist;
+      return message.channel.send(playlistEmbed);
+    });
+  },
+};

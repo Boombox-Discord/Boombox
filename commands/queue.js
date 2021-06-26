@@ -1,46 +1,59 @@
-const { Metrics } = require("../utils/utils");
+"use strict";
+const Discord = require("discord.js");
+const { getRedis } = require("../utils/redis");
+const DiscordPages = require("discord-pages");
 
-function queuemsg(msg, serverQueue, client) {
-  Metrics.increment("boombox.queue");
-  if (!msg.member.voice.channel) {
-    return msg.channel.send(
-      "You have to be in a voice channel to request the queue."
-    );
-  }
-  if (!serverQueue) {
-    return msg.channel.send("There is currently no songs in the queue!");
-  }
-  var serverQueueSongs = showObject(serverQueue.songs);
+module.exports = {
+  name: "queue",
+  description: "Shows the current queue",
+  args: false,
+  guildOnly: true,
+  voice: true,
+  async execute(message, args) {
+    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+      if (err) {
+        throw new Error("Error with Redis");
+      }
+      const serverQueue = JSON.parse(reply);
 
-  if (serverQueueSongs.includes("21. ")) {
-    serverQueueSongs = serverQueueSongs.split("21. ");
-    serverQueueSongs = serverQueueSongs[0];
-  }
+      if (!serverQueue) {
+        return message.reply("There is currently no songs in the queue!");
+      }
+      const size = 10;
+      const songsArray = [];
+      //split array into groups of 10
+      for (let i = 0; i < serverQueue.songs.length; i += size) {
+        songsArray.push(serverQueue.songs.slice(i, i + size));
+      }
 
-  return msg.channel.send({
-    embed: {
-      author: {
-        name: client.user.username,
-        icon_url: client.user.avatarURL,
-      },
-      title: "First 20 songs in the queue.",
-      color: 16711680,
-      description: serverQueueSongs,
-      thumbnail: {
-        url: serverQueue.songs["0"].imgurl,
-      },
-    },
-  });
-}
+      let songCount = 0;
+      let embedDesc = "";
+      const embedPagesArray = [];
 
-function showObject(obj) {
-  var result = [];
-  var i;
-  for (i = 0; i < obj.length; i++) {
-    var numberInQueue = i + 1;
-    result += numberInQueue + ". " + obj[i].title + "\n";
-  }
-  return result;
-}
+      for (let i = 0; i < songsArray.length; i++) {
+        const songEmbed = new Discord.MessageEmbed()
+          .setColor("#ed1c24")
+          .setTitle("Currnet Songs In The Queue")
+          .setAuthor(
+            message.client.user.username,
+            message.client.user.avatarURL()
+          )
+          .setThumbnail(serverQueue.songs[0].thumbnail);
 
-module.exports = queuemsg;
+        for (let j = 0; j < songsArray[i].length; j++) {
+          songCount++;
+          embedDesc += `${songCount}. ${songsArray[i][j].title} \n`;
+        }
+        songEmbed.setDescription(embedDesc);
+        embedDesc = "";
+        embedPagesArray.push(songEmbed);
+      }
+      const embedPages = new DiscordPages({
+        pages: embedPagesArray,
+        channel: message.channel,
+      });
+
+      embedPages.createPages();
+    });
+  },
+};

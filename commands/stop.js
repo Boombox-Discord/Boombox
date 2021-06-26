@@ -1,26 +1,37 @@
-const play = require("./playSong");
-const { Metrics, clientRedis } = require("../utils/utils");
-const waitSong = require("./waitSong");
+"use strict";
+const { clientRedis, getRedis } = require("../utils/redis");
 
-function stop(msg, serverQueue, player, client) {
-  Metrics.increment("boombox.stop");
-  if (!msg.member.voice.channel) {
-    return msg.channel.send(
-      "You have to be in a voice channel to stop the music!"
-    );
-  }
-  if (!serverQueue) {
-    return msg.channel.send("There is no song currently playing to stop!");
-  }
-  serverQueue.songs = [];
-  clientRedis.set(
-    `guild_${msg.guild.id}`,
-    JSON.stringify(serverQueue),
-    "EX",
-    86400
-  );
-  waitSong(null, msg.guild, msg, player, true, client, null);
-  play(msg.guild, null, null, null, msg, player, client);
-}
+module.exports = {
+  name: "stop",
+  description: "Stop's the currnet playing song and deletes the queue.",
+  args: false,
+  guildOnly: true,
+  voice: true,
+  async execute(message, args) {
+    const manager = message.client.manager;
 
-module.exports = stop;
+    const player = manager.get(message.guild.id);
+
+    if (!player) {
+      return message.reply("There is currently no song playing!");
+    }
+
+    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+      if (err) {
+        throw new Error("Error with redis");
+      }
+
+      const serverQueue = JSON.parse(reply);
+
+      serverQueue.songs = [];
+      clientRedis.set(
+        `guild_${message.guild.id}`,
+        JSON.stringify(serverQueue),
+        "EX",
+        86400 //skipcq: JS-0074
+      );
+    });
+
+    return player.stop();
+  },
+};

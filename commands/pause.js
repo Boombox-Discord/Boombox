@@ -1,30 +1,36 @@
-const { Metrics } = require("../utils/utils");
-const waitForSong = require("./waitSong");
+"use strict";
+const Discord = require("discord.js");
 
-function pause(msg, serverQueue, player, client, play) {
-  Metrics.increment("boombox.pause");
-  if (!msg.member.voice.channel) {
-    return msg.channel.send(
-      "You have to be in a voice channel to pause a song!"
-    );
-  }
+module.exports = {
+  name: "pause",
+  description: "Pause or resume the current song.",
+  args: false,
+  guildOnly: true,
+  voice: true,
+  execute(message, args) {
+    const manager = message.client.manager;
+    const player = manager.get(message.guild.id);
 
-  if (!serverQueue) {
-    return msg.channel.send("There is currently no song playing!");
-  }
-  if (!player.paused) {
-    waitForSong(null, msg.guild, msg, player, true, client, play);
+    if (!player) {
+      return message.reply("There is currently no songs playing!");
+    }
+
+    if (player.paused) {
+      player.pause(false);
+      const messageEmbed = new Discord.MessageEmbed()
+        .setColor("#ed1c24")
+        .setTitle("⏸️ I have resumed the media!")
+        .setAuthor(
+          message.client.user.username,
+          message.client.user.avatarURL()
+        );
+      return message.channel.send(messageEmbed);
+    }
     player.pause(true);
-    return msg.channel.send("I have paused the music!");
-  } else {
-    const position = player.position;
-    const length = serverQueue.songs[0].info.length;
-    const timeLeft = length - position;
-    player.resume();
-    const guild = msg.guild;
-    waitForSong(timeLeft, guild, msg, player, false, client, play);
-  }
-}
-module.exports = pause;
-
-//
+    const messageEmbed = new Discord.MessageEmbed()
+      .setColor("#ed1c24")
+      .setTitle("⏸️ I have paused the media!")
+      .setAuthor(message.client.user.username, message.client.user.avatarURL());
+    return message.channel.send(messageEmbed);
+  },
+};

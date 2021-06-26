@@ -1,16 +1,15 @@
 {
   "prefix": "!",
-  "token": "Discrod token",
-  "youtubeAPI": "youtubeAPIKEY",
+  "token": "Discord token",
   "inviteLink": "https://discord.com/api/oauth2/authorize?client_id=678819994250772480&permissions=36785152&scope=bot",
-  "statsdURL": "graphite",
-  "statsdPort": "8125",
   "geniusApiKey": "Client_Access_Token_Here",
   "errorChannel": "770516315508834304",
   "lavalinkIP": "lavalink",
-  "lavalinkPort": "2333",
+  "lavalinkPort": 2333,
   "lavalinkPassword": "Supper cool password",
   "redisIP": "redis",
   "redisPort": "6379",
-  "redisPassword": ""
+  "redisPassword": "",
+  "sentryDSN": "",
+  "sentryEnv": "dev"
 }
