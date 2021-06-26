@@ -51,7 +51,7 @@ module.exports = {
     // by defualt set the for loop for playlist to zero so we start at the start of the playlist
     let forNumb = 0;
 
-    await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
+    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }

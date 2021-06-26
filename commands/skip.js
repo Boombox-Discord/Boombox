@@ -5,7 +5,7 @@ module.exports = {
   args: false,
   guildOnly: true,
   voice: true,
-  async execute(message, args) {
+  execute(message, args) {
     const manager = message.client.manager;
     const player = manager.get(message.guild.id);
 

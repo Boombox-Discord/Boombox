@@ -8,7 +8,7 @@ module.exports = {
   args: false,
   guildOnly: false,
   voice: false,
-  async execute(message, args) {
+  execute(message, args) {
     const embed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setAuthor(message.client.user.username, message.client.user.avatarURL())

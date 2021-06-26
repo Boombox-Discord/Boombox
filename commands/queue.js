@@ -10,7 +10,7 @@ module.exports = {
   guildOnly: true,
   voice: true,
   async execute(message, args) {
-    await getRedis(`guild_${message.guild.id}`, async function (err, reply) {
+    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
       if (err) {
         throw new Error("Error with Redis");
       }
