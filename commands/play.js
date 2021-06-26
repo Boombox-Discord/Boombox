@@ -54,7 +54,7 @@ module.exports = {
       return message.reply("Sorry, that video is a livestream!");
     }
 
-    let songQueue = file ? {
+    const songQueue = file ? {
       title: file.name,
       url: response.tracks[0].uri,
       thumbnail: response.tracks[0].thumbnail,
