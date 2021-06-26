@@ -54,15 +54,17 @@ module.exports = {
       return message.reply("Sorry, that video is a livestream!");
     }
 
-    const songQueue = file ? {
-      title: file.name,
-      url: response.tracks[0].uri,
-      thumbnail: response.tracks[0].thumbnail,
-    } : {
-      title: response.tracks[0].title,
-      url: response.tracks[0].uri,
-      thumbnail: response.tracks[0].thumbnail,
-    };
+    const songQueue = file
+      ? {
+          title: file.name,
+          url: response.tracks[0].uri,
+          thumbnail: response.tracks[0].thumbnail,
+        }
+      : {
+          title: response.tracks[0].title,
+          url: response.tracks[0].uri,
+          thumbnail: response.tracks[0].thumbnail,
+        };
 
     await getRedis(`guild_${message.guild.id}`, function (err, reply) {
       if (err) {
