@@ -1,6 +1,6 @@
 "use strict";
 const Discord = require("discord.js");
-const { clientReids, getRedis, clientRedis } = require("../utils/redis");
+const { getRedis, clientRedis } = require("../utils/redis");
 
 module.exports = {
   name: "playlist",

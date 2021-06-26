@@ -7,7 +7,6 @@ module.exports = {
   description: "List's all available commands and info for the commands.",
   usage: "[command name]",
   execute(message, args) {
-    const data = [];
     const { commands } = message.client;
 
     if (!args.length) {
