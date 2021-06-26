@@ -53,20 +53,16 @@ module.exports = {
     if (response.tracks[0].isStream) {
       return message.reply("Sorry, that video is a livestream!");
     }
-    let songQueue; //skipcq: JS-0119
-    if (file) {
-      songQueue = {
-        title: file.name,
-        url: response.tracks[0].uri,
-        thumbnail: response.tracks[0].thumbnail,
-      };
-    } else {
-      songQueue = {
-        title: response.tracks[0].title,
-        url: response.tracks[0].uri,
-        thumbnail: response.tracks[0].thumbnail,
-      };
-    }
+
+    let songQueue = file ? {
+      title: file.name,
+      url: response.tracks[0].uri,
+      thumbnail: response.tracks[0].thumbnail,
+    } : {
+      title: response.tracks[0].title,
+      url: response.tracks[0].uri,
+      thumbnail: response.tracks[0].thumbnail,
+    };
 
     await getRedis(`guild_${message.guild.id}`, function (err, reply) {
       if (err) {
