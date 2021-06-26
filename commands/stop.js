@@ -21,7 +21,7 @@ module.exports = {
         throw new Error("Error with redis");
       }
 
-      let serverQueue = JSON.parse(reply);
+      const serverQueue = JSON.parse(reply);
 
       serverQueue.songs = [];
       clientRedis.set(

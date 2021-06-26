@@ -42,7 +42,7 @@ module.exports = {
       );
     }
 
-    let songQueue = {
+    const songQueue = {
       title: response.tracks[0].title,
       url: response.tracks[0].uri,
       thumbnail: response.tracks[0].thumbnail,
@@ -86,7 +86,7 @@ module.exports = {
         if (response.tracks[0].isStream) {
           errorSongs++;
         }
-        let songsAdd = {
+        const songsAdd = {
           title: response.tracks[i].title,
           url: response.tracks[i].uri,
           thumbnail: response.tracks[i].thumbnail,
