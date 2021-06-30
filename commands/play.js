@@ -56,9 +56,7 @@ module.exports = {
       );
     }
     if (!response.tracks[0]) {
-      return message.reply(
-        "Sorry, there were no songs found!"
-      );
+      return message.reply("Sorry, there were no songs found!");
     }
     if (response.tracks[0].isStream) {
       return message.reply("Sorry, that video is a livestream!");
