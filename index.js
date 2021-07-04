@@ -16,7 +16,7 @@ const {
   sentryEnv,
 } = require("./config.json"); //skipcq: JS-0266
 
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] });
 client.commands = new Discord.Collection();
 
 Sentry.init({
@@ -124,10 +124,6 @@ client.on("message", async (message) => {
     return;
   }
 
-  if (command.guildOnly && message.channel.type === "dm") {
-    return message.reply("I can't execute this command inside DMs!");
-  }
-
   if (command.args && !args.length) {
     const argsEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
@@ -159,6 +155,33 @@ client.on("message", async (message) => {
   } catch (err) {
     console.error(err); //skipcq: JS-0002
     message.reply("There was an error trying to execute that command!");
+    Sentry.captureException(err);
+  } finally {
+    transaction.finish();
+  }
+});
+
+client.on('interaction', async interaction => {
+	if (!interaction.isCommand()) return;
+
+  const command = client.commands.get(interaction.commandName);
+
+  if (command.voice) {
+    if (!interaction.member.voice.channel) {
+      interaction.reply("You are not in a voice channel!")
+    }
+  }
+
+  const transaction = Sentry.startTransaction({
+    op: "command",
+    name: "Command ran on Boombox",
+  });
+
+  try {
+    await command.execute(interaction);
+  } catch (err) {
+    console.error(err); //skipcq: JS-0002
+    interaction.reply("There was an error trying to execute that command!");
     Sentry.captureException(err);
   } finally {
     transaction.finish();
