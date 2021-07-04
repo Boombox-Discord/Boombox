@@ -24,7 +24,7 @@ module.exports = {
     let video = "";
     let query = "";
 
-    const mediaName = interaction.options.get('songname');
+    const mediaName = interaction.options.get("songname");
 
     if (mediaName.startsWith("https://")) {
       video = mediaName;
@@ -36,11 +36,14 @@ module.exports = {
     const searchEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle("🔍 Searching For Video")
-      .setAuthor(interaction.client.user.username, interaction.client.user.avatarURL())
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      )
       .setDescription(
         `Please wait we are searching for a song called ${video}`
       );
-    await interaction.reply({embeds: [searchEmbed]});
+    await interaction.reply({ embeds: [searchEmbed] });
 
     const response = await manager.search(query);
     if (!response) {
@@ -56,9 +59,9 @@ module.exports = {
     }
 
     const songQueue = {
-          title: response.tracks[0].title,
-          url: response.tracks[0].uri,
-          thumbnail: response.tracks[0].thumbnail,
+      title: response.tracks[0].title,
+      url: response.tracks[0].uri,
+      thumbnail: response.tracks[0].thumbnail,
     };
 
     await getRedis(`guild_${message.guild.id}`, function (err, reply) {

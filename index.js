@@ -16,7 +16,7 @@ const {
   sentryEnv,
 } = require("./config.json"); //skipcq: JS-0266
 
-const client = new Discord.Client({ intents: ['GUILDS', 'GUILD_MESSAGES'] });
+const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 client.commands = new Discord.Collection();
 
 Sentry.init({
@@ -161,14 +161,14 @@ client.on("message", async (message) => {
   }
 });
 
-client.on('interaction', async interaction => {
-	if (!interaction.isCommand()) return;
+client.on("interaction", async (interaction) => {
+  if (!interaction.isCommand()) return;
 
   const command = client.commands.get(interaction.commandName);
 
   if (command.voice) {
     if (!interaction.member.voice.channel) {
-      interaction.reply("You are not in a voice channel!")
+      interaction.reply("You are not in a voice channel!");
     }
   }
 
