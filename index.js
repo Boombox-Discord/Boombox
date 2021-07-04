@@ -16,7 +16,15 @@ const {
   sentryEnv,
 } = require("./config.json"); //skipcq: JS-0266
 
-const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES", "DIRECT_MESSAGES", "GUILD_MESSAGE_REACTIONS"] });
+const client = new Discord.Client({
+  intents: [
+    "GUILDS",
+    "GUILD_MESSAGES",
+    "GUILD_VOICE_STATES",
+    "DIRECT_MESSAGES",
+    "GUILD_MESSAGE_REACTIONS",
+  ],
+});
 client.commands = new Discord.Collection();
 
 Sentry.init({
@@ -62,7 +70,9 @@ client.manager = new Manager({
       )
       .setThumbnail(track.thumbnail);
 
-    client.channels.cache.get(player.textChannel).send({ embeds: [newQueueEmbed] });
+    client.channels.cache
+      .get(player.textChannel)
+      .send({ embeds: [newQueueEmbed] });
   })
   .on("queueEnd", async (player) => {
     await getRedis(`guild_${player.guild}`, async function (err, reply) {

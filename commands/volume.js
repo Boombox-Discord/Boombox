@@ -23,13 +23,15 @@ module.exports = {
       return interaction.reply("Please select a number between 1 and 100!");
     }
 
-
     player.setVolume(volume);
     const embed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle(`🔊 I have set the volume to ${volume}%`)
-      .setAuthor(interaction.client.user.username, interaction.client.user.avatarURL());
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      );
 
-    return interaction.reply({embeds: [embed]});
+    return interaction.reply({ embeds: [embed] });
   },
 };

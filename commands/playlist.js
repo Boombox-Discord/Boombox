@@ -25,13 +25,18 @@ module.exports = {
     const mediaName = interaction.options.get("playlisturl").value;
 
     if (!mediaName.startsWith("https://")) {
-      return interaction.editReply("You did not supply a link to a youtube playlist!");
+      return interaction.editReply(
+        "You did not supply a link to a youtube playlist!"
+      );
     }
 
     const searchEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle("🔍 Searching For Video")
-      .setAuthor(interaction.client.user.username, interaction.client.user.avatarURL())
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      )
       .setDescription("Please wait we are searching for that playlist.");
     interaction.editReply({ embeds: [searchEmbed] });
 

@@ -1,5 +1,5 @@
 "use strict";
-const {MessageActionRow, MessageButton, MessageEmbed} = require("discord.js");
+const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
 const { getRedis } = require("../utils/redis");
 
 module.exports = {
@@ -49,37 +49,53 @@ module.exports = {
         embedPagesArray.push(songEmbed);
       }
 
-      const Buttons = new MessageActionRow()
-        .addComponents(
-          new MessageButton()
-            .setCustomID('previousPage')
-            .setLabel('⬅️')
-            .setStyle('SECONDARY'),
+      const Buttons = new MessageActionRow().addComponents(
+        new MessageButton()
+          .setCustomID("previousPage")
+          .setLabel("⬅️")
+          .setStyle("SECONDARY"),
 
-          new MessageButton()
-            .setCustomID('nextPage')
-            .setLabel('➡️')
-            .setStyle('SECONDARY'),
-        )
+        new MessageButton()
+          .setCustomID("nextPage")
+          .setLabel("➡️")
+          .setStyle("SECONDARY")
+      );
 
-        embedPagesArray[0].setFooter(`Page: ${embedPage + 1}/${embedPagesArray.length}`);
-        await interaction.reply({embeds: [embedPagesArray[0]], components: [Buttons]})
-        const message = await interaction.fetchReply();
-        const collector = message.createMessageComponentCollector({ time: 15000 })
+      embedPagesArray[0].setFooter(
+        `Page: ${embedPage + 1}/${embedPagesArray.length}`
+      );
+      await interaction.reply({
+        embeds: [embedPagesArray[0]],
+        components: [Buttons],
+      });
+      const message = await interaction.fetchReply();
+      const collector = message.createMessageComponentCollector({
+        time: 15000,
+      });
 
-        collector.on('collect', async i => {
-          if (i.customID === 'nextPage') {
-            embedPage++;
-            if (embedPage >= embedPagesArray.length) embedPage = 0;
-            embedPagesArray[embedPage].setFooter(`Page: ${embedPage + 1}/${embedPagesArray.length}`)
-            await i.update({embeds: [embedPagesArray[embedPage]], components: [Buttons]})
-          }else if (i.customID === 'previousPage') {
-            embedPage--;
-            if (embedPage < 0) embedPage = embedPagesArray.length - 1;
-            embedPagesArray[embedPage].setFooter(`Page: ${embedPage + 1}/${embedPagesArray.length}`)
-            await i.update({embeds: [embedPagesArray[embedPage]], components: [Buttons]})
-          }
-        });
+      collector.on("collect", async (i) => {
+        if (i.customID === "nextPage") {
+          embedPage++;
+          if (embedPage >= embedPagesArray.length) embedPage = 0;
+          embedPagesArray[embedPage].setFooter(
+            `Page: ${embedPage + 1}/${embedPagesArray.length}`
+          );
+          await i.update({
+            embeds: [embedPagesArray[embedPage]],
+            components: [Buttons],
+          });
+        } else if (i.customID === "previousPage") {
+          embedPage--;
+          if (embedPage < 0) embedPage = embedPagesArray.length - 1;
+          embedPagesArray[embedPage].setFooter(
+            `Page: ${embedPage + 1}/${embedPagesArray.length}`
+          );
+          await i.update({
+            embeds: [embedPagesArray[embedPage]],
+            components: [Buttons],
+          });
+        }
+      });
     });
   },
 };

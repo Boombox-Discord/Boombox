@@ -13,7 +13,7 @@ module.exports = {
       return interaction.reply("There is currently not song playing!");
     }
 
-    interaction.reply('I have skipped to the next song!')
+    interaction.reply("I have skipped to the next song!");
 
     return player.stop();
   },

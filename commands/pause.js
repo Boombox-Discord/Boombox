@@ -30,7 +30,10 @@ module.exports = {
     const messageEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle("⏸️ I have paused the media!")
-      .setAuthor(interaction.client.user.username, interaction.client.user.avatarURL());
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      );
     return interaction.reply({ embeds: [messageEmbed] });
   },
 };

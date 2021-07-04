@@ -50,7 +50,7 @@ module.exports = {
         .setAuthor(
           interaction.client.user.username,
           interaction.client.user.avatarURL()
-        )
+        );
 
       return interaction.reply({ embeds: [replyEmbed] });
     });

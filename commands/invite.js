@@ -11,7 +11,10 @@ module.exports = {
   execute(interaction) {
     const embed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
-      .setAuthor(interaction.client.user.username, interaction.client.user.avatarURL())
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      )
       .setTitle(
         `Click Here to Invite ${interaction.client.user.username} To Your Server!`
       )

@@ -32,7 +32,7 @@ module.exports = {
       );
     });
 
-    interaction.reply('I removed all songs from the queue!')
+    interaction.reply("I removed all songs from the queue!");
 
     return player.stop();
   },

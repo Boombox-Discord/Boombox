@@ -58,7 +58,10 @@ module.exports = {
     const helpCommandEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle(`Help For Command ${command.name}`)
-      .setAuthor(interaction.client.user.username, interaction.client.user.avatarURL())
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      )
       .setDescription(`Usage for command ${command.name}.`)
       .addFields(
         { name: "Command Name", value: command.name },

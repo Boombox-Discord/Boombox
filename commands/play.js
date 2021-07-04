@@ -32,7 +32,7 @@ module.exports = {
       query = mediaName;
     } else {
       query = `ytsearch:${mediaName}`;
-      video = mediaName
+      video = mediaName;
     }
 
     const searchEmbed = new Discord.MessageEmbed()
