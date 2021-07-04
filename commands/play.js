@@ -4,12 +4,13 @@ const { clientRedis, getRedis } = require("../utils/redis");
 
 module.exports = {
   name: "play",
-  description: "Plays a song from youtube or uploaded file.",
+  description: "Plays a song from youtube or any MP3 url.",
   args: true,
   usage: "<youtube URL or video name>",
   guildOnly: true,
   voice: true,
   async execute(interaction) {
+    await interaction.defer();
     const manager = interaction.client.manager;
     const voiceChannel = interaction.member.voice.channel;
 
@@ -24,13 +25,14 @@ module.exports = {
     let video = "";
     let query = "";
 
-    const mediaName = interaction.options.get("songname");
+    const mediaName = interaction.options.get("songname").value;
 
     if (mediaName.startsWith("https://")) {
       video = mediaName;
       query = mediaName;
     } else {
       query = `ytsearch:${mediaName}`;
+      video = mediaName
     }
 
     const searchEmbed = new Discord.MessageEmbed()
@@ -43,19 +45,19 @@ module.exports = {
       .setDescription(
         `Please wait we are searching for a song called ${video}`
       );
-    await interaction.reply({ embeds: [searchEmbed] });
+    await interaction.editReply({ embeds: [searchEmbed] });
 
     const response = await manager.search(query);
     if (!response) {
-      return interaction.followup(
+      return interaction.editReply(
         "Sorry, an error has occurred, please try again later!"
       );
     }
     if (!response.tracks[0]) {
-      return interaction.followup("Sorry, there were no songs found!");
+      return interaction.editReply("Sorry, there were no songs found!");
     }
     if (response.tracks[0].isStream) {
-      return interaction.followup("Sorry, that video is a livestream!");
+      return interaction.editReply("Sorry, that video is a livestream!");
     }
 
     const songQueue = {
@@ -64,7 +66,7 @@ module.exports = {
       thumbnail: response.tracks[0].thumbnail,
     };
 
-    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+    await getRedis(`guild_${interaction.guildID}`, function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
@@ -115,7 +117,7 @@ module.exports = {
           )
           .setThumbnail(songQueue.thumbnail);
 
-        return interaction.followup(addQueueEmbed);
+        return interaction.editReply({ embeds: [addQueueEmbed] });
       }
     });
   },

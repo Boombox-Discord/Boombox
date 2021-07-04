@@ -4,11 +4,10 @@ const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 const { prefix, token } = require("./config.json"); //skipcq: JS-0266
 
 client.on("message", async (message) => {
-  if (!client.application?.owner) await client.application?.fetch();
+//   if (!client.application?.owner) await client.application?.fetch();
 
   if (
-    message.content.toLowerCase() === `${prefix}deploy` &&
-    message.author.id === client.application?.owner.id
+    message.content.toLowerCase() === `${prefix}deploy`
   ) {
     const data = [
       {
@@ -26,6 +25,14 @@ client.on("message", async (message) => {
       {
         name: "help",
         description: "List's all available commands and info for the commands.",
+		options: [
+			{
+			  name: "command",
+			  type: "STRING",
+			  description: "Name of command you want help for.",
+			  required: false,
+			},
+		  ],
       },
       {
         name: "invite",
@@ -58,6 +65,14 @@ client.on("message", async (message) => {
       {
         name: "remove",
         description: "Removes a specifc song from the queue.",
+		options: [
+			{
+			  name: "songnumber",
+			  type: "INTEGER",
+			  description: "Song number in queue to remove.",
+			  required: true,
+			},
+		  ],
       },
       {
         name: "skip",

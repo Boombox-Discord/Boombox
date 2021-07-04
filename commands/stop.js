@@ -7,16 +7,16 @@ module.exports = {
   args: false,
   guildOnly: true,
   voice: true,
-  async execute(message, args) {
-    const manager = message.client.manager;
+  async execute(interaction) {
+    const manager = interaction.client.manager;
 
-    const player = manager.get(message.guild.id);
+    const player = manager.get(interaction.guildID);
 
     if (!player) {
-      return message.reply("There is currently no song playing!");
+      return interaction.reply("There is currently no song playing!");
     }
 
-    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+    await getRedis(`guild_${interaction.guildID}`, function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
@@ -25,12 +25,14 @@ module.exports = {
 
       serverQueue.songs = [];
       clientRedis.set(
-        `guild_${message.guild.id}`,
+        `guild_${interaction.guildID}`,
         JSON.stringify(serverQueue),
         "EX",
         86400 //skipcq: JS-0074
       );
     });
+
+    interaction.reply('I removed all songs from the queue!')
 
     return player.stop();
   },
