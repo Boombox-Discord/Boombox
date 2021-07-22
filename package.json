@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/AjayACST/Boombox#readme",
   "dependencies": {
-    "@sentry/tracing": "^6.9.0",
+    "@sentry/tracing": "^6.10.0",
     "@sentry/node": "^6.9.0",
     "discord-pages": "^1.0.2",
     "discord.js": "^12.5.3",
