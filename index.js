@@ -16,7 +16,14 @@ const {
   sentryEnv,
 } = require("./config.json"); //skipcq: JS-0266
 
-const client = new Discord.Client({intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_VOICE_STATES, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
+const client = new Discord.Client({
+  intents: [
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_VOICE_STATES,
+    Discord.Intents.FLAGS.DIRECT_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+  ],
+});
 client.commands = new Discord.Collection();
 
 Sentry.init({
@@ -24,8 +31,6 @@ Sentry.init({
   tracesSampleRate: 1.0,
   environment: sentryEnv,
 });
-
-
 
 client.manager = new Manager({
   nodes: [
@@ -130,8 +135,6 @@ client.on("interactionCreate", async (interaction) => {
       return interaction.reply("You are not in a voice channel!");
     }
   }
-
-
 
   const transaction = Sentry.startTransaction({
     op: "command",
