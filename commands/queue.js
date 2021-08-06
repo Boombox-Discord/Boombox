@@ -9,7 +9,7 @@ module.exports = {
   guildOnly: true,
   voice: true,
   async execute(interaction) {
-    await getRedis(`guild_${interaction.guildID}`, async function (err, reply) {
+    await getRedis(`guild_${interaction.guildId}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with Redis");
       }
@@ -51,12 +51,12 @@ module.exports = {
 
       const Buttons = new MessageActionRow().addComponents(
         new MessageButton()
-          .setCustomID("previousPage")
+          .setCustomId("previousPage")
           .setLabel("⬅️")
           .setStyle("SECONDARY"),
 
         new MessageButton()
-          .setCustomID("nextPage")
+          .setCustomId("nextPage")
           .setLabel("➡️")
           .setStyle("SECONDARY")
       );
@@ -74,7 +74,7 @@ module.exports = {
       });
 
       collector.on("collect", async (i) => {
-        if (i.customID === "nextPage") {
+        if (i.customId === "nextPage") {
           embedPage++;
           if (embedPage >= embedPagesArray.length) embedPage = 0;
           embedPagesArray[embedPage].setFooter(
@@ -84,7 +84,7 @@ module.exports = {
             embeds: [embedPagesArray[embedPage]],
             components: [Buttons],
           });
-        } else if (i.customID === "previousPage") {
+        } else if (i.customId === "previousPage") {
           embedPage--;
           if (embedPage < 0) embedPage = embedPagesArray.length - 1;
           embedPagesArray[embedPage].setFooter(

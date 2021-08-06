@@ -7,7 +7,7 @@ module.exports = {
   voice: true,
   execute(interaction) {
     const manager = interaction.client.manager;
-    const player = manager.get(interaction.guildID);
+    const player = manager.get(interaction.guildId);
 
     if (!player) {
       return interaction.reply("There is currently not song playing!");

@@ -10,13 +10,13 @@ module.exports = {
   async execute(interaction) {
     const manager = interaction.client.manager;
 
-    const player = manager.get(interaction.guildID);
+    const player = manager.get(interaction.guildId);
 
     if (!player) {
       return interaction.reply("There is currently no song playing!");
     }
 
-    await getRedis(`guild_${interaction.guildID}`, function (err, reply) {
+    await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
@@ -25,7 +25,7 @@ module.exports = {
 
       serverQueue.songs = [];
       clientRedis.set(
-        `guild_${interaction.guildID}`,
+        `guild_${interaction.guildId}`,
         JSON.stringify(serverQueue),
         "EX",
         86400 //skipcq: JS-0074

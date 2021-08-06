@@ -10,7 +10,7 @@ module.exports = {
   guildOnly: true,
   voice: true,
   async execute(interaction) {
-    await interaction.defer();
+    await interaction.deferReply();
     const manager = interaction.client.manager;
     const voiceChannel = interaction.member.voice.channel;
 
@@ -62,7 +62,7 @@ module.exports = {
     // by defualt set the for loop for playlist to zero so we start at the start of the playlist
     let forNumb = 0;
 
-    await getRedis(`guild_${interaction.guildID}`, function (err, reply) {
+    await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
@@ -71,9 +71,9 @@ module.exports = {
 
       if (!serverQueue) {
         const player = manager.create({
-          guild: interaction.guildID,
+          guild: interaction.guildId,
           voiceChannel: voiceChannel.id,
-          textChannel: interaction.channelID,
+          textChannel: interaction.channelId,
         });
         player.connect();
 
@@ -105,7 +105,7 @@ module.exports = {
         serverQueue.songs.push(songsAdd);
       }
       clientRedis.set(
-        `guild_${interaction.guildID}`,
+        `guild_${interaction.guildId}`,
         JSON.stringify(serverQueue),
         "EX",
         86400 //skipcq: JS-0074

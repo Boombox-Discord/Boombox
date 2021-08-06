@@ -16,15 +16,7 @@ const {
   sentryEnv,
 } = require("./config.json"); //skipcq: JS-0266
 
-const client = new Discord.Client({
-  intents: [
-    "GUILDS",
-    "GUILD_MESSAGES",
-    "GUILD_VOICE_STATES",
-    "DIRECT_MESSAGES",
-    "GUILD_MESSAGE_REACTIONS",
-  ],
-});
+const client = new Discord.Client({intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_VOICE_STATES, Discord.Intents.FLAGS.DIRECT_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]});
 client.commands = new Discord.Collection();
 
 Sentry.init({
@@ -32,6 +24,8 @@ Sentry.init({
   tracesSampleRate: 1.0,
   environment: sentryEnv,
 });
+
+
 
 client.manager = new Manager({
   nodes: [
@@ -125,11 +119,19 @@ client.on("interactionCreate", async (interaction) => {
 
   const command = client.commands.get(interaction.commandName);
 
-  if (command.voice) {
-    if (!interaction.member.voice.channel) {
-      interaction.reply("You are not in a voice channel!");
+  if (command.guildOnly) {
+    if (!interaction.guild) {
+      return interaction.reply("This command can only be ran in guilds!");
     }
   }
+
+  if (command.voice) {
+    if (!interaction.member.voice) {
+      return interaction.reply("You are not in a voice channel!");
+    }
+  }
+
+
 
   const transaction = Sentry.startTransaction({
     op: "command",
