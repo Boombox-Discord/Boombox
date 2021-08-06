@@ -8,29 +8,30 @@ module.exports = {
   usage: "<number 0 to 100>",
   guildOnly: true,
   voice: true,
-  execute(message, args) {
-    const manager = message.client.manager;
-    const player = manager.get(message.guild.id);
+  execute(interaction) {
+    const manager = interaction.client.manager;
+    const player = manager.get(interaction.guildId);
+
+    const volume = interaction.options.get("volume").value;
 
     if (!player) {
-      return message.reply("There is currently no songs playing!");
+      return interaction.reply("There is currently no songs playing!");
     }
 
-    if (args[0] >= 101 || args[1] <= 0) {
+    if (volume >= 101 || volume <= 0) {
       //skipcq: JS-0074
-      return message.reply("Please select a number between 1 and 100!");
+      return interaction.reply("Please select a number between 1 and 100!");
     }
 
-    if (isNaN(args[0])) {
-      return message.channel.send("That is not a valid number!");
-    }
-
-    player.setVolume(args[0]);
+    player.setVolume(volume);
     const embed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
-      .setTitle(`🔊 I have set the volume to ${args[0]}%`)
-      .setAuthor(message.client.user.username, message.client.user.avatarURL());
+      .setTitle(`🔊 I have set the volume to ${volume}%`)
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      );
 
-    return message.channel.send(embed);
+    return interaction.reply({ embeds: [embed] });
   },
 };

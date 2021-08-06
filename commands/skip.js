@@ -5,13 +5,15 @@ module.exports = {
   args: false,
   guildOnly: true,
   voice: true,
-  execute(message, args) {
-    const manager = message.client.manager;
-    const player = manager.get(message.guild.id);
+  execute(interaction) {
+    const manager = interaction.client.manager;
+    const player = manager.get(interaction.guildId);
 
     if (!player) {
-      return message.reply("There is currently not song playing!");
+      return interaction.reply("There is currently not song playing!");
     }
+
+    interaction.reply("I have skipped to the next song!");
 
     return player.stop();
   },

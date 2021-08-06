@@ -8,41 +8,37 @@ module.exports = {
   args: false,
   guildOnly: true,
   voice: true,
-  async execute(message, args) {
-    const manager = message.client.manager;
-    const player = manager.get(message.guild.id);
+  async execute(interaction) {
+    const manager = interaction.client.manager;
+    const player = manager.get(interaction.guildId);
 
     if (!player) {
-      return message.reply("There is currently no songs in the queue!");
+      return interaction.reply("There is currently no songs in the queue!");
     }
 
-    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+    await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
       if (err) {
         throw new Error("Error with Redis");
       }
       const serverQueue = JSON.parse(reply);
 
-      if (args[0] === 1) {
-        return message.reply("I cannot remove the current song playing.");
+      const remove = interaction.options.get("songnumber").value;
+
+      if (remove === 1) {
+        return interaction.reply("I cannot remove the current song playing.");
       }
 
-      if (args[0] > serverQueue.songs.length || args[0] < 0) {
-        return message.reply(
+      if (remove > serverQueue.songs.length || remove < 0) {
+        return interaction.reply(
           `The queue is only ${serverQueue.songs.length} songs long!`
         );
       }
+      const deletedSong = serverQueue.songs[remove - 1].title;
 
-      if (isNaN(args[0])) {
-        return message.channel.send("That is not a valid number!");
-      }
-
-      const argsNum = parseInt(args[0], 10);
-      const deletedSong = serverQueue.songs[argsNum - 1].title;
-
-      serverQueue.songs.splice(argsNum - 1, 1);
+      serverQueue.songs.splice(remove - 1, 1);
 
       clientRedis.set(
-        `guild_${message.guild.id}`,
+        `guild_${interaction.guildId}`,
         JSON.stringify(serverQueue),
         "EX",
         86400 //skipcq: JS-0074
@@ -52,11 +48,11 @@ module.exports = {
         .setColor("#ed1c24")
         .setTitle(`${deletedSong} Has Been Removed From The Queue!`)
         .setAuthor(
-          message.client.user.ussername,
-          message.client.user.avatarURL()
+          interaction.client.user.username,
+          interaction.client.user.avatarURL()
         );
 
-      return message.channel.send(replyEmbed);
+      return interaction.reply({ embeds: [replyEmbed] });
     });
   },
 };

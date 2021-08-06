@@ -1,7 +1,6 @@
 "use strict";
-const Discord = require("discord.js");
+const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
 const { getRedis } = require("../utils/redis");
-const DiscordPages = require("discord-pages");
 
 module.exports = {
   name: "queue",
@@ -9,15 +8,15 @@ module.exports = {
   args: false,
   guildOnly: true,
   voice: true,
-  async execute(message, args) {
-    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+  async execute(interaction) {
+    await getRedis(`guild_${interaction.guildId}`, async function (err, reply) {
       if (err) {
         throw new Error("Error with Redis");
       }
       const serverQueue = JSON.parse(reply);
 
       if (!serverQueue) {
-        return message.reply("There is currently no songs in the queue!");
+        return interaction.reply("There is currently no songs in the queue!");
       }
       const size = 10;
       const songsArray = [];
@@ -28,15 +27,16 @@ module.exports = {
 
       let songCount = 0;
       let embedDesc = "";
+      let embedPage = 0;
       const embedPagesArray = [];
 
       for (let i = 0; i < songsArray.length; i++) {
-        const songEmbed = new Discord.MessageEmbed()
+        const songEmbed = new MessageEmbed()
           .setColor("#ed1c24")
           .setTitle("Currnet Songs In The Queue")
           .setAuthor(
-            message.client.user.username,
-            message.client.user.avatarURL()
+            interaction.client.user.username,
+            interaction.client.user.avatarURL()
           )
           .setThumbnail(serverQueue.songs[0].thumbnail);
 
@@ -48,12 +48,54 @@ module.exports = {
         embedDesc = "";
         embedPagesArray.push(songEmbed);
       }
-      const embedPages = new DiscordPages({
-        pages: embedPagesArray,
-        channel: message.channel,
+
+      const Buttons = new MessageActionRow().addComponents(
+        new MessageButton()
+          .setCustomId("previousPage")
+          .setLabel("⬅️")
+          .setStyle("SECONDARY"),
+
+        new MessageButton()
+          .setCustomId("nextPage")
+          .setLabel("➡️")
+          .setStyle("SECONDARY")
+      );
+
+      embedPagesArray[0].setFooter(
+        `Page: ${embedPage + 1}/${embedPagesArray.length}`
+      );
+      await interaction.reply({
+        embeds: [embedPagesArray[0]],
+        components: [Buttons],
+      });
+      const message = await interaction.fetchReply();
+      const collector = message.createMessageComponentCollector({
+        time: 15000,
       });
 
-      embedPages.createPages();
+      collector.on("collect", async (i) => {
+        if (i.customId === "nextPage") {
+          embedPage++;
+          if (embedPage >= embedPagesArray.length) embedPage = 0;
+          embedPagesArray[embedPage].setFooter(
+            `Page: ${embedPage + 1}/${embedPagesArray.length}`
+          );
+          await i.update({
+            embeds: [embedPagesArray[embedPage]],
+            components: [Buttons],
+          });
+        } else if (i.customId === "previousPage") {
+          embedPage--;
+          if (embedPage < 0) embedPage = embedPagesArray.length - 1;
+          embedPagesArray[embedPage].setFooter(
+            `Page: ${embedPage + 1}/${embedPagesArray.length}`
+          );
+          await i.update({
+            embeds: [embedPagesArray[embedPage]],
+            components: [Buttons],
+          });
+        }
+      });
     });
   },
 };

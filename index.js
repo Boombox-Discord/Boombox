@@ -16,7 +16,14 @@ const {
   sentryEnv,
 } = require("./config.json"); //skipcq: JS-0266
 
-const client = new Discord.Client();
+const client = new Discord.Client({
+  intents: [
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_VOICE_STATES,
+    Discord.Intents.FLAGS.DIRECT_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+  ],
+});
 client.commands = new Discord.Collection();
 
 Sentry.init({
@@ -62,7 +69,9 @@ client.manager = new Manager({
       )
       .setThumbnail(track.thumbnail);
 
-    client.channels.cache.get(player.textChannel).send(newQueueEmbed);
+    client.channels.cache
+      .get(player.textChannel)
+      .send({ embeds: [newQueueEmbed] });
   })
   .on("queueEnd", async (player) => {
     await getRedis(`guild_${player.guild}`, async function (err, reply) {
@@ -110,42 +119,20 @@ client.once("ready", () => {
 
 client.on("raw", (d) => client.manager.updateVoiceState(d));
 
-client.on("message", async (message) => {
-  if (!message.content.startsWith(prefix) || message.author.bot) {
-    return;
-  }
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
 
-  const args = message.content.slice(prefix.length).trim().split(/ +/);
-  const commandName = args.shift().toLowerCase();
+  const command = client.commands.get(interaction.commandName);
 
-  const command = client.commands.get(commandName);
-
-  if (!command) {
-    return;
-  }
-
-  if (command.guildOnly && message.channel.type === "dm") {
-    return message.reply("I can't execute this command inside DMs!");
-  }
-
-  if (command.args && !args.length) {
-    const argsEmbed = new Discord.MessageEmbed()
-      .setColor("#ed1c24")
-      .setTitle("Incorrect Usage!")
-      .setAuthor(client.user.username, client.user.avatarURL())
-      .addField(
-        `The proper usage for the ${command.name} command is:`,
-        `${prefix}${command.name} ${command.usage}`
-      );
-
-    return message.channel.send(argsEmbed);
+  if (command.guildOnly) {
+    if (!interaction.guild) {
+      return interaction.reply("This command can only be ran in guilds!");
+    }
   }
 
   if (command.voice) {
-    if (!message.member.voice.channel) {
-      return message.reply(
-        "You need to be in a voice channel to run that command!"
-      );
+    if (!interaction.member.voice) {
+      return interaction.reply("You are not in a voice channel!");
     }
   }
 
@@ -155,10 +142,10 @@ client.on("message", async (message) => {
   });
 
   try {
-    await command.execute(message, args);
+    await command.execute(interaction);
   } catch (err) {
     console.error(err); //skipcq: JS-0002
-    message.reply("There was an error trying to execute that command!");
+    interaction.reply("There was an error trying to execute that command!");
     Sentry.captureException(err);
   } finally {
     transaction.finish();

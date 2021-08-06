@@ -7,12 +7,12 @@ module.exports = {
   args: false,
   guildOnly: true,
   voice: true,
-  execute(message, args) {
-    const manager = message.client.manager;
-    const player = manager.get(message.guild.id);
+  execute(interaction) {
+    const manager = interaction.client.manager;
+    const player = manager.get(interaction.guildId);
 
     if (!player) {
-      return message.reply("There is currently no songs playing!");
+      return interaction.reply("There is currently no songs playing!");
     }
 
     if (player.paused) {
@@ -21,16 +21,19 @@ module.exports = {
         .setColor("#ed1c24")
         .setTitle("⏸️ I have resumed the media!")
         .setAuthor(
-          message.client.user.username,
-          message.client.user.avatarURL()
+          interaction.client.user.username,
+          interaction.client.user.avatarURL()
         );
-      return message.channel.send(messageEmbed);
+      return interaction.reply({ embeds: [messageEmbed] });
     }
     player.pause(true);
     const messageEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle("⏸️ I have paused the media!")
-      .setAuthor(message.client.user.username, message.client.user.avatarURL());
-    return message.channel.send(messageEmbed);
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      );
+    return interaction.reply({ embeds: [messageEmbed] });
   },
 };

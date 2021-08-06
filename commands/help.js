@@ -6,19 +6,21 @@ module.exports = {
   name: "help",
   description: "List's all available commands and info for the commands.",
   usage: "[command name]",
-  execute(message, args) {
-    const { commands } = message.client;
+  execute(interaction) {
+    const { commands } = interaction.client;
 
-    if (!args.length) {
+    const commandHelp = interaction.options.get("command");
+
+    if (!commandHelp) {
       const helpEmbed = new Discord.MessageEmbed()
         .setColor("#ed1c24")
-        .setTitle(`${message.client.user.username} Help`)
+        .setTitle(`${interaction.client.user.username} Help`)
         .setAuthor(
-          message.client.user.username,
-          message.client.user.avatarURL()
+          interaction.client.user.username,
+          interaction.client.user.avatarURL()
         )
         .setDescription(
-          `Below are all avilable commands for ${message.client.user.username}`
+          `Below are all avilable commands for ${interaction.client.user.username}`
         );
       commands.forEach((command) => {
         if (!command.usage) {
@@ -31,32 +33,35 @@ module.exports = {
         }
       });
 
-      return message.author
-        .send(helpEmbed)
+      return interaction.user
+        .send({ embeds: [helpEmbed] })
         .then(() => {
-          if (message.channel.type === "dm") {
+          if (interaction.channel.type === "dm") {
             return;
           }
-          message.reply("I've sent you a DM with all my commands!");
+          interaction.reply("I've sent you a DM with all my commands!");
         })
         .catch((error) => {
-          message.reply(
+          interaction.reply(
             "it seems like I can't DM you! Do you have DMs disabled?"
           );
         });
     }
 
-    const name = args[0].toLowerCase();
+    const name = commandHelp.value;
     const command = commands.get(name);
 
     if (!command) {
-      return message.reply("That's not a valid command!");
+      return interaction.reply("That's not a valid command!");
     }
 
     const helpCommandEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle(`Help For Command ${command.name}`)
-      .setAuthor(message.client.user.username, message.client.user.avatarURL())
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      )
       .setDescription(`Usage for command ${command.name}.`)
       .addFields(
         { name: "Command Name", value: command.name },
@@ -72,6 +77,6 @@ module.exports = {
       );
     }
 
-    message.channel.send(helpCommandEmbed);
+    interaction.reply({ embeds: [helpCommandEmbed] });
   },
 };

@@ -9,40 +9,48 @@ module.exports = {
   usage: "<youtube URL>",
   guildOnly: true,
   voice: true,
-  async execute(message, args) {
-    const manager = message.client.manager;
-    const voiceChannel = message.member.voice.channel;
+  async execute(interaction) {
+    await interaction.deferReply();
+    const manager = interaction.client.manager;
+    const voiceChannel = interaction.member.voice.channel;
 
-    const permissions = voiceChannel.permissionsFor(message.client.user);
+    const permissions = voiceChannel.permissionsFor(interaction.client.user);
 
     if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-      return message.reply(
+      return interaction.editReply(
         "I don't have permission to join or speak in that voice channel!"
       );
     }
 
-    if (!args[0].startsWith("https://")) {
-      return message.reply("You did not supply a link to a youtube playlist!");
+    const mediaName = interaction.options.get("playlisturl").value;
+
+    if (!mediaName.startsWith("https://")) {
+      return interaction.editReply(
+        "You did not supply a link to a youtube playlist!"
+      );
     }
 
     const searchEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle("🔍 Searching For Video")
-      .setAuthor(message.client.user.username, message.client.user.avatarURL())
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      )
       .setDescription("Please wait we are searching for that playlist.");
-    message.channel.send(searchEmbed);
+    interaction.editReply({ embeds: [searchEmbed] });
 
-    const response = await manager.search(args[0]);
+    const response = await manager.search(mediaName);
     if (!response) {
-      return message.reply(
+      return interaction.editReply(
         "Sorry, an error has occurred, please try again later!"
       );
     }
     if (!response.tracks[0]) {
-      return message.reply("Sorry, there were no songs found!");
+      return interaction.editReply("Sorry, there were no songs found!");
     }
     if (response.tracks[0].isStream) {
-      return message.reply("Sorry, that video is a livestream!");
+      return interaction.editReply("Sorry, that video is a livestream!");
     }
 
     const songQueue = {
@@ -54,7 +62,7 @@ module.exports = {
     // by defualt set the for loop for playlist to zero so we start at the start of the playlist
     let forNumb = 0;
 
-    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+    await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
@@ -63,14 +71,14 @@ module.exports = {
 
       if (!serverQueue) {
         const player = manager.create({
-          guild: message.guild.id,
+          guild: interaction.guildId,
           voiceChannel: voiceChannel.id,
-          textChannel: message.channel.id,
+          textChannel: interaction.channelId,
         });
         player.connect();
 
         serverQueue = {
-          textChannel: message.channel,
+          textChannel: interaction.channel,
           voiceChannel: voiceChannel, //skipcq: JS-0240
           songs: [],
         };
@@ -97,7 +105,7 @@ module.exports = {
         serverQueue.songs.push(songsAdd);
       }
       clientRedis.set(
-        `guild_${message.guild.id}`,
+        `guild_${interaction.guildId}`,
         JSON.stringify(serverQueue),
         "EX",
         86400 //skipcq: JS-0074
@@ -109,8 +117,8 @@ module.exports = {
           "I have added all the songs from that playlist into the queue."
         )
         .setAuthor(
-          message.client.user.username,
-          message.client.user.avatarURL()
+          interaction.client.user.username,
+          interaction.client.user.avatarURL()
         );
       if (errorSongs > 0) {
         playlistEmbed.setDescription(
@@ -124,7 +132,7 @@ module.exports = {
         );
       }
 
-      return message.channel.send(playlistEmbed);
+      return interaction.editReply({ embeds: [playlistEmbed] });
     });
   },
 };

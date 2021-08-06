@@ -4,19 +4,20 @@ const { clientRedis, getRedis } = require("../utils/redis");
 
 module.exports = {
   name: "play",
-  description: "Plays a song from youtube or uploaded file.",
+  description: "Plays a song from youtube or any MP3 url.",
   args: true,
   usage: "<youtube URL or video name>",
   guildOnly: true,
   voice: true,
-  async execute(message, args) {
-    const manager = message.client.manager;
-    const voiceChannel = message.member.voice.channel;
+  async execute(interaction) {
+    await interaction.deferReply();
+    const manager = interaction.client.manager;
+    const voiceChannel = interaction.member.voice.channel;
 
-    const permissions = voiceChannel.permissionsFor(message.client.user);
+    const permissions = voiceChannel.permissionsFor(interaction.client.user);
 
     if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-      return message.reply(
+      return interaction.reply(
         "I don't have permission to join or speak in that voice channel!"
       );
     }
@@ -24,57 +25,48 @@ module.exports = {
     let video = "";
     let query = "";
 
-    const files = message.attachments.array();
-    const file = files[0];
+    const mediaName = interaction.options.get("songname").value;
 
-    if (file) {
-      video = file.name;
-      query = file.url;
-    } else if (args[0].startsWith("https://")) {
-      video = args[0];
-      query = args[0];
+    if (mediaName.startsWith("https://")) {
+      video = mediaName;
+      query = mediaName;
     } else {
-      for (let i = 0; i < args.length; i++) {
-        video += `${args[i]}  `;
-      }
-      query = `ytsearch:${video}`;
+      query = `ytsearch:${mediaName}`;
+      video = mediaName;
     }
 
     const searchEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle("🔍 Searching For Video")
-      .setAuthor(message.client.user.username, message.client.user.avatarURL())
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      )
       .setDescription(
         `Please wait we are searching for a song called ${video}`
       );
-    message.channel.send(searchEmbed);
+    await interaction.editReply({ embeds: [searchEmbed] });
 
     const response = await manager.search(query);
     if (!response) {
-      return message.reply(
+      return interaction.editReply(
         "Sorry, an error has occurred, please try again later!"
       );
     }
     if (!response.tracks[0]) {
-      return message.reply("Sorry, there were no songs found!");
+      return interaction.editReply("Sorry, there were no songs found!");
     }
     if (response.tracks[0].isStream) {
-      return message.reply("Sorry, that video is a livestream!");
+      return interaction.editReply("Sorry, that video is a livestream!");
     }
 
-    const songQueue = file
-      ? {
-          title: file.name,
-          url: response.tracks[0].uri,
-          thumbnail: response.tracks[0].thumbnail,
-        }
-      : {
-          title: response.tracks[0].title,
-          url: response.tracks[0].uri,
-          thumbnail: response.tracks[0].thumbnail,
-        };
+    const songQueue = {
+      title: response.tracks[0].title,
+      url: response.tracks[0].uri,
+      thumbnail: response.tracks[0].thumbnail,
+    };
 
-    await getRedis(`guild_${message.guild.id}`, function (err, reply) {
+    await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
       if (err) {
         throw new Error("Error with redis");
       }
@@ -83,21 +75,21 @@ module.exports = {
 
       if (!serverQueue) {
         const player = manager.create({
-          guild: message.guild.id,
+          guild: interaction.guildId,
           voiceChannel: voiceChannel.id,
-          textChannel: message.channel.id,
+          textChannel: interaction.channelId,
         });
 
         player.connect();
 
         serverQueue = {
-          textChannel: message.channel,
+          textChannel: interaction.channel,
           voiceChannel: voiceChannel, //skipcq: JS-0240
           songs: [],
         };
         serverQueue.songs.push(songQueue);
         clientRedis.set(
-          `guild_${message.guild.id}`,
+          `guild_${interaction.guildId}`,
           JSON.stringify(serverQueue),
           "EX",
           86400 //skipcq: JS-0074
@@ -106,7 +98,7 @@ module.exports = {
       } else {
         serverQueue.songs.push(songQueue);
         clientRedis.set(
-          `guild_${message.guild.id}`,
+          `guild_${interaction.guildId}`,
           JSON.stringify(serverQueue),
           "EX",
           86400 //skipcq: JS-0074
@@ -117,15 +109,15 @@ module.exports = {
           .setTitle(songQueue.title)
           .setURL(songQueue.url)
           .setAuthor(
-            message.client.user.username,
-            message.client.user.avatarURL()
+            interaction.client.user.username,
+            interaction.client.user.avatarURL()
           )
           .setDescription(
             `[${songQueue.title}](${songQueue.url}) has been added to the queue and is number ${serverQueue.songs.length} in the queue!`
           )
           .setThumbnail(songQueue.thumbnail);
 
-        return message.channel.send(addQueueEmbed);
+        return interaction.editReply({ embeds: [addQueueEmbed] });
       }
     });
   },
