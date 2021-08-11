@@ -87,11 +87,11 @@ Make sure you have Docker and docker-compose installed. You can find instruction
 git clone https://github.com/Boombox-Discord/Boombox.git
 ```
 
-2.  Rename config-example.json to config.json and insert your own values. Leave the redis fields as they are. 
+2.  Rename config-example.json to config.json and insert your own values. Leave the redis fields as they are.
 
-3. ename lavalink-config-example.yml to lavalink-config.yml and replace password with something different. Make sure to put this password in the config.json file under lavalinkPassword.
+3.  ename lavalink-config-example.yml to lavalink-config.yml and replace password with something different. Make sure to put this password in the config.json file under lavalinkPassword.
 
-3.  Run docker-compose
+4.  Run docker-compose
 
 ```sh
 docker-compose up -d
