@@ -50,8 +50,6 @@
 
 ## About The Project
 
-![gif of Boombox commands](https://boomboxdiscord.dev/IMG/Header.gif)
-
 Boombox is a free and open source music bot for Discord built on Disocrd.js. Boombox uses Lavalink as it's music server and redis as it's database. All commands on Boombox are free and will always be free to use.
 
 ### Commands
@@ -60,19 +58,18 @@ Below is a table of all of Boombox's commands.
 
 | Command Name | Usage                             | Description                                                                                                                  |
 | ------------ | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Play         | !play [song name or youtube link] | This will find the song from youtube and start playing. If there is something currently playing it will add it to the queue. |
-| Skip         | !skip                             | Will skip the currently playing song.                                                                                        |
-| Stop         | !stop                             | Will stop currently playing song and delete the queue.                                                                       |
-| Now Playing  | !np                               | Displays what song is currently playing.                                                                                     |
-| Lyrics       | !lyrics                           | Will get the currently playing songs lyrics. Lyrics are provided by Genius                                                   |
-| Lyrics       | !lyrics [song name]               | Will get the lyrics for the provided song. Lyrics are provided by Genius                                                     |
-| Queue        | !queue                            | Displays the first 20 songs in the queue.                                                                                    |
-| Volume       | !volume                           | Set's the volume. Use a number between 1 and 100.                                                                            |
-| Invite       | !invite                           | Sends an invite link for the bot.                                                                                            |
-| Playlist     | !playlist [youtube playlist url]  | This command will add all songs from a youtube playlist into the queue.                                                      |
-| Pause        | !pause                            | Will pause the song that is currently playing.                                                                               |
-| Remove       | !remove [position in queue]       | Will remove that song from the queue.                                                                                        |
-| Play File    | !playfile {attachment}            | Will play the attached song. File format needs to be either MP3 or WAV.                                                      |
+| Play         | /play [song name or youtube link] | This will find the song from youtube and start playing. If there is something currently playing it will add it to the queue. |
+| Skip         | /skip                             | Will skip the currently playing song.                                                                                        |
+| Stop         | /stop                             | Will stop currently playing song and delete the queue.                                                                       |
+| Now Playing  | /np                               | Displays what song is currently playing.                                                                                     |
+| Lyrics       | /lyrics                           | Will get the currently playing songs lyrics. Lyrics are provided by Genius                                                   |
+| Lyrics       | /lyrics [song name]               | Will get the lyrics for the provided song. Lyrics are provided by Genius                                                     |
+| Queue        | /queue                            | Displays the first 20 songs in the queue.                                                                                    |
+| Volume       | /volume                           | Set's the volume. Use a number between 1 and 100.                                                                            |
+| Invite       | /invite                           | Sends an invite link for the bot.                                                                                            |
+| Playlist     | /playlist [youtube playlist url]  | This command will add all songs from a youtube playlist into the queue.                                                      |
+| Pause        | /pause                            | Will pause the song that is currently playing.                                                                               |
+| Remove       | /remove [position in queue]       | Will remove that song from the queue.                                                                                        |
 
 ## Getting Started
 
@@ -90,13 +87,17 @@ Make sure you have Docker and docker-compose installed. You can find instruction
 git clone https://github.com/Boombox-Discord/Boombox.git
 ```
 
-2.  Rename config-example.json to config.json and insert your own values. Leave the redis, and statsD config fields as they are. Also rename lavalink-config-example.yml to lavalink-config.yml and replace password with something different. Make sure to put this password in the config.json file under lavalinkPassword.
+2.  Rename config-example.json to config.json and insert your own values. Leave the redis fields as they are.
 
-3.  Run docker-compose
+3.  ename lavalink-config-example.yml to lavalink-config.yml and replace password with something different. Make sure to put this password in the config.json file under lavalinkPassword.
+
+4.  Run docker-compose
 
 ```sh
 docker-compose up -d
 ```
+
+This will automaticly register the slash commands with discord using the token provided in config.json. These can take up to one hour to appear in Discord.
 
 ### Other ways to install
 

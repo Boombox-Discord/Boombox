@@ -1,14 +1,14 @@
 {
   "name": "boombox",
-  "version": "2.0.1",
-  "description": "A free, and open source discord music bot, based on discord.js and ytdl",
+  "version": "3.0.1",
+  "description": "A free and open source Discord music bot built on Discord.js.",
   "main": "bot.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node deploy.js && node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AjayACST/Boombox.git"
+    "url": "git+https://github.com/Boombox-Dev/Boombox.git"
   },
   "keywords": [
     "music",
@@ -17,12 +17,12 @@
     "youtube",
     "play"
   ],
-  "author": "Arrow Quirk",
+  "author": "Boombox-Dev",
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/AjayACST/Boombox/issues"
+    "url": "https://github.com/Boombox-Dev/Boombox/issues"
   },
-  "homepage": "https://github.com/AjayACST/Boombox#readme",
+  "homepage": "https://github.com/Boombox-Dev/Boombox#readme",
   "dependencies": {
     "discord.js": "^13.0.0",
     "@sentry/tracing": "^6.10.0",
