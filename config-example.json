@@ -2,8 +2,6 @@
   "prefix": "!",
   "token": "Discord token",
   "inviteLink": "https://discord.com/api/oauth2/authorize?client_id=678819994250772480&permissions=36785152&scope=bot",
-  "geniusApiKey": "Client_Access_Token_Here",
-  "errorChannel": "770516315508834304",
   "lavalinkIP": "lavalink",
   "lavalinkPort": 2333,
   "lavalinkPassword": "Supper cool password",
