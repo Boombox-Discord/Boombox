@@ -131,7 +131,7 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   if (command.voice) {
-    if (!interaction.member.voice) {
+    if (!interaction.member.voice.channel) {
       return interaction.reply("You are not in a voice channel!");
     }
   }
