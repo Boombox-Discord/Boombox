@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/Boombox-Dev/Boombox#readme",
   "dependencies": {
-    "discord.js": "^13.0.0",
+    "discord.js": "^13.1.0",
     "@sentry/tracing": "^6.10.0",
     "@sentry/node": "^6.10.0",
     "erela.js": "^2.3.3",
