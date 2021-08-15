@@ -9,5 +9,7 @@
   "redisPort": "6379",
   "redisPassword": "",
   "sentryDSN": "",
-  "sentryEnv": "dev"
+  "sentryEnv": "dev",
+  "spotifyClientID": "",
+  "spotifyClientSecret": ""
 }

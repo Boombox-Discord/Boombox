@@ -5,6 +5,7 @@ const { Manager } = require("erela.js");
 const { clientRedis, getRedis } = require("./utils/redis");
 const Sentry = require("@sentry/node");
 const Tracing = require("@sentry/tracing");
+const Spotify = require("erela.js-spotify");
 
 const {
   prefix,
@@ -14,6 +15,9 @@ const {
   lavalinkPassword,
   sentryDSN,
   sentryEnv,
+  spotifyEnabled,
+  spotifyClientID,
+  spotifyClientSecret
 } = require("./config.json"); //skipcq: JS-0266
 
 const client = new Discord.Client({
@@ -32,6 +36,12 @@ Sentry.init({
   environment: sentryEnv,
 });
 
+// let spotifyPlugin
+
+// if (spotifyEnabled) {
+//   spotifyPlugin = 
+// }
+
 client.manager = new Manager({
   nodes: [
     {
@@ -39,6 +49,13 @@ client.manager = new Manager({
       port: lavalinkPort,
       password: lavalinkPassword,
     },
+  ],
+  
+  plugins: [
+    new Spotify({
+      clientID: spotifyClientID,
+      clientSecret: spotifyClientSecret,
+    })
   ],
   send(id, payload) {
     const guild = client.guilds.cache.get(id);
