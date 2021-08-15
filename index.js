@@ -15,7 +15,6 @@ const {
   lavalinkPassword,
   sentryDSN,
   sentryEnv,
-  spotifyEnabled,
   spotifyClientID,
   spotifyClientSecret,
 } = require("./config.json"); //skipcq: JS-0266
