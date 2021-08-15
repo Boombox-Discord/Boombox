@@ -56,20 +56,20 @@ Boombox is a free and open source music bot for Discord built on Disocrd.js. Boo
 
 Below is a table of all of Boombox's commands.
 
-| Command Name | Usage                             | Description                                                                                                                  |
-| ------------ | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Play         | /play [song name, youtube or spotify link] | This will find the song from youtube or spotify and start playing. If there is something currently playing it will add it to the queue. |
-| Skip         | /skip                             | Will skip the currently playing song.                                                                                        |
-| Stop         | /stop                             | Will stop currently playing song and delete the queue.                                                                       |
-| Now Playing  | /np                               | Displays what song is currently playing.                                                                                     |
-| Lyrics       | /lyrics                           | Will get the currently playing songs lyrics. Lyrics are provided by Genius                                                   |
-| Lyrics       | /lyrics [song name]               | Will get the lyrics for the provided song. Lyrics are provided by Genius                                                     |
-| Queue        | /queue                            | Displays the first 20 songs in the queue.                                                                                    |
-| Volume       | /volume                           | Set's the volume. Use a number between 1 and 100.                                                                            |
-| Invite       | /invite                           | Sends an invite link for the bot.                                                                                            |
-| Playlist     | /playlist [youtube playlist url or spotify album or playlist]  | This command will add all songs from a youtube playlist or spotify album or playlist into the queue.                                                      |
-| Pause        | /pause                            | Will pause the song that is currently playing.                                                                               |
-| Remove       | /remove [position in queue]       | Will remove that song from the queue.                                                                                        |
+| Command Name | Usage                                                         | Description                                                                                                                             |
+| ------------ | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Play         | /play [song name, youtube or spotify link]                    | This will find the song from youtube or spotify and start playing. If there is something currently playing it will add it to the queue. |
+| Skip         | /skip                                                         | Will skip the currently playing song.                                                                                                   |
+| Stop         | /stop                                                         | Will stop currently playing song and delete the queue.                                                                                  |
+| Now Playing  | /np                                                           | Displays what song is currently playing.                                                                                                |
+| Lyrics       | /lyrics                                                       | Will get the currently playing songs lyrics. Lyrics are provided by Genius                                                              |
+| Lyrics       | /lyrics [song name]                                           | Will get the lyrics for the provided song. Lyrics are provided by Genius                                                                |
+| Queue        | /queue                                                        | Displays the first 20 songs in the queue.                                                                                               |
+| Volume       | /volume                                                       | Set's the volume. Use a number between 1 and 100.                                                                                       |
+| Invite       | /invite                                                       | Sends an invite link for the bot.                                                                                                       |
+| Playlist     | /playlist [youtube playlist url or spotify album or playlist] | This command will add all songs from a youtube playlist or spotify album or playlist into the queue.                                    |
+| Pause        | /pause                                                        | Will pause the song that is currently playing.                                                                                          |
+| Remove       | /remove [position in queue]                                   | Will remove that song from the queue.                                                                                                   |
 
 ## Getting Started
 
@@ -89,11 +89,11 @@ git clone https://github.com/Boombox-Discord/Boombox.git
 
 2.  Rename config-example.json to config.json and insert your own values. Leave the redis fields as they are.
 
-3. Get a clientID and client secret for Spotify [from here](https://developer.spotify.com/dashboard/applications) and paste it into the config file. This allows you to play music from Spotify links.
+3.  Get a clientID and client secret for Spotify [from here](https://developer.spotify.com/dashboard/applications) and paste it into the config file. This allows you to play music from Spotify links.
 
-3.  Rename lavalink-config-example.yml to lavalink-config.yml and replace password with something different. Make sure to put this password in the config.json file under lavalinkPassword.
+4.  Rename lavalink-config-example.yml to lavalink-config.yml and replace password with something different. Make sure to put this password in the config.json file under lavalinkPassword.
 
-4.  Run docker-compose
+5.  Run docker-compose
 
 ```sh
 docker-compose up -d

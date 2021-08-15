@@ -46,7 +46,8 @@ async function registerCommands() {
     },
     {
       name: "playlist",
-      description: "Plays all songs from a youtube playlist or spotify album or playlist.",
+      description:
+        "Plays all songs from a youtube playlist or spotify album or playlist.",
       options: [
         {
           name: "playlisturl",
