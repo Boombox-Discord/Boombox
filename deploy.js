@@ -4,8 +4,6 @@ const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 
 const { prefix, token } = require("./config.json"); //skipcq: JS-0266
 
-
-
 async function registerCommands() {
   const data = [
     {
