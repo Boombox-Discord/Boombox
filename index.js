@@ -35,12 +35,6 @@ Sentry.init({
   environment: sentryEnv,
 });
 
-// let spotifyPlugin
-
-// if (spotifyEnabled) {
-//   spotifyPlugin =
-// }
-
 client.manager = new Manager({
   nodes: [
     {

@@ -47,8 +47,6 @@ module.exports = {
       );
     await interaction.editReply({ embeds: [searchEmbed] });
 
-    console.log(query);
-
     const response = await manager.search(query);
     if (!response) {
       return interaction.editReply(
