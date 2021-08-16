@@ -4,7 +4,7 @@ const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 
 const { prefix, token } = require("./config.json"); //skipcq: JS-0266
 
-client.login(token);
+
 
 async function registerCommands() {
   const data = [
@@ -95,7 +95,9 @@ async function registerCommands() {
     },
   ];
   await client.application?.commands.set(data);
+  process.exit(0);
 }
 
 registerCommands();
-process.exit(0);
+
+client.login(token);
