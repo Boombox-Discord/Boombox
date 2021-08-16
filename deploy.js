@@ -4,18 +4,16 @@ const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 
 const { prefix, token } = require("./config.json"); //skipcq: JS-0266
 
-client.login(token);
-
 async function registerCommands() {
   const data = [
     {
       name: "play",
-      description: "Plays a song from youtube.",
+      description: "Plays a song from youtube or spotify.",
       options: [
         {
           name: "songname",
           type: "STRING",
-          description: "The Youtube URL or media name.",
+          description: "The Youtube URL, media name or spotify link.",
           required: true,
         },
       ],
@@ -46,12 +44,13 @@ async function registerCommands() {
     },
     {
       name: "playlist",
-      description: "Plays all songs from a youtube playlist.",
+      description:
+        "Plays all songs from a youtube playlist or spotify album or playlist.",
       options: [
         {
           name: "playlisturl",
           type: "STRING",
-          description: "Youtube URL to playlist",
+          description: "Link to youtube playlist or spotify album or playlist.",
           required: true,
         },
       ],
@@ -94,7 +93,9 @@ async function registerCommands() {
     },
   ];
   await client.application?.commands.set(data);
+  process.exit(0);
 }
 
 registerCommands();
-process.exit(0);
+
+client.login(token);
