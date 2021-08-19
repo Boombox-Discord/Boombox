@@ -107,95 +107,98 @@ module.exports = {
         }
       );
     } else if (interaction.options.getSubcommand() === "list") {
-        await getRedis(`save_${interaction.user.id}`, async function (err, reply) {
-            if (err) {
-                throw new Error("Error with Redis");
+      await getRedis(
+        `save_${interaction.user.id}`,
+        async function (err, reply) {
+          if (err) {
+            throw new Error("Error with Redis");
+          }
+
+          if (!reply) {
+            return interaction.reply("There are no saved queues!");
+          }
+
+          const savedQueues = JSON.parse(reply);
+          const size = 10;
+          const queueArray = [];
+
+          for (let i = 0; i < savedQueues.length; i += size) {
+            queueArray.push(savedQueues.slice(i, i + size));
+          }
+
+          let queueCount = 0;
+          let embedDesc = "";
+          let embedPage = 0;
+          let embedPagesArray = [];
+
+          for (let i = 0; i < queueArray.length; i++) {
+            const queueEmbed = new Discord.MessageEmbed()
+              .setColor("#ed1c24")
+              .setTitle(`Current Saved Queues for ${interaction.user.username}`)
+              .setAuthor(
+                interaction.client.user.username,
+                interaction.client.user.avatarURL()
+              )
+              .setThumbnail(savedQueues[0].songs[0].thumbnail);
+
+            for (let j = 0; j < queueArray[i].length; j++) {
+              queueCount++;
+              embedDesc += `${queueCount}. ${queueArray[i][j].name} with ${queueArray[i][j].songs.length} songs saved. \n`;
             }
+            queueEmbed.setDescription(embedDesc);
+            embedPagesArray.push(queueEmbed);
+          }
 
-            if (!reply) {
-                return interaction.reply("There are no saved queues!")
-            }
+          const Buttons = new Discord.MessageActionRow().addComponents(
+            new Discord.MessageButton()
+              .setCustomId("previousPage")
+              .setLabel("⬅️")
+              .setStyle("SECONDARY"),
 
-            const savedQueues = JSON.parse(reply)
-            const size = 10;
-            const queueArray = [];
+            new Discord.MessageButton()
+              .setCustomId("nextPage")
+              .setLabel("➡️")
+              .setStyle("SECONDARY")
+          );
 
-            for (let i = 0; i < savedQueues.length; i += size) {
-                queueArray.push(savedQueues.slice(i, i + size));
-            }
+          embedPagesArray[0].setFooter(
+            `Page: ${embedPage + 1}/${embedPagesArray.length}`
+          );
 
-            let queueCount = 0;
-            let embedDesc = "";
-            let embedPage = 0;
-            let embedPagesArray = [];
+          await interaction.reply({
+            embeds: [embedPagesArray[0]],
+            components: [Buttons],
+          });
+          const message = await interaction.fetchReply();
+          const collector = message.createMessageComponentCollector({
+            time: 15000,
+          });
 
-            for (let i = 0; i < queueArray.length; i++) {
-                const queueEmbed = new Discord.MessageEmbed()
-                    .setColor("#ed1c24")
-                    .setTitle(`Current Saved Queues for ${interaction.user.username}`)
-                    .setAuthor(
-                        interaction.client.user.username,
-                        interaction.client.user.avatarURL()
-                    )
-                    .setThumbnail(savedQueues[0].songs[0].thumbnail);
-
-                for (let j = 0; j < queueArray[i].length; j++) {
-                    queueCount++;
-                    embedDesc += `${queueCount}. ${queueArray[i][j].name} with ${queueArray[i][j].songs.length} songs saved. \n`
-                }
-                queueEmbed.setDescription(embedDesc);
-                embedPagesArray.push(queueEmbed)
-            }
-
-            const Buttons = new Discord.MessageActionRow().addComponents(
-                new Discord.MessageButton()
-                    .setCustomId("previousPage")
-                    .setLabel("⬅️")
-                    .setStyle("SECONDARY"),
-
-                new Discord.MessageButton()
-                    .setCustomId("nextPage")
-                    .setLabel("➡️")
-                    .setStyle("SECONDARY")
-            );
-
-            embedPagesArray[0].setFooter(
+          collector.on("collect", async (i) => {
+            if (i.customId === "nextPage") {
+              embedPage++;
+              if (embedPage >= embedPagesArray.length) embedPage = 0;
+              embedPagesArray[embedPage].setFooter(
                 `Page: ${embedPage + 1}/${embedPagesArray.length}`
-            );
-
-            await interaction.reply({
-                embeds: [embedPagesArray[0]],
+              );
+              await i.update({
+                embeds: [embedPagesArray[embedPage]],
                 components: [Buttons],
-            });
-            const message = await interaction.fetchReply();
-            const collector = message.createMessageComponentCollector({
-                time: 15000,
-            });
-
-            collector.on("collect", async (i) => {
-                if (i.customId === "nextPage") {
-                  embedPage++;
-                  if (embedPage >= embedPagesArray.length) embedPage = 0;
-                  embedPagesArray[embedPage].setFooter(
-                    `Page: ${embedPage + 1}/${embedPagesArray.length}`
-                  );
-                  await i.update({
-                    embeds: [embedPagesArray[embedPage]],
-                    components: [Buttons],
-                  });
-                } else if (i.customId === "previousPage") {
-                  embedPage--;
-                  if (embedPage < 0) embedPage = embedPagesArray.length - 1;
-                  embedPagesArray[embedPage].setFooter(
-                    `Page: ${embedPage + 1}/${embedPagesArray.length}`
-                  );
-                  await i.update({
-                    embeds: [embedPagesArray[embedPage]],
-                    components: [Buttons],
-                  });
-                }
               });
-        })
+            } else if (i.customId === "previousPage") {
+              embedPage--;
+              if (embedPage < 0) embedPage = embedPagesArray.length - 1;
+              embedPagesArray[embedPage].setFooter(
+                `Page: ${embedPage + 1}/${embedPagesArray.length}`
+              );
+              await i.update({
+                embeds: [embedPagesArray[embedPage]],
+                components: [Buttons],
+              });
+            }
+          });
+        }
+      );
     }
   },
 };
