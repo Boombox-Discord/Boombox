@@ -49,26 +49,53 @@ module.exports = {
     ),
   async execute(interaction) {
     if (interaction.options.getSubcommand() === "save") {
-      const queueName = interaction.options.getString("name");
-      let serverQueueSave;
-      await getRedis(
-        `guild_${interaction.guildId}`,
-        async function (err, reply) {
-          if (err) {
+        const queueName = interaction.options.getString("name")
+        let userQueues = []
+        await getRedis(`guild_${interaction.guildId}`, async function (err, reply) {
+            if (err) {
             throw new Error("Error with Redis");
-          }
-          const serverQueue = JSON.parse(reply);
+            }
+            const serverQueue = JSON.parse(reply);
 
-          if (!serverQueue) {
-            return interaction.reply(
-              "There is currently no songs in the queue to save!"
-            );
-          }
-          serverQueueSave = serverQueue;
-        }
-      );
+            if (!serverQueue) {
+                return interaction.reply(
+                    "There is currently no songs in the queue to save!"
+                );
+            }
 
-      console.log(serverQueueSave);
+            await getRedis(`save_${interaction.user.id}`, async function (err, reply) {
+                if (err) {
+                    throw new Error("Error with Redis");
+                }
+                
+                if (reply) {
+                    const redisSaveQueue = JSON.parse(reply)
+                    for (let i = 0; i < redisSaveQueue.length; i++) {
+                        return interaction.reply(`There is already a saved queue called ${queueName}! PLease choose a different name.`);
+                    }
+                    userQueues = JSON.parse(reply);
+                }
+
+                const queuePush = {
+                    name: queueName,
+                    songs: serverQueue.songs
+                }
+                userQueues.push(queuePush)
+                clientRedis.set(
+                    `save_${interaction.user.id}`,
+                    JSON.stringify(userQueues)
+                )
+                const saveEmbed = new Discord.MessageEmbed()
+                    .setColor("#ed1c24")
+                    .setTitle(`💾  I have saved the current queue under the name ${queueName}!`)
+                    .setAuthor(
+                        interaction.client.user.username,
+                        interaction.client.user.avatarURL()
+                    )
+
+                return interaction.reply({ embeds: [saveEmbed] })
+            })
+        })
     }
   },
 };
