@@ -122,7 +122,7 @@ for (const file of commandFiles) {
 client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`); //skipcq: JS-0002
   client.manager.init(client.user.id);
-  client.user.setActivity(`for /help`, { type: "WATCHING" });
+  client.user.setActivity("for /help", { type: "WATCHING" });
 });
 
 // send voice events to lavalink library
