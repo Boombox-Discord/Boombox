@@ -20,7 +20,9 @@ module.exports = {
       const serverQueue = JSON.parse(reply);
 
       if (!serverQueue) {
-        return interaction.editReply("There is currently no songs in the queue!");
+        return interaction.editReply(
+          "There is currently no songs in the queue!"
+        );
       }
       const size = 10;
       const songsArray = [];

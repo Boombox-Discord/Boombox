@@ -229,14 +229,14 @@ module.exports = {
           }
 
           const loadEmbed = new Discord.MessageEmbed()
-            .setColor('#ed1c24')
+            .setColor("#ed1c24")
             .setTitle(`Now loading all songs from the saved queue ${name}`)
             .setAuthor(
               interaction.client.user.username,
               interaction.client.user.avatarURL()
             );
-          
-          interaction.editReply({ embeds: [loadEmbed] })
+
+          interaction.editReply({ embeds: [loadEmbed] });
 
           const manager = interaction.client.manager;
           const voiceChannel = interaction.member.voice.channel;
@@ -319,14 +319,14 @@ module.exports = {
             );
           }
           const queueEmbed = new Discord.MessageEmbed()
-            .setColor('#ed1c24')
+            .setColor("#ed1c24")
             .setTitle(`All songs from ${name} has been loaded into the queue!`)
             .setAuthor(
               interaction.client.user.username,
               interaction.client.user.avatarURL()
             );
-          
-          return interaction.editReply({ embeds: [queueEmbed] })
+
+          return interaction.editReply({ embeds: [queueEmbed] });
         }
       );
     } else if (interaction.options.getSubcommand() === "delete") {
@@ -338,11 +338,11 @@ module.exports = {
           }
 
           if (!reply) {
-            return interaction.editReply("You have no queues saved!")
+            return interaction.editReply("You have no queues saved!");
           }
 
           const name = interaction.options.getString("name");
-          const savedQueues = JSON.parse(reply)
+          const savedQueues = JSON.parse(reply);
           var queueIndex = -1;
           for (let i = 0; i < savedQueues.length; i++) {
             if (savedQueues[i].name === name) {
@@ -354,31 +354,30 @@ module.exports = {
           if (queueIndex === -1) {
             return interaction.editReply(
               `The queue with the name of ${name} could not be found!`
-            )
+            );
           }
 
-          savedQueues.splice(queueIndex, 1)
+          savedQueues.splice(queueIndex, 1);
           if (savedQueues.length === 0) {
-            clientRedis.del(`save_${interaction.user.id}`)
+            clientRedis.del(`save_${interaction.user.id}`);
           } else {
             clientRedis.set(
               `save_${interaction.user.id}`,
               JSON.stringify(savedQueues)
-            )
+            );
           }
 
           const deleteEmbed = new Discord.MessageEmbed()
-            .setColor('#ed1c24')
+            .setColor("#ed1c24")
             .setTitle(`Deleted the queue ${name}`)
             .setAuthor(
               interaction.client.user.username,
               interaction.client.user.avatarURL()
             );
-          
-          return interaction.editReply({ embeds: [deleteEmbed] })
-          
+
+          return interaction.editReply({ embeds: [deleteEmbed] });
         }
-      )
+      );
     }
   },
 };

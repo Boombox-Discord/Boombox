@@ -35,7 +35,9 @@ module.exports = {
       const remove = interaction.options.get("songnumber").value;
 
       if (remove === 1) {
-        return interaction.editReply("I cannot remove the current song playing.");
+        return interaction.editReply(
+          "I cannot remove the current song playing."
+        );
       }
 
       if (remove > serverQueue.songs.length || remove < 0) {

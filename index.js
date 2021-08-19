@@ -131,7 +131,7 @@ client.on("raw", (d) => client.manager.updateVoiceState(d));
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
-  await interaction.deferReply()
+  await interaction.deferReply();
 
   const command = client.commands.get(interaction.commandName);
 
