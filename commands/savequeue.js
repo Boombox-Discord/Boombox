@@ -75,9 +75,12 @@ module.exports = {
               if (reply) {
                 const redisSaveQueue = JSON.parse(reply);
                 for (let i = 0; i < redisSaveQueue.length; i++) {
-                  return interaction.reply(
-                    `There is already a saved queue called ${queueName}! PLease choose a different name.`
-                  );
+                  if (redisSaveQueue[i].name === queueName) {
+                    return interaction.reply(
+                      `There is already a saved queue called ${queueName}! PLease choose a different name.`
+                    );
+                  }
+                  
                 }
                 userQueues = JSON.parse(reply);
               }
@@ -199,6 +202,104 @@ module.exports = {
           });
         }
       );
+    } else if (interaction.options.getSubcommand() === "load") {
+      await getRedis (
+        `save_${interaction.user.id}`,
+        async function (err, reply) {
+          if (err) {
+            throw new Error("Error with Redis.");
+          }
+
+          if (!reply) {
+            return interaction.reply("You have no queues saved!")
+          }
+          const name = interaction.options.getString("name");
+          const savedQueues = JSON.parse(reply);
+          var queueIndex = -1;
+          for (let i = 0; i < savedQueues.length; i++) {
+            if (savedQueues[i].name === name) {
+              queueIndex = i;
+              break;
+            }
+          }
+
+          if (queueIndex === -1) {
+            return interaction.reply(`The queue with the name of ${name} could not be found!`)
+          }
+
+          const manager = interaction.client.manager;
+          const voiceChannel = interaction.member.voice.channel;
+
+          if (!manager.get(interaction.guildId)) {
+            const permissions = voiceChannel.permissionsFor(interaction.client.user);
+
+            if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+              return interaction.reply(
+                "I don't have permission to join or speak in that voice channel!"
+              );
+            }
+
+            const response = await manager.search(savedQueues[queueIndex].songs[0].url)
+            if (!response) {
+              return interaction.editReply(
+                "Sorry, an error has occurred, please try again later!"
+              );
+            }
+            if (!response.tracks[0]) {
+              return interaction.editReply("Sorry, there were no songs found!");
+            }
+            if (response.tracks[0].isStream) {
+              return interaction.editReply("Sorry, that video is a livestream!");
+            }
+
+            const player = manager.create({
+              guild: interaction.guildId,
+              voiceChannel: voiceChannel.id,
+              textChannel: interaction.channelId
+            });
+
+            player.connect();
+
+            var serverQueue = {
+              textChannel: interaction.channel,
+              voiceChannel: voiceChannel,
+              songs: []
+            };
+
+            for (let i = 0; i < savedQueues[queueIndex].songs.length; i++) {
+              serverQueue.songs.push(savedQueues[queueIndex].songs[i])
+            }
+            
+            clientRedis.set(
+              `guild_${interaction.guildId}`,
+              JSON.stringify(serverQueue),
+              "EX",
+              86400
+            )
+            player.play(response.tracks[0])
+
+          } else {
+            await getRedis(`guild_${interaction.guildId}`, function(err, reply) {
+              if (err) {
+                throw new Error("Error with Redis");
+              }
+
+              const serverQueue = JSON.parse(reply);
+
+              for (let i = 0; i < savedQueues[queueIndex].songs.length; i++) {
+                serverQueue.songs.push(savedQueues[queueIndex].songs[i])
+              }
+
+              clientRedis.set(
+                `guild_${interaction.guildId}`,
+                JSON.stringify(serverQueue),
+                "EX",
+                "86400"
+              )
+            })
+          }
+        }
+      )
     }
   },
 };
