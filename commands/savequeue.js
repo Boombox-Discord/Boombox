@@ -65,47 +65,44 @@ module.exports = {
             );
           }
 
-          await getRedis(
-            `save_${interaction.user.id}`,
-            function (err, reply) {
-              if (err) {
-                throw new Error("Error with Redis");
-              }
-
-              if (reply) {
-                const redisSaveQueue = JSON.parse(reply);
-                for (let i = 0; i < redisSaveQueue.length; i++) {
-                  if (redisSaveQueue[i].name === queueName) {
-                    return interaction.editReply(
-                      `There is already a saved queue called ${queueName}! PLease choose a different name.`
-                    );
-                  }
-                }
-                userQueues = JSON.parse(reply);
-              }
-
-              const queuePush = {
-                name: queueName,
-                songs: serverQueue.songs,
-              };
-              userQueues.push(queuePush);
-              clientRedis.set(
-                `save_${interaction.user.id}`,
-                JSON.stringify(userQueues)
-              );
-              const saveEmbed = new Discord.MessageEmbed()
-                .setColor("#ed1c24")
-                .setTitle(
-                  `💾  I have saved the current queue under the name ${queueName}!`
-                )
-                .setAuthor(
-                  interaction.client.user.username,
-                  interaction.client.user.avatarURL()
-                );
-
-              return interaction.editReply({ embeds: [saveEmbed] });
+          await getRedis(`save_${interaction.user.id}`, function (err, reply) {
+            if (err) {
+              throw new Error("Error with Redis");
             }
-          );
+
+            if (reply) {
+              const redisSaveQueue = JSON.parse(reply);
+              for (let i = 0; i < redisSaveQueue.length; i++) {
+                if (redisSaveQueue[i].name === queueName) {
+                  return interaction.editReply(
+                    `There is already a saved queue called ${queueName}! PLease choose a different name.`
+                  );
+                }
+              }
+              userQueues = JSON.parse(reply);
+            }
+
+            const queuePush = {
+              name: queueName,
+              songs: serverQueue.songs,
+            };
+            userQueues.push(queuePush);
+            clientRedis.set(
+              `save_${interaction.user.id}`,
+              JSON.stringify(userQueues)
+            );
+            const saveEmbed = new Discord.MessageEmbed()
+              .setColor("#ed1c24")
+              .setTitle(
+                `💾  I have saved the current queue under the name ${queueName}!`
+              )
+              .setAuthor(
+                interaction.client.user.username,
+                interaction.client.user.avatarURL()
+              );
+
+            return interaction.editReply({ embeds: [saveEmbed] });
+          });
         }
       );
     } else if (interaction.options.getSubcommand() === "list") {
@@ -298,7 +295,8 @@ module.exports = {
           } else {
             await getRedis(
               `guild_${interaction.guildId}`,
-              function (err, reply) { //skipcq: JS-0123
+              function (err, reply) {
+                //skipcq: JS-0123
                 if (err) {
                   throw new Error("Error with Redis");
                 }
@@ -330,54 +328,51 @@ module.exports = {
         }
       );
     } else if (interaction.options.getSubcommand() === "delete") {
-      await getRedis(
-        `save_${interaction.user.id}`,
-        function (err, reply) {
-          if (err) {
-            throw new Error("Error with Reids.");
-          }
-
-          if (!reply) {
-            return interaction.editReply("You have no queues saved!");
-          }
-
-          const name = interaction.options.getString("name");
-          const savedQueues = JSON.parse(reply);
-          let queueIndex = -1;
-          for (let i = 0; i < savedQueues.length; i++) {
-            if (savedQueues[i].name === name) {
-              queueIndex = i;
-              break;
-            }
-          }
-
-          if (queueIndex === -1) {
-            return interaction.editReply(
-              `The queue with the name of ${name} could not be found!`
-            );
-          }
-
-          savedQueues.splice(queueIndex, 1);
-          if (savedQueues.length === 0) {
-            clientRedis.del(`save_${interaction.user.id}`);
-          } else {
-            clientRedis.set(
-              `save_${interaction.user.id}`,
-              JSON.stringify(savedQueues)
-            );
-          }
-
-          const deleteEmbed = new Discord.MessageEmbed()
-            .setColor("#ed1c24")
-            .setTitle(`Deleted the queue ${name}`)
-            .setAuthor(
-              interaction.client.user.username,
-              interaction.client.user.avatarURL()
-            );
-
-          return interaction.editReply({ embeds: [deleteEmbed] });
+      await getRedis(`save_${interaction.user.id}`, function (err, reply) {
+        if (err) {
+          throw new Error("Error with Reids.");
         }
-      );
+
+        if (!reply) {
+          return interaction.editReply("You have no queues saved!");
+        }
+
+        const name = interaction.options.getString("name");
+        const savedQueues = JSON.parse(reply);
+        let queueIndex = -1;
+        for (let i = 0; i < savedQueues.length; i++) {
+          if (savedQueues[i].name === name) {
+            queueIndex = i;
+            break;
+          }
+        }
+
+        if (queueIndex === -1) {
+          return interaction.editReply(
+            `The queue with the name of ${name} could not be found!`
+          );
+        }
+
+        savedQueues.splice(queueIndex, 1);
+        if (savedQueues.length === 0) {
+          clientRedis.del(`save_${interaction.user.id}`);
+        } else {
+          clientRedis.set(
+            `save_${interaction.user.id}`,
+            JSON.stringify(savedQueues)
+          );
+        }
+
+        const deleteEmbed = new Discord.MessageEmbed()
+          .setColor("#ed1c24")
+          .setTitle(`Deleted the queue ${name}`)
+          .setAuthor(
+            interaction.client.user.username,
+            interaction.client.user.avatarURL()
+          );
+
+        return interaction.editReply({ embeds: [deleteEmbed] });
+      });
     }
   },
 };
