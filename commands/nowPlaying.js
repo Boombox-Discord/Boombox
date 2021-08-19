@@ -17,7 +17,7 @@ module.exports = {
     const player = manager.get(interaction.guildId);
 
     if (!player) {
-      return interaction.reply("There is currently no songs playing!");
+      return interaction.editReply("There is currently no songs playing!");
     }
 
     await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
@@ -37,7 +37,7 @@ module.exports = {
         .setURL(serverQueue.songs[0].url)
         .setThumbnail(serverQueue.songs[0].thumbnail);
 
-      return interaction.reply({ embeds: [npEmbed] });
+      return interaction.editReply({ embeds: [npEmbed] });
     });
   },
 };

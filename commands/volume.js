@@ -22,12 +22,12 @@ module.exports = {
     const volume = interaction.options.get("volume").value;
 
     if (!player) {
-      return interaction.reply("There is currently no songs playing!");
+      return interaction.editReply("There is currently no songs playing!");
     }
 
     if (volume >= 101 || volume <= 0) {
       //skipcq: JS-0074
-      return interaction.reply("Please select a number between 1 and 100!");
+      return interaction.editReply("Please select a number between 1 and 100!");
     }
 
     player.setVolume(volume);
@@ -39,6 +39,6 @@ module.exports = {
         interaction.client.user.avatarURL()
       );
 
-    return interaction.reply({ embeds: [embed] });
+    return interaction.editReply({ embeds: [embed] });
   },
 };

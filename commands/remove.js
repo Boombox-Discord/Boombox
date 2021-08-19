@@ -23,7 +23,7 @@ module.exports = {
     const player = manager.get(interaction.guildId);
 
     if (!player) {
-      return interaction.reply("There is currently no songs in the queue!");
+      return interaction.editReply("There is currently no songs in the queue!");
     }
 
     await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
@@ -35,11 +35,11 @@ module.exports = {
       const remove = interaction.options.get("songnumber").value;
 
       if (remove === 1) {
-        return interaction.reply("I cannot remove the current song playing.");
+        return interaction.editReply("I cannot remove the current song playing.");
       }
 
       if (remove > serverQueue.songs.length || remove < 0) {
-        return interaction.reply(
+        return interaction.editReply(
           `The queue is only ${serverQueue.songs.length} songs long!`
         );
       }
@@ -62,7 +62,7 @@ module.exports = {
           interaction.client.user.avatarURL()
         );
 
-      return interaction.reply({ embeds: [replyEmbed] });
+      return interaction.editReply({ embeds: [replyEmbed] });
     });
   },
 };

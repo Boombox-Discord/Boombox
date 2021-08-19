@@ -7,7 +7,7 @@ module.exports = {
   name: "savequeue",
   description: "Saves the current queue, or loads a saved queue.",
   args: true,
-  usage: "<save | load | list> <queue ID>",
+  usage: "<save | load | list> [queue name]",
   data: new SlashCommandBuilder()
     .setName("savequeue")
     .setDescription("Saves the current queue, or loads a saved queue.")
@@ -60,7 +60,7 @@ module.exports = {
           const serverQueue = JSON.parse(reply);
 
           if (!serverQueue) {
-            return interaction.reply(
+            return interaction.editReply(
               "There is currently no songs in the queue to save!"
             );
           }
@@ -76,7 +76,7 @@ module.exports = {
                 const redisSaveQueue = JSON.parse(reply);
                 for (let i = 0; i < redisSaveQueue.length; i++) {
                   if (redisSaveQueue[i].name === queueName) {
-                    return interaction.reply(
+                    return interaction.editReply(
                       `There is already a saved queue called ${queueName}! PLease choose a different name.`
                     );
                   }
@@ -103,7 +103,7 @@ module.exports = {
                   interaction.client.user.avatarURL()
                 );
 
-              return interaction.reply({ embeds: [saveEmbed] });
+              return interaction.editReply({ embeds: [saveEmbed] });
             }
           );
         }
@@ -117,7 +117,7 @@ module.exports = {
           }
 
           if (!reply) {
-            return interaction.reply("There are no saved queues!");
+            return interaction.editReply("There are no saved queues!");
           }
 
           const savedQueues = JSON.parse(reply);
@@ -167,7 +167,7 @@ module.exports = {
             `Page: ${embedPage + 1}/${embedPagesArray.length}`
           );
 
-          await interaction.reply({
+          await interaction.editReply({
             embeds: [embedPagesArray[0]],
             components: [Buttons],
           });
@@ -210,7 +210,7 @@ module.exports = {
           }
 
           if (!reply) {
-            return interaction.reply("You have no queues saved!");
+            return interaction.editReply("You have no queues saved!");
           }
           const name = interaction.options.getString("name");
           const savedQueues = JSON.parse(reply);
@@ -223,10 +223,20 @@ module.exports = {
           }
 
           if (queueIndex === -1) {
-            return interaction.reply(
+            return interaction.editReply(
               `The queue with the name of ${name} could not be found!`
             );
           }
+
+          const loadEmbed = new Discord.MessageEmbed()
+            .setColor('#ed1c24')
+            .setTitle(`Now loading all songs from the saved queue ${name}`)
+            .setAuthor(
+              interaction.client.user.username,
+              interaction.client.user.avatarURL()
+            );
+          
+          interaction.editReply({ embeds: [loadEmbed] })
 
           const manager = interaction.client.manager;
           const voiceChannel = interaction.member.voice.channel;
@@ -237,7 +247,7 @@ module.exports = {
             );
 
             if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-              return interaction.reply(
+              return interaction.editReply(
                 "I don't have permission to join or speak in that voice channel!"
               );
             }
@@ -283,6 +293,7 @@ module.exports = {
               "EX",
               86400
             );
+
             player.play(response.tracks[0]);
           } else {
             await getRedis(
@@ -307,8 +318,67 @@ module.exports = {
               }
             );
           }
+          const queueEmbed = new Discord.MessageEmbed()
+            .setColor('#ed1c24')
+            .setTitle(`All songs from ${name} has been loaded into the queue!`)
+            .setAuthor(
+              interaction.client.user.username,
+              interaction.client.user.avatarURL()
+            );
+          
+          return interaction.editReply({ embeds: [queueEmbed] })
         }
       );
+    } else if (interaction.options.getSubcommand() === "delete") {
+      await getRedis(
+        `save_${interaction.user.id}`,
+        async function (err, reply) {
+          if (err) {
+            throw new Error("Error with Reids.");
+          }
+
+          if (!reply) {
+            return interaction.editReply("You have no queues saved!")
+          }
+
+          const name = interaction.options.getString("name");
+          const savedQueues = JSON.parse(reply)
+          var queueIndex = -1;
+          for (let i = 0; i < savedQueues.length; i++) {
+            if (savedQueues[i].name === name) {
+              queueIndex = i;
+              break;
+            }
+          }
+
+          if (queueIndex === -1) {
+            return interaction.editReply(
+              `The queue with the name of ${name} could not be found!`
+            )
+          }
+
+          savedQueues.splice(queueIndex, 1)
+          if (savedQueues.length === 0) {
+            clientRedis.del(`save_${interaction.user.id}`)
+          } else {
+            clientRedis.set(
+              `save_${interaction.user.id}`,
+              JSON.stringify(savedQueues)
+            )
+          }
+
+          const deleteEmbed = new Discord.MessageEmbed()
+            .setColor('#ed1c24')
+            .setTitle(`Deleted the queue ${name}`)
+            .setAuthor(
+              interaction.client.user.username,
+              interaction.client.user.avatarURL()
+            );
+          
+          return interaction.editReply({ embeds: [deleteEmbed] })
+          
+        }
+      )
     }
   },
 };

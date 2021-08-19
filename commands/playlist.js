@@ -23,7 +23,6 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    await interaction.deferReply();
     const manager = interaction.client.manager;
     const voiceChannel = interaction.member.voice.channel;
 

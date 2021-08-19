@@ -47,10 +47,10 @@ module.exports = {
           if (interaction.channel.type === "dm") {
             return;
           }
-          interaction.reply("I've sent you a DM with all my commands!");
+          interaction.editReply("I've sent you a DM with all my commands!");
         })
         .catch((error) => {
-          interaction.reply(
+          interaction.editReply(
             "it seems like I can't DM you! Do you have DMs disabled?"
           );
         });
@@ -60,7 +60,7 @@ module.exports = {
     const command = commands.get(name);
 
     if (!command) {
-      return interaction.reply("That's not a valid command!");
+      return interaction.editReply("That's not a valid command!");
     }
 
     const helpCommandEmbed = new Discord.MessageEmbed()
@@ -82,6 +82,6 @@ module.exports = {
       helpCommandEmbed.addField("Usage", `/${command.name} ${command.usage}`);
     }
 
-    interaction.reply({ embeds: [helpCommandEmbed] });
+    interaction.editReply({ embeds: [helpCommandEmbed] });
   },
 };

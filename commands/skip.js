@@ -15,10 +15,10 @@ module.exports = {
     const player = manager.get(interaction.guildId);
 
     if (!player) {
-      return interaction.reply("There is currently not song playing!");
+      return interaction.editReply("There is currently not song playing!");
     }
 
-    interaction.reply("I have skipped to the next song!");
+    interaction.editReply("I have skipped to the next song!");
 
     return player.stop();
   },

@@ -23,6 +23,6 @@ module.exports = {
         `Click Here to Invite ${interaction.client.user.username} To Your Server!`
       )
       .setURL(inviteLink);
-    return interaction.reply({ embeds: [embed] });
+    return interaction.editReply({ embeds: [embed] });
   },
 };

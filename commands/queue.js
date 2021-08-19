@@ -20,7 +20,7 @@ module.exports = {
       const serverQueue = JSON.parse(reply);
 
       if (!serverQueue) {
-        return interaction.reply("There is currently no songs in the queue!");
+        return interaction.editReply("There is currently no songs in the queue!");
       }
       const size = 10;
       const songsArray = [];
@@ -68,7 +68,7 @@ module.exports = {
       embedPagesArray[0].setFooter(
         `Page: ${embedPage + 1}/${embedPagesArray.length}`
       );
-      await interaction.reply({
+      await interaction.editReply({
         embeds: [embedPagesArray[0]],
         components: [Buttons],
       });

@@ -16,7 +16,7 @@ module.exports = {
     const player = manager.get(interaction.guildId);
 
     if (!player) {
-      return interaction.reply("There is currently no songs playing!");
+      return interaction.editReply("There is currently no songs playing!");
     }
 
     if (player.paused) {
@@ -28,7 +28,7 @@ module.exports = {
           interaction.client.user.username,
           interaction.client.user.avatarURL()
         );
-      return interaction.reply({ embeds: [messageEmbed] });
+      return interaction.editReply({ embeds: [messageEmbed] });
     }
     player.pause(true);
     const messageEmbed = new Discord.MessageEmbed()
@@ -38,6 +38,6 @@ module.exports = {
         interaction.client.user.username,
         interaction.client.user.avatarURL()
       );
-    return interaction.reply({ embeds: [messageEmbed] });
+    return interaction.editReply({ embeds: [messageEmbed] });
   },
 };
