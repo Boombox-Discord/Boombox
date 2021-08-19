@@ -1,11 +1,15 @@
 "use strict";
-const { prefix } = require("../config.json"); //skipcq: JS-0266
 const Discord = require("discord.js");
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
   name: "help",
   description: "List's all available commands and info for the commands.",
   usage: "[command name]",
+  data: new SlashCommandBuilder()
+    .setName('help')
+    .setDescription("List's all available commands and info for the commands.")
+    .addUserOption(option => option.setName('command').setDescription('Name of the command you want help for.')),
   execute(interaction) {
     const { commands } = interaction.client;
 
@@ -24,10 +28,10 @@ module.exports = {
         );
       commands.forEach((command) => {
         if (!command.usage) {
-          helpEmbed.addField(`${prefix}${command.name}`, command.description);
+          helpEmbed.addField(`/${command.name}`, command.description);
         } else {
           helpEmbed.addField(
-            `${prefix}${command.name} ${command.usage}`,
+            `/${command.name} ${command.usage}`,
             command.description
           );
         }
@@ -69,11 +73,11 @@ module.exports = {
       );
 
     if (!command.usage) {
-      helpCommandEmbed.addField("Usage", `${prefix}${command.name}`);
+      helpCommandEmbed.addField("Usage", `/${command.name}`);
     } else {
       helpCommandEmbed.addField(
         "Usage",
-        `${prefix}${command.name} ${command.usage}`
+        `/${command.name} ${command.usage}`
       );
     }
 

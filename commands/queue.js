@@ -1,6 +1,7 @@
 "use strict";
 const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
 const { getRedis } = require("../utils/redis");
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
   name: "queue",
@@ -8,6 +9,9 @@ module.exports = {
   args: false,
   guildOnly: true,
   voice: true,
+  data: new SlashCommandBuilder()
+    .setName('queue')
+    .setDescription("Shows the current queue"),
   async execute(interaction) {
     await getRedis(`guild_${interaction.guildId}`, async function (err, reply) {
       if (err) {

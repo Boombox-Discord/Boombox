@@ -1,5 +1,6 @@
 "use strict";
 const Discord = require("discord.js");
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
   name: "pause",
@@ -7,6 +8,9 @@ module.exports = {
   args: false,
   guildOnly: true,
   voice: true,
+  data: new SlashCommandBuilder()
+    .setName('pause')
+    .setDescription('Pause or resume the current song.'),
   execute(interaction) {
     const manager = interaction.client.manager;
     const player = manager.get(interaction.guildId);
