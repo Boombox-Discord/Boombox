@@ -80,7 +80,6 @@ module.exports = {
                       `There is already a saved queue called ${queueName}! PLease choose a different name.`
                     );
                   }
-                  
                 }
                 userQueues = JSON.parse(reply);
               }
@@ -203,7 +202,7 @@ module.exports = {
         }
       );
     } else if (interaction.options.getSubcommand() === "load") {
-      await getRedis (
+      await getRedis(
         `save_${interaction.user.id}`,
         async function (err, reply) {
           if (err) {
@@ -211,7 +210,7 @@ module.exports = {
           }
 
           if (!reply) {
-            return interaction.reply("You have no queues saved!")
+            return interaction.reply("You have no queues saved!");
           }
           const name = interaction.options.getString("name");
           const savedQueues = JSON.parse(reply);
@@ -224,14 +223,18 @@ module.exports = {
           }
 
           if (queueIndex === -1) {
-            return interaction.reply(`The queue with the name of ${name} could not be found!`)
+            return interaction.reply(
+              `The queue with the name of ${name} could not be found!`
+            );
           }
 
           const manager = interaction.client.manager;
           const voiceChannel = interaction.member.voice.channel;
 
           if (!manager.get(interaction.guildId)) {
-            const permissions = voiceChannel.permissionsFor(interaction.client.user);
+            const permissions = voiceChannel.permissionsFor(
+              interaction.client.user
+            );
 
             if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
               return interaction.reply(
@@ -239,7 +242,9 @@ module.exports = {
               );
             }
 
-            const response = await manager.search(savedQueues[queueIndex].songs[0].url)
+            const response = await manager.search(
+              savedQueues[queueIndex].songs[0].url
+            );
             if (!response) {
               return interaction.editReply(
                 "Sorry, an error has occurred, please try again later!"
@@ -249,13 +254,15 @@ module.exports = {
               return interaction.editReply("Sorry, there were no songs found!");
             }
             if (response.tracks[0].isStream) {
-              return interaction.editReply("Sorry, that video is a livestream!");
+              return interaction.editReply(
+                "Sorry, that video is a livestream!"
+              );
             }
 
             const player = manager.create({
               guild: interaction.guildId,
               voiceChannel: voiceChannel.id,
-              textChannel: interaction.channelId
+              textChannel: interaction.channelId,
             });
 
             player.connect();
@@ -263,43 +270,45 @@ module.exports = {
             var serverQueue = {
               textChannel: interaction.channel,
               voiceChannel: voiceChannel,
-              songs: []
+              songs: [],
             };
 
             for (let i = 0; i < savedQueues[queueIndex].songs.length; i++) {
-              serverQueue.songs.push(savedQueues[queueIndex].songs[i])
+              serverQueue.songs.push(savedQueues[queueIndex].songs[i]);
             }
-            
+
             clientRedis.set(
               `guild_${interaction.guildId}`,
               JSON.stringify(serverQueue),
               "EX",
               86400
-            )
-            player.play(response.tracks[0])
-
+            );
+            player.play(response.tracks[0]);
           } else {
-            await getRedis(`guild_${interaction.guildId}`, function(err, reply) {
-              if (err) {
-                throw new Error("Error with Redis");
+            await getRedis(
+              `guild_${interaction.guildId}`,
+              function (err, reply) {
+                if (err) {
+                  throw new Error("Error with Redis");
+                }
+
+                const serverQueue = JSON.parse(reply);
+
+                for (let i = 0; i < savedQueues[queueIndex].songs.length; i++) {
+                  serverQueue.songs.push(savedQueues[queueIndex].songs[i]);
+                }
+
+                clientRedis.set(
+                  `guild_${interaction.guildId}`,
+                  JSON.stringify(serverQueue),
+                  "EX",
+                  "86400"
+                );
               }
-
-              const serverQueue = JSON.parse(reply);
-
-              for (let i = 0; i < savedQueues[queueIndex].songs.length; i++) {
-                serverQueue.songs.push(savedQueues[queueIndex].songs[i])
-              }
-
-              clientRedis.set(
-                `guild_${interaction.guildId}`,
-                JSON.stringify(serverQueue),
-                "EX",
-                "86400"
-              )
-            })
+            );
           }
         }
-      )
+      );
     }
   },
 };
