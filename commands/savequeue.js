@@ -67,7 +67,7 @@ module.exports = {
 
           await getRedis(
             `save_${interaction.user.id}`,
-            async function (err, reply) {
+            function (err, reply) {
               if (err) {
                 throw new Error("Error with Redis");
               }
@@ -131,7 +131,7 @@ module.exports = {
           let queueCount = 0;
           let embedDesc = "";
           let embedPage = 0;
-          let embedPagesArray = [];
+          const embedPagesArray = [];
 
           for (let i = 0; i < queueArray.length; i++) {
             const queueEmbed = new Discord.MessageEmbed()
@@ -214,7 +214,7 @@ module.exports = {
           }
           const name = interaction.options.getString("name");
           const savedQueues = JSON.parse(reply);
-          var queueIndex = -1;
+          let queueIndex = -1;
           for (let i = 0; i < savedQueues.length; i++) {
             if (savedQueues[i].name === name) {
               queueIndex = i;
@@ -277,9 +277,9 @@ module.exports = {
 
             player.connect();
 
-            var serverQueue = {
+            let serverQueue = {
               textChannel: interaction.channel,
-              voiceChannel: voiceChannel,
+              voiceChannel: voiceChannel, //skipcq: JS-0240
               songs: [],
             };
 
@@ -298,12 +298,12 @@ module.exports = {
           } else {
             await getRedis(
               `guild_${interaction.guildId}`,
-              function (err, reply) {
+              function (err, reply) { //skipcq: JS-0123
                 if (err) {
                   throw new Error("Error with Redis");
                 }
 
-                const serverQueue = JSON.parse(reply);
+                const serverQueue = JSON.parse(reply); //skipcq: JS-0123
 
                 for (let i = 0; i < savedQueues[queueIndex].songs.length; i++) {
                   serverQueue.songs.push(savedQueues[queueIndex].songs[i]);
@@ -332,7 +332,7 @@ module.exports = {
     } else if (interaction.options.getSubcommand() === "delete") {
       await getRedis(
         `save_${interaction.user.id}`,
-        async function (err, reply) {
+        function (err, reply) {
           if (err) {
             throw new Error("Error with Reids.");
           }
@@ -343,7 +343,7 @@ module.exports = {
 
           const name = interaction.options.getString("name");
           const savedQueues = JSON.parse(reply);
-          var queueIndex = -1;
+          let queueIndex = -1;
           for (let i = 0; i < savedQueues.length; i++) {
             if (savedQueues[i].name === name) {
               queueIndex = i;
