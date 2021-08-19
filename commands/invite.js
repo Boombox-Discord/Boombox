@@ -1,7 +1,7 @@
 "use strict";
 const { inviteLink } = require("../config.json"); //skipcq: JS-0266
 const Discord = require("discord.js");
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
   name: "invite",
@@ -10,7 +10,7 @@ module.exports = {
   guildOnly: false,
   voice: false,
   data: new SlashCommandBuilder()
-    .setName('invite')
+    .setName("invite")
     .setDescription("Sends an invite link for the bot."),
   execute(interaction) {
     const embed = new Discord.MessageEmbed()

@@ -1,6 +1,6 @@
 "use strict";
 const { clientRedis, getRedis } = require("../utils/redis");
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
   name: "stop",
@@ -9,7 +9,7 @@ module.exports = {
   guildOnly: true,
   voice: true,
   data: new SlashCommandBuilder()
-    .setName('stop')
+    .setName("stop")
     .setDescription("Stop's the currnet playing song and deletes the queue."),
   async execute(interaction) {
     const manager = interaction.client.manager;

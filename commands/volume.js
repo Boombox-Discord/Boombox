@@ -1,6 +1,6 @@
 "use strict";
 const Discord = require("discord.js");
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
   name: "volume",
@@ -10,9 +10,11 @@ module.exports = {
   guildOnly: true,
   voice: true,
   data: new SlashCommandBuilder()
-    .setName('volume')
+    .setName("volume")
     .setDescription("Set's the volume to a number between 0 and 100.")
-    .addIntegerOption(option => option.setName('volume').setDescription('Volume').setRequired(true)),
+    .addIntegerOption((option) =>
+      option.setName("volume").setDescription("Volume").setRequired(true)
+    ),
   execute(interaction) {
     const manager = interaction.client.manager;
     const player = manager.get(interaction.guildId);

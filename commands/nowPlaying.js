@@ -1,7 +1,7 @@
 "use strict";
 const Discord = require("discord.js");
 const { getRedis } = require("../utils/redis");
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
   name: "nowplaying",
@@ -10,8 +10,8 @@ module.exports = {
   guildOnly: true,
   voice: true,
   data: new SlashCommandBuilder()
-    .setName('nowplaying')
-    .setDescription('Shows the media that is currently playing.'),
+    .setName("nowplaying")
+    .setDescription("Shows the media that is currently playing."),
   async execute(interaction) {
     const manager = interaction.client.manager;
     const player = manager.get(interaction.guildId);

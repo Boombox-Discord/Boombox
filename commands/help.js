@@ -1,15 +1,19 @@
 "use strict";
 const Discord = require("discord.js");
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
   name: "help",
   description: "List's all available commands and info for the commands.",
   usage: "[command name]",
   data: new SlashCommandBuilder()
-    .setName('help')
+    .setName("help")
     .setDescription("List's all available commands and info for the commands.")
-    .addUserOption(option => option.setName('command').setDescription('Name of the command you want help for.')),
+    .addUserOption((option) =>
+      option
+        .setName("command")
+        .setDescription("Name of the command you want help for.")
+    ),
   execute(interaction) {
     const { commands } = interaction.client;
 
@@ -75,10 +79,7 @@ module.exports = {
     if (!command.usage) {
       helpCommandEmbed.addField("Usage", `/${command.name}`);
     } else {
-      helpCommandEmbed.addField(
-        "Usage",
-        `/${command.name} ${command.usage}`
-      );
+      helpCommandEmbed.addField("Usage", `/${command.name} ${command.usage}`);
     }
 
     interaction.reply({ embeds: [helpCommandEmbed] });

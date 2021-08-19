@@ -1,7 +1,7 @@
 "use strict";
 const { getRedis, clientRedis } = require("../utils/redis");
 const Discord = require("discord.js");
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
   name: "remove",
@@ -10,9 +10,14 @@ module.exports = {
   guildOnly: true,
   voice: true,
   data: new SlashCommandBuilder()
-    .setName('remove')
-    .setDescription('Removes a specifc song from the queue')
-    .addIntegerOption(option => option.setName('songnumber').setDescription('Song number in queue to remove.').setRequired(true)),
+    .setName("remove")
+    .setDescription("Removes a specifc song from the queue")
+    .addIntegerOption((option) =>
+      option
+        .setName("songnumber")
+        .setDescription("Song number in queue to remove.")
+        .setRequired(true)
+    ),
   async execute(interaction) {
     const manager = interaction.client.manager;
     const player = manager.get(interaction.guildId);
