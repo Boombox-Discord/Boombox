@@ -274,7 +274,7 @@ module.exports = {
 
             player.connect();
 
-            let serverQueue = {
+            const serverQueue = {
               textChannel: interaction.channel,
               voiceChannel: voiceChannel, //skipcq: JS-0240
               songs: [],
