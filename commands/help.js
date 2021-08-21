@@ -9,7 +9,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("help")
     .setDescription("List's all available commands and info for the commands.")
-    .addUserOption((option) =>
+    .addStringOption((option) =>
       option
         .setName("command")
         .setDescription("Name of the command you want help for.")
