@@ -137,13 +137,13 @@ client.on("interactionCreate", async (interaction) => {
 
   if (command.guildOnly) {
     if (!interaction.guild) {
-      return interaction.reply("This command can only be ran in guilds!");
+      return interaction.editReply("This command can only be ran in guilds!");
     }
   }
 
   if (command.voice) {
     if (!interaction.member.voice.channel) {
-      return interaction.reply("You are not in a voice channel!");
+      return interaction.editReply("You are not in a voice channel!");
     }
   }
 
