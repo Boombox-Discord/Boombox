@@ -1,6 +1,7 @@
 "use strict";
 const { inviteLink } = require("../config.json"); //skipcq: JS-0266
 const Discord = require("discord.js");
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
   name: "invite",
@@ -8,6 +9,9 @@ module.exports = {
   args: false,
   guildOnly: false,
   voice: false,
+  data: new SlashCommandBuilder()
+    .setName("invite")
+    .setDescription("Sends an invite link for the bot."),
   execute(interaction) {
     const embed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
@@ -19,6 +23,6 @@ module.exports = {
         `Click Here to Invite ${interaction.client.user.username} To Your Server!`
       )
       .setURL(inviteLink);
-    return interaction.reply({ embeds: [embed] });
+    return interaction.editReply({ embeds: [embed] });
   },
 };

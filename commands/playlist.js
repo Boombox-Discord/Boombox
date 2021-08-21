@@ -1,16 +1,28 @@
 "use strict";
 const Discord = require("discord.js");
 const { getRedis, clientRedis } = require("../utils/redis");
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
   name: "playlist",
-  description: "Plays all songs from a youtube playlist.",
+  description:
+    "Plays all songs from a youtube playlist, spotify album or spotify playlist.",
   args: true,
-  usage: "<youtube URL>",
+  usage: "<youtube URL, spotify album or playlist URL>",
   guildOnly: true,
   voice: true,
+  data: new SlashCommandBuilder()
+    .setName("playlist")
+    .setDescription(
+      "Plays all songs from a youtube playlist, spotify album or spotify playlist."
+    )
+    .addStringOption((option) =>
+      option
+        .setName("playlisturl")
+        .setDescription("Youtube URL, spotify album or playlist URL.")
+        .setRequired(true)
+    ),
   async execute(interaction) {
-    await interaction.deferReply();
     const manager = interaction.client.manager;
     const voiceChannel = interaction.member.voice.channel;
 

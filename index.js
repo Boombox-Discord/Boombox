@@ -122,7 +122,7 @@ for (const file of commandFiles) {
 client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`); //skipcq: JS-0002
   client.manager.init(client.user.id);
-  client.user.setActivity(`for ${prefix}help`, { type: "WATCHING" });
+  client.user.setActivity("for /help", { type: "WATCHING" });
 });
 
 // send voice events to lavalink library
@@ -131,6 +131,7 @@ client.on("raw", (d) => client.manager.updateVoiceState(d));
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
+  await interaction.deferReply();
 
   const command = client.commands.get(interaction.commandName);
 
@@ -155,7 +156,7 @@ client.on("interactionCreate", async (interaction) => {
     await command.execute(interaction);
   } catch (err) {
     console.error(err); //skipcq: JS-0002
-    interaction.reply("There was an error trying to execute that command!");
+    interaction.editReply("There was an error trying to execute that command!");
     Sentry.captureException(err);
   } finally {
     transaction.finish();

@@ -11,5 +11,6 @@
   "sentryDSN": "",
   "sentryEnv": "dev",
   "spotifyClientID": "",
-  "spotifyClientSecret": ""
+  "spotifyClientSecret": "",
+  "clientId": "Discord Client ID"
 }

@@ -1,6 +1,7 @@
 "use strict";
 const { getRedis, clientRedis } = require("../utils/redis");
 const Discord = require("discord.js");
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
   name: "remove",
@@ -8,12 +9,21 @@ module.exports = {
   args: false,
   guildOnly: true,
   voice: true,
+  data: new SlashCommandBuilder()
+    .setName("remove")
+    .setDescription("Removes a specifc song from the queue")
+    .addIntegerOption((option) =>
+      option
+        .setName("songnumber")
+        .setDescription("Song number in queue to remove.")
+        .setRequired(true)
+    ),
   async execute(interaction) {
     const manager = interaction.client.manager;
     const player = manager.get(interaction.guildId);
 
     if (!player) {
-      return interaction.reply("There is currently no songs in the queue!");
+      return interaction.editReply("There is currently no songs in the queue!");
     }
 
     await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
@@ -25,11 +35,13 @@ module.exports = {
       const remove = interaction.options.get("songnumber").value;
 
       if (remove === 1) {
-        return interaction.reply("I cannot remove the current song playing.");
+        return interaction.editReply(
+          "I cannot remove the current song playing."
+        );
       }
 
       if (remove > serverQueue.songs.length || remove < 0) {
-        return interaction.reply(
+        return interaction.editReply(
           `The queue is only ${serverQueue.songs.length} songs long!`
         );
       }
@@ -52,7 +64,7 @@ module.exports = {
           interaction.client.user.avatarURL()
         );
 
-      return interaction.reply({ embeds: [replyEmbed] });
+      return interaction.editReply({ embeds: [replyEmbed] });
     });
   },
 };

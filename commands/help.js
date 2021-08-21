@@ -1,11 +1,19 @@
 "use strict";
-const { prefix } = require("../config.json"); //skipcq: JS-0266
 const Discord = require("discord.js");
+const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
   name: "help",
   description: "List's all available commands and info for the commands.",
   usage: "[command name]",
+  data: new SlashCommandBuilder()
+    .setName("help")
+    .setDescription("List's all available commands and info for the commands.")
+    .addUserOption((option) =>
+      option
+        .setName("command")
+        .setDescription("Name of the command you want help for.")
+    ),
   execute(interaction) {
     const { commands } = interaction.client;
 
@@ -24,10 +32,10 @@ module.exports = {
         );
       commands.forEach((command) => {
         if (!command.usage) {
-          helpEmbed.addField(`${prefix}${command.name}`, command.description);
+          helpEmbed.addField(`/${command.name}`, command.description);
         } else {
           helpEmbed.addField(
-            `${prefix}${command.name} ${command.usage}`,
+            `/${command.name} ${command.usage}`,
             command.description
           );
         }
@@ -39,10 +47,10 @@ module.exports = {
           if (interaction.channel.type === "dm") {
             return;
           }
-          interaction.reply("I've sent you a DM with all my commands!");
+          interaction.editReply("I've sent you a DM with all my commands!");
         })
         .catch((error) => {
-          interaction.reply(
+          interaction.editReply(
             "it seems like I can't DM you! Do you have DMs disabled?"
           );
         });
@@ -52,7 +60,7 @@ module.exports = {
     const command = commands.get(name);
 
     if (!command) {
-      return interaction.reply("That's not a valid command!");
+      return interaction.editReply("That's not a valid command!");
     }
 
     const helpCommandEmbed = new Discord.MessageEmbed()
@@ -69,14 +77,11 @@ module.exports = {
       );
 
     if (!command.usage) {
-      helpCommandEmbed.addField("Usage", `${prefix}${command.name}`);
+      helpCommandEmbed.addField("Usage", `/${command.name}`);
     } else {
-      helpCommandEmbed.addField(
-        "Usage",
-        `${prefix}${command.name} ${command.usage}`
-      );
+      helpCommandEmbed.addField("Usage", `/${command.name} ${command.usage}`);
     }
 
-    interaction.reply({ embeds: [helpCommandEmbed] });
+    interaction.editReply({ embeds: [helpCommandEmbed] });
   },
 };
