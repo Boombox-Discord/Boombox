@@ -71,22 +71,21 @@ client.manager = new Manager({
   .on("trackStart", (player, track) => {
     try {
       const newQueueEmbed = new Discord.MessageEmbed()
-      .setColor("#ed1c24")
-      .setTitle(track.title)
-      .setURL(track.uri)
-      .setAuthor(client.user.username, client.user.avatarURL())
-      .setDescription(
-        `[${track.title}](${track.uri}) is now playing and is number 1 in the queue!`
-      )
-      .setThumbnail(track.thumbnail);
+        .setColor("#ed1c24")
+        .setTitle(track.title)
+        .setURL(track.uri)
+        .setAuthor(client.user.username, client.user.avatarURL())
+        .setDescription(
+          `[${track.title}](${track.uri}) is now playing and is number 1 in the queue!`
+        )
+        .setThumbnail(track.thumbnail);
 
-    client.channels.cache
-      .get(player.textChannel)
-      .send({ embeds: [newQueueEmbed] });
+      client.channels.cache
+        .get(player.textChannel)
+        .send({ embeds: [newQueueEmbed] });
     } catch (err) {
       Sentry.captureException(err);
     }
-    
   })
   .on("queueEnd", async (player) => {
     await getRedis(`guild_${player.guild}`, async function (err, reply) {
@@ -107,7 +106,6 @@ client.manager = new Manager({
         } catch (err) {
           Sentry.captureException(err);
         }
-
       }
       clientRedis.set(
         `guild_${player.guild}`,
