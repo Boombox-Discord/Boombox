@@ -10,7 +10,7 @@
 
 <p align="center">
     <a href="https://github.com/Boombox-Discord/Boombox">
-        <img src="https://boomboxdiscord.dev/IMG/favicon.png" alt="Logo" width="80" height="80">
+        <img src="https://boomboxdiscord.dev/plasmic/boombox/images/boomboxPfpNewpng.png" alt="Logo" width="80" height="80">
     </a>
     <h2 align="center">Boombox Music Bot</h2>
     <p align="center">
