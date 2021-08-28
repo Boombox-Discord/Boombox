@@ -88,34 +88,24 @@ client.manager = new Manager({
     }
   })
   .on("queueEnd", async (player) => {
-    await getRedis(`guild_${player.guild}`, async function (err, reply) {
-      if (err) {
-        throw new Error("Error with redis");
-      }
-      const serverQueue = JSON.parse(reply);
+    const redisReply = await clientRedis.get(`guild_${player.guild}`)
+    const serverQueue = JSON.parse(redisReply);
 
-      serverQueue.songs.shift();
+    serverQueue.songs.shift();
 
-      if (!serverQueue.songs[0]) {
-        try {
-          clientRedis.del(`guild_${player.guild}`);
-          player.destroy();
-          return client.channels.cache
-            .get(player.textChannel)
-            .send("No more songs in queue, leaving voice channel!");
-        } catch (err) {
-          Sentry.captureException(err);
-        }
-      }
-      clientRedis.set(
-        `guild_${player.guild}`,
-        JSON.stringify(serverQueue),
-        "EX",
-        86400 //skipcq: JS-0074
-      );
-      const response = await client.manager.search(serverQueue.songs[0].url);
-      player.play(response.tracks[0]);
-    });
+    if (!serverQueue.songs[0]) {
+        await clientRedis.del(`guild_${player.guild}`);
+        player.destroy();
+        return client.channels.cache
+          .get(player.textChannel)
+          .send("No more songs in queue, leaving voice channel!");
+    }
+    await clientRedis.set(
+      `guild_${player.guild}`,
+      JSON.stringify(serverQueue),
+    );
+    const response = await client.manager.search(serverQueue.songs[0].url);
+    player.play(response.tracks[0]);
   });
 
 const commandFiles = fs
@@ -127,10 +117,11 @@ for (const file of commandFiles) {
   client.commands.set(command.name, command);
 }
 
-client.once("ready", () => {
+client.once("ready", async () => {
   console.log(`Logged in as ${client.user.tag}!`); //skipcq: JS-0002
   client.manager.init(client.user.id);
   client.user.setActivity("for /help", { type: "WATCHING" });
+  // console.log(await clientRedis.scan(0))
 });
 
 // send voice events to lavalink library

@@ -51,328 +51,289 @@ module.exports = {
     if (interaction.options.getSubcommand() === "save") {
       const queueName = interaction.options.getString("name");
       let userQueues = [];
-      await getRedis(
-        `guild_${interaction.guildId}`,
-        async function (err, reply) {
-          if (err) {
-            throw new Error("Error with Redis");
-          }
-          const serverQueue = JSON.parse(reply);
+      const redisReply = await clientRedis.get(`guild_${interaction.guildId}`)
+      const serverQueue = JSON.parse(redisReply);
 
-          if (!serverQueue) {
+      if (!serverQueue) {
+        return interaction.editReply(
+          "There is currently no songs in the queue to save!"
+        );
+      }
+      const redisSaveReply = await clientRedis.get(`save_${interaction.user.id}`)
+      if (redisSaveReply) {
+        const redisSaveQueue = JSON.parse(redisSaveReply);
+        for (let i = 0; i < redisSaveQueue.length; i++) {
+          if (redisSaveQueue[i].name === queueName) {
             return interaction.editReply(
-              "There is currently no songs in the queue to save!"
+              `There is already a saved queue called ${queueName}! PLease choose a different name.`
             );
           }
-
-          await getRedis(`save_${interaction.user.id}`, function (err, reply) {
-            if (err) {
-              throw new Error("Error with Redis");
-            }
-
-            if (reply) {
-              const redisSaveQueue = JSON.parse(reply);
-              for (let i = 0; i < redisSaveQueue.length; i++) {
-                if (redisSaveQueue[i].name === queueName) {
-                  return interaction.editReply(
-                    `There is already a saved queue called ${queueName}! PLease choose a different name.`
-                  );
-                }
-              }
-              userQueues = JSON.parse(reply);
-            }
-
-            const queuePush = {
-              name: queueName,
-              songs: serverQueue.songs,
-            };
-            userQueues.push(queuePush);
-            clientRedis.set(
-              `save_${interaction.user.id}`,
-              JSON.stringify(userQueues)
-            );
-            const saveEmbed = new Discord.MessageEmbed()
-              .setColor("#ed1c24")
-              .setTitle(
-                `💾  I have saved the current queue under the name ${queueName}!`
-              )
-              .setAuthor(
-                interaction.client.user.username,
-                interaction.client.user.avatarURL()
-              );
-
-            return interaction.editReply({ embeds: [saveEmbed] });
-          });
         }
+        userQueues = JSON.parse(redisSaveReply);
+      }
+
+      const queuePush = {
+        name: queueName,
+        songs: serverQueue.songs,
+      };
+      userQueues.push(queuePush);
+      await clientRedis.set(
+        `save_${interaction.user.id}`,
+        JSON.stringify(userQueues)
       );
+      const saveEmbed = new Discord.MessageEmbed()
+        .setColor("#ed1c24")
+        .setTitle(
+          `💾  I have saved the current queue under the name ${queueName}!`
+        )
+        .setAuthor(
+          interaction.client.user.username,
+          interaction.client.user.avatarURL()
+        );
+
+      return interaction.editReply({ embeds: [saveEmbed] });
     } else if (interaction.options.getSubcommand() === "list") {
-      await getRedis(
-        `save_${interaction.user.id}`,
-        async function (err, reply) {
-          if (err) {
-            throw new Error("Error with Redis");
-          }
+      
+      const redisReply = await clientRedis.get(`save_${interaction.user.id}`)
 
-          if (!reply) {
-            return interaction.editReply("There are no saved queues!");
-          }
+      if (!redisReply) {
+        return interaction.editReply("There are no saved queues!");
+      }
 
-          const savedQueues = JSON.parse(reply);
-          const size = 10;
-          const queueArray = [];
+      const savedQueues = JSON.parse(redisReply);
+      const size = 10;
+      const queueArray = [];
 
-          for (let i = 0; i < savedQueues.length; i += size) {
-            queueArray.push(savedQueues.slice(i, i + size));
-          }
+      for (let i = 0; i < savedQueues.length; i += size) {
+        queueArray.push(savedQueues.slice(i, i + size));
+      }
 
-          let queueCount = 0;
-          let embedDesc = "";
-          let embedPage = 0;
-          const embedPagesArray = [];
+      let queueCount = 0;
+      let embedDesc = "";
+      let embedPage = 0;
+      const embedPagesArray = [];
 
-          for (let i = 0; i < queueArray.length; i++) {
-            const queueEmbed = new Discord.MessageEmbed()
-              .setColor("#ed1c24")
-              .setTitle(`Current Saved Queues for ${interaction.user.username}`)
-              .setAuthor(
-                interaction.client.user.username,
-                interaction.client.user.avatarURL()
-              )
-              .setThumbnail(savedQueues[0].songs[0].thumbnail);
-
-            for (let j = 0; j < queueArray[i].length; j++) {
-              queueCount++;
-              embedDesc += `${queueCount}. ${queueArray[i][j].name} with ${queueArray[i][j].songs.length} songs saved. \n`;
-            }
-            queueEmbed.setDescription(embedDesc);
-            embedPagesArray.push(queueEmbed);
-          }
-
-          const Buttons = new Discord.MessageActionRow().addComponents(
-            new Discord.MessageButton()
-              .setCustomId("previousPage")
-              .setLabel("⬅️")
-              .setStyle("SECONDARY"),
-
-            new Discord.MessageButton()
-              .setCustomId("nextPage")
-              .setLabel("➡️")
-              .setStyle("SECONDARY")
-          );
-
-          embedPagesArray[0].setFooter(
-            `Page: ${embedPage + 1}/${embedPagesArray.length}`
-          );
-
-          await interaction.editReply({
-            embeds: [embedPagesArray[0]],
-            components: [Buttons],
-          });
-          const message = await interaction.fetchReply();
-          const collector = message.createMessageComponentCollector({
-            time: 15000,
-          });
-
-          collector.on("collect", async (i) => {
-            if (i.customId === "nextPage") {
-              embedPage++;
-              if (embedPage >= embedPagesArray.length) embedPage = 0;
-              embedPagesArray[embedPage].setFooter(
-                `Page: ${embedPage + 1}/${embedPagesArray.length}`
-              );
-              await i.update({
-                embeds: [embedPagesArray[embedPage]],
-                components: [Buttons],
-              });
-            } else if (i.customId === "previousPage") {
-              embedPage--;
-              if (embedPage < 0) embedPage = embedPagesArray.length - 1;
-              embedPagesArray[embedPage].setFooter(
-                `Page: ${embedPage + 1}/${embedPagesArray.length}`
-              );
-              await i.update({
-                embeds: [embedPagesArray[embedPage]],
-                components: [Buttons],
-              });
-            }
-          });
-        }
-      );
-    } else if (interaction.options.getSubcommand() === "load") {
-      await getRedis(
-        `save_${interaction.user.id}`,
-        async function (err, reply) {
-          if (err) {
-            throw new Error("Error with Redis.");
-          }
-
-          if (!reply) {
-            return interaction.editReply("You have no queues saved!");
-          }
-          const name = interaction.options.getString("name");
-          const savedQueues = JSON.parse(reply);
-          let queueIndex = -1;
-          for (let i = 0; i < savedQueues.length; i++) {
-            if (savedQueues[i].name === name) {
-              queueIndex = i;
-              break;
-            }
-          }
-
-          if (queueIndex === -1) {
-            return interaction.editReply(
-              `The queue with the name of ${name} could not be found!`
-            );
-          }
-
-          const loadEmbed = new Discord.MessageEmbed()
-            .setColor("#ed1c24")
-            .setTitle(`Now loading all songs from the saved queue ${name}`)
-            .setAuthor(
-              interaction.client.user.username,
-              interaction.client.user.avatarURL()
-            );
-
-          interaction.editReply({ embeds: [loadEmbed] });
-
-          const manager = interaction.client.manager;
-          const voiceChannel = interaction.member.voice.channel;
-
-          if (!manager.get(interaction.guildId)) {
-            const permissions = voiceChannel.permissionsFor(
-              interaction.client.user
-            );
-
-            if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-              return interaction.editReply(
-                "I don't have permission to join or speak in that voice channel!"
-              );
-            }
-
-            const response = await manager.search(
-              savedQueues[queueIndex].songs[0].url
-            );
-            if (!response) {
-              return interaction.editReply(
-                "Sorry, an error has occurred, please try again later!"
-              );
-            }
-            if (!response.tracks[0]) {
-              return interaction.editReply("Sorry, there were no songs found!");
-            }
-            if (response.tracks[0].isStream) {
-              return interaction.editReply(
-                "Sorry, that video is a livestream!"
-              );
-            }
-
-            const player = manager.create({
-              guild: interaction.guildId,
-              voiceChannel: voiceChannel.id,
-              textChannel: interaction.channelId,
-            });
-
-            player.connect();
-
-            const serverQueue = {
-              textChannel: interaction.channel,
-              voiceChannel: voiceChannel, //skipcq: JS-0240
-              songs: [],
-            };
-
-            for (let i = 0; i < savedQueues[queueIndex].songs.length; i++) {
-              serverQueue.songs.push(savedQueues[queueIndex].songs[i]);
-            }
-
-            clientRedis.set(
-              `guild_${interaction.guildId}`,
-              JSON.stringify(serverQueue),
-              "EX",
-              86400
-            );
-
-            player.play(response.tracks[0]);
-          } else {
-            await getRedis(
-              `guild_${interaction.guildId}`,
-              function (err, reply) {
-                //skipcq: JS-0123
-                if (err) {
-                  throw new Error("Error with Redis");
-                }
-
-                const serverQueue = JSON.parse(reply); //skipcq: JS-0123
-
-                for (let i = 0; i < savedQueues[queueIndex].songs.length; i++) {
-                  serverQueue.songs.push(savedQueues[queueIndex].songs[i]);
-                }
-
-                clientRedis.set(
-                  `guild_${interaction.guildId}`,
-                  JSON.stringify(serverQueue),
-                  "EX",
-                  "86400"
-                );
-              }
-            );
-          }
-          const queueEmbed = new Discord.MessageEmbed()
-            .setColor("#ed1c24")
-            .setTitle(`All songs from ${name} has been loaded into the queue!`)
-            .setAuthor(
-              interaction.client.user.username,
-              interaction.client.user.avatarURL()
-            );
-
-          return interaction.editReply({ embeds: [queueEmbed] });
-        }
-      );
-    } else if (interaction.options.getSubcommand() === "delete") {
-      await getRedis(`save_${interaction.user.id}`, function (err, reply) {
-        if (err) {
-          throw new Error("Error with Reids.");
-        }
-
-        if (!reply) {
-          return interaction.editReply("You have no queues saved!");
-        }
-
-        const name = interaction.options.getString("name");
-        const savedQueues = JSON.parse(reply);
-        let queueIndex = -1;
-        for (let i = 0; i < savedQueues.length; i++) {
-          if (savedQueues[i].name === name) {
-            queueIndex = i;
-            break;
-          }
-        }
-
-        if (queueIndex === -1) {
-          return interaction.editReply(
-            `The queue with the name of ${name} could not be found!`
-          );
-        }
-
-        savedQueues.splice(queueIndex, 1);
-        if (savedQueues.length === 0) {
-          clientRedis.del(`save_${interaction.user.id}`);
-        } else {
-          clientRedis.set(
-            `save_${interaction.user.id}`,
-            JSON.stringify(savedQueues)
-          );
-        }
-
-        const deleteEmbed = new Discord.MessageEmbed()
+      for (let i = 0; i < queueArray.length; i++) {
+        const queueEmbed = new Discord.MessageEmbed()
           .setColor("#ed1c24")
-          .setTitle(`Deleted the queue ${name}`)
+          .setTitle(`Current Saved Queues for ${interaction.user.username}`)
           .setAuthor(
             interaction.client.user.username,
             interaction.client.user.avatarURL()
-          );
+          )
+          .setThumbnail(savedQueues[0].songs[0].thumbnail);
 
-        return interaction.editReply({ embeds: [deleteEmbed] });
+        for (let j = 0; j < queueArray[i].length; j++) {
+          queueCount++;
+          embedDesc += `${queueCount}. ${queueArray[i][j].name} with ${queueArray[i][j].songs.length} songs saved. \n`;
+        }
+        queueEmbed.setDescription(embedDesc);
+        embedPagesArray.push(queueEmbed);
+      }
+
+      const Buttons = new Discord.MessageActionRow().addComponents(
+        new Discord.MessageButton()
+          .setCustomId("previousPage")
+          .setLabel("⬅️")
+          .setStyle("SECONDARY"),
+
+        new Discord.MessageButton()
+          .setCustomId("nextPage")
+          .setLabel("➡️")
+          .setStyle("SECONDARY")
+      );
+
+      embedPagesArray[0].setFooter(
+        `Page: ${embedPage + 1}/${embedPagesArray.length}`
+      );
+
+      await interaction.editReply({
+        embeds: [embedPagesArray[0]],
+        components: [Buttons],
       });
+      const message = await interaction.fetchReply();
+      const collector = message.createMessageComponentCollector({
+        time: 15000,
+      });
+
+      collector.on("collect", async (i) => {
+        if (i.customId === "nextPage") {
+          embedPage++;
+          if (embedPage >= embedPagesArray.length) embedPage = 0;
+          embedPagesArray[embedPage].setFooter(
+            `Page: ${embedPage + 1}/${embedPagesArray.length}`
+          );
+          await i.update({
+            embeds: [embedPagesArray[embedPage]],
+            components: [Buttons],
+          });
+        } else if (i.customId === "previousPage") {
+          embedPage--;
+          if (embedPage < 0) embedPage = embedPagesArray.length - 1;
+          embedPagesArray[embedPage].setFooter(
+            `Page: ${embedPage + 1}/${embedPagesArray.length}`
+          );
+          await i.update({
+            embeds: [embedPagesArray[embedPage]],
+            components: [Buttons],
+          });
+        }
+      });
+    } else if (interaction.options.getSubcommand() === "load") {
+      const redisReply = await clientRedis.get(`save_${interaction.user.id}`)
+      if (!redisReply) {
+        return interaction.editReply("You have no queues saved!");
+      }
+      const name = interaction.options.getString("name");
+      const savedQueues = JSON.parse(redisReply);
+      let queueIndex = -1;
+      for (let i = 0; i < savedQueues.length; i++) {
+        if (savedQueues[i].name === name) {
+          queueIndex = i;
+          break;
+        }
+      }
+
+      if (queueIndex === -1) {
+        return interaction.editReply(
+          `The queue with the name of ${name} could not be found!`
+        );
+      }
+
+      const loadEmbed = new Discord.MessageEmbed()
+        .setColor("#ed1c24")
+        .setTitle(`Now loading all songs from the saved queue ${name}`)
+        .setAuthor(
+          interaction.client.user.username,
+          interaction.client.user.avatarURL()
+        );
+
+      interaction.editReply({ embeds: [loadEmbed] });
+
+      const manager = interaction.client.manager;
+      const voiceChannel = interaction.member.voice.channel;
+
+      if (!manager.get(interaction.guildId)) {
+        const permissions = voiceChannel.permissionsFor(
+          interaction.client.user
+        );
+
+        if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+          return interaction.editReply(
+            "I don't have permission to join or speak in that voice channel!"
+          );
+        }
+
+        const response = await manager.search(
+          savedQueues[queueIndex].songs[0].url
+        );
+        if (!response) {
+          return interaction.editReply(
+            "Sorry, an error has occurred, please try again later!"
+          );
+        }
+        if (!response.tracks[0]) {
+          return interaction.editReply("Sorry, there were no songs found!");
+        }
+        if (response.tracks[0].isStream) {
+          return interaction.editReply(
+            "Sorry, that video is a livestream!"
+          );
+        }
+
+        const player = manager.create({
+          guild: interaction.guildId,
+          voiceChannel: voiceChannel.id,
+          textChannel: interaction.channelId,
+        });
+
+        player.connect();
+
+        const serverQueue = {
+          textChannel: interaction.channel,
+          voiceChannel: voiceChannel, //skipcq: JS-0240
+          songs: [],
+        };
+
+        for (let i = 0; i < savedQueues[queueIndex].songs.length; i++) {
+          serverQueue.songs.push(savedQueues[queueIndex].songs[i]);
+        }
+
+        await clientRedis.set(
+          `guild_${interaction.guildId}`,
+          JSON.stringify(serverQueue),
+          "EX",
+          86400
+        );
+
+        player.play(response.tracks[0]);
+      } else {
+        const redisQueueReply = await clientRedis.get(`guild_${interaction.guildId}`)
+
+        const serverQueue = JSON.parse(redisQueueReply); //skipcq: JS-0123
+
+        for (let i = 0; i < savedQueues[queueIndex].songs.length; i++) {
+          serverQueue.songs.push(savedQueues[queueIndex].songs[i]);
+        }
+
+        await clientRedis.set(
+          `guild_${interaction.guildId}`,
+          JSON.stringify(serverQueue),
+          "EX",
+          "86400"
+        );
+      }
+      const queueEmbed = new Discord.MessageEmbed()
+        .setColor("#ed1c24")
+        .setTitle(`All songs from ${name} has been loaded into the queue!`)
+        .setAuthor(
+          interaction.client.user.username,
+          interaction.client.user.avatarURL()
+        );
+
+      return interaction.editReply({ embeds: [queueEmbed] });
+    } else if (interaction.options.getSubcommand() === "delete") {
+      const redisReply = await clientRedis.get(`save_${interaction.user.id}`)
+
+      if (!redisReply) {
+        return interaction.editReply("You have no queues saved!");
+      }
+
+      const name = interaction.options.getString("name");
+      const savedQueues = JSON.parse(redisReply);
+      let queueIndex = -1;
+      for (let i = 0; i < savedQueues.length; i++) {
+        if (savedQueues[i].name === name) {
+          queueIndex = i;
+          break;
+        }
+      }
+
+      if (queueIndex === -1) {
+        return interaction.editReply(
+          `The queue with the name of ${name} could not be found!`
+        );
+      }
+
+      savedQueues.splice(queueIndex, 1);
+      if (savedQueues.length === 0) {
+        await clientRedis.del(`save_${interaction.user.id}`);
+      } else {
+        await clientRedis.set(
+          `save_${interaction.user.id}`,
+          JSON.stringify(savedQueues)
+        );
+      }
+
+      const deleteEmbed = new Discord.MessageEmbed()
+        .setColor("#ed1c24")
+        .setTitle(`Deleted the queue ${name}`)
+        .setAuthor(
+          interaction.client.user.username,
+          interaction.client.user.avatarURL()
+        );
+
+      return interaction.editReply({ embeds: [deleteEmbed] });
     }
   },
 };

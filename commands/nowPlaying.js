@@ -1,6 +1,6 @@
 "use strict";
 const Discord = require("discord.js");
-const { getRedis } = require("../utils/redis");
+const { clientRedis } = require("../utils/redis");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
@@ -16,28 +16,24 @@ module.exports = {
     const manager = interaction.client.manager;
     const player = manager.get(interaction.guildId);
 
-    if (!player) {
+
+    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`)
+
+    if (!player && !redisReply) {
       return interaction.editReply("There is currently no songs playing!");
     }
+    const serverQueue = JSON.parse(redisReply);
 
-    await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
-      if (err) {
-        throw new Error("Error with redis");
-      }
+    const npEmbed = new Discord.MessageEmbed()
+      .setColor("#ed1c24")
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
+      )
+      .setTitle(`${serverQueue.songs[0].title} Is Now Playing!`)
+      .setURL(serverQueue.songs[0].url)
+      .setThumbnail(serverQueue.songs[0].thumbnail);
 
-      const serverQueue = JSON.parse(reply);
-
-      const npEmbed = new Discord.MessageEmbed()
-        .setColor("#ed1c24")
-        .setAuthor(
-          interaction.client.user.username,
-          interaction.client.user.avatarURL()
-        )
-        .setTitle(`${serverQueue.songs[0].title} Is Now Playing!`)
-        .setURL(serverQueue.songs[0].url)
-        .setThumbnail(serverQueue.songs[0].thumbnail);
-
-      return interaction.editReply({ embeds: [npEmbed] });
-    });
+    return interaction.editReply({ embeds: [npEmbed] });
   },
 };

@@ -1,9 +1,9 @@
 "use strict";
-const redis = require("redis");
+const asyncRedis = require("async-redis");
 
 const { redisIP, redisPort, redisPassword } = require("../config.json"); //skipcq: JS-0266
 
-const clientRedis = redis.createClient({
+const clientRedis = asyncRedis.createClient({
   host: redisIP,
   port: redisPort,
   auth_pass: redisPassword,
