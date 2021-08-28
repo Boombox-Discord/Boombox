@@ -126,11 +126,11 @@ client.manager = new Manager({
     serverQueue.songs.shift();
 
     if (!serverQueue.songs[0]) {
-      await clientRedis.del(`guild_${player.guild}`);
-      player.destroy();
-      return client.channels.cache
+      await clientRedis.del(`guild_${player.guild}`);      
+      client.channels.cache
         .get(player.textChannel)
         .send("No more songs in queue, leaving voice channel!");
+      return player.destroy();
     }
     await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
     const response = await client.manager.search(serverQueue.songs[0].url);
