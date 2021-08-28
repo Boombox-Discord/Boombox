@@ -133,7 +133,10 @@ client.manager = new Manager({
     await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
     const response = await client.manager.search(serverQueue.songs[0].url);
     player.play(response.tracks[0]);
-  });
+  })
+  .on("socketClosed", async (player) => {
+    await clientRedis.del(`guild_${player.guild}`)
+  })
 
 const commandFiles = fs
   .readdirSync("./commands")
