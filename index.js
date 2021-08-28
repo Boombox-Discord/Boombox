@@ -100,24 +100,22 @@ client.manager = new Manager({
         `Node ${node.options.identifier} had an error: ${error.message}`
       ) //skipcq: JS-0002
   )
-  .on("trackStart", (player, track) => {
-    try {
-      const newQueueEmbed = new Discord.MessageEmbed()
-        .setColor("#ed1c24")
-        .setTitle(track.title)
-        .setURL(track.uri)
-        .setAuthor(client.user.username, client.user.avatarURL())
-        .setDescription(
-          `[${track.title}](${track.uri}) is now playing and is number 1 in the queue!`
-        )
-        .setThumbnail(track.thumbnail);
+  .on("trackStart", async (player, track) => {
+    const redisReply = await clientRedis.get(`guild_${player.guild}`);
+    const serverQueue = JSON.parse(redisReply);
+    const newQueueEmbed = new Discord.MessageEmbed()
+      .setColor("#ed1c24")
+      .setTitle(track.title)
+      .setURL(track.uri)
+      .setAuthor(client.user.username, client.user.avatarURL())
+      .setDescription(
+        `[${track.title}](${track.uri}) is now playing and is number 1 in the queue!`
+      )
+      .setThumbnail(track.thumbnail);
 
-      client.channels.cache
-        .get(player.textChannel)
-        .send({ embeds: [newQueueEmbed] });
-    } catch (err) {
-      Sentry.captureException(err);
-    }
+    client.channels.cache
+      .get(serverQueue.textChannel.id)
+      .send({ embeds: [newQueueEmbed] });
   })
   .on("queueEnd", async (player) => {
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
@@ -128,7 +126,7 @@ client.manager = new Manager({
     if (!serverQueue.songs[0]) {
       await clientRedis.del(`guild_${player.guild}`);      
       client.channels.cache
-        .get(player.textChannel)
+        .get(serverQueue.textChannel.id)
         .send("No more songs in queue, leaving voice channel!");
       return player.destroy();
     }
