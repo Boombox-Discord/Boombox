@@ -314,7 +314,12 @@ module.exports = {
 
       savedQueues.splice(queueIndex, 1);
 
-      (savedQueues.length === 0) ? await clientRedis.del(`save_${interaction.user.id}`) : await clientRedis.set(`save_${interaction.user.id}`, JSON.stringify(savedQueues));
+      savedQueues.length === 0
+        ? await clientRedis.del(`save_${interaction.user.id}`)
+        : await clientRedis.set(
+            `save_${interaction.user.id}`,
+            JSON.stringify(savedQueues)
+          );
 
       const deleteEmbed = new Discord.MessageEmbed()
         .setColor("#ed1c24")
