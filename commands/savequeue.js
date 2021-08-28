@@ -314,7 +314,7 @@ module.exports = {
 
       savedQueues.splice(queueIndex, 1);
 
-      const redisUpdate = savedQueues.length === 0
+      savedQueues.length === 0
         ? await clientRedis.del(`save_${interaction.user.id}`)
         : await clientRedis.set(
             `save_${interaction.user.id}`,
