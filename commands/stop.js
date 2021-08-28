@@ -1,5 +1,5 @@
 "use strict";
-const { clientRedis, getRedis } = require("../utils/redis");
+const { clientRedis } = require("../utils/redis");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
@@ -20,21 +20,17 @@ module.exports = {
       return interaction.editReply("There is currently no song playing!");
     }
 
-    await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
-      if (err) {
-        throw new Error("Error with redis");
-      }
+    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
 
-      const serverQueue = JSON.parse(reply);
+    const serverQueue = JSON.parse(redisReply);
 
-      serverQueue.songs = [];
-      clientRedis.set(
-        `guild_${interaction.guildId}`,
-        JSON.stringify(serverQueue),
-        "EX",
-        86400 //skipcq: JS-0074
-      );
-    });
+    serverQueue.songs = [];
+    clientRedis.set(
+      `guild_${interaction.guildId}`,
+      JSON.stringify(serverQueue),
+      "EX",
+      86400 //skipcq: JS-0074
+    );
 
     interaction.editReply("I removed all songs from the queue!");
 

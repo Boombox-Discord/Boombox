@@ -1,6 +1,6 @@
 "use strict";
 const Discord = require("discord.js");
-const { clientRedis, getRedis } = require("../utils/redis");
+const { clientRedis } = require("../utils/redis");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
     const permissions = voiceChannel.permissionsFor(interaction.client.user);
 
     if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-      return interaction.reply(
+      return interaction.editReply(
         "I don't have permission to join or speak in that voice channel!"
       );
     }
@@ -75,59 +75,50 @@ module.exports = {
       thumbnail: response.tracks[0].thumbnail,
     };
 
-    await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
-      if (err) {
-        throw new Error("Error with redis");
-      }
+    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+    let serverQueue = JSON.parse(redisReply);
 
-      let serverQueue = JSON.parse(reply);
+    if (!serverQueue) {
+      const player = manager.create({
+        guild: interaction.guildId,
+        voiceChannel: voiceChannel.id,
+        textChannel: interaction.channelId,
+      });
 
-      if (!serverQueue) {
-        const player = manager.create({
-          guild: interaction.guildId,
-          voiceChannel: voiceChannel.id,
-          textChannel: interaction.channelId,
-        });
+      player.connect();
 
-        player.connect();
+      serverQueue = {
+        textChannel: interaction.channel,
+        voiceChannel: voiceChannel, //skipcq: JS-0240
+        songs: [],
+      };
+      serverQueue.songs.push(songQueue);
+      await clientRedis.set(
+        `guild_${interaction.guildId}`,
+        JSON.stringify(serverQueue)
+      );
+      player.play(response.tracks[0]);
+    } else {
+      serverQueue.songs.push(songQueue);
+      clientRedis.set(
+        `guild_${interaction.guildId}`,
+        JSON.stringify(serverQueue)
+      );
 
-        serverQueue = {
-          textChannel: interaction.channel,
-          voiceChannel: voiceChannel, //skipcq: JS-0240
-          songs: [],
-        };
-        serverQueue.songs.push(songQueue);
-        clientRedis.set(
-          `guild_${interaction.guildId}`,
-          JSON.stringify(serverQueue),
-          "EX",
-          86400 //skipcq: JS-0074
-        );
-        player.play(response.tracks[0]);
-      } else {
-        serverQueue.songs.push(songQueue);
-        clientRedis.set(
-          `guild_${interaction.guildId}`,
-          JSON.stringify(serverQueue),
-          "EX",
-          86400 //skipcq: JS-0074
-        );
+      const addQueueEmbed = new Discord.MessageEmbed()
+        .setColor("#ed1c24")
+        .setTitle(songQueue.title)
+        .setURL(songQueue.url)
+        .setAuthor(
+          interaction.client.user.username,
+          interaction.client.user.avatarURL()
+        )
+        .setDescription(
+          `[${songQueue.title}](${songQueue.url}) has been added to the queue and is number ${serverQueue.songs.length} in the queue!`
+        )
+        .setThumbnail(songQueue.thumbnail);
 
-        const addQueueEmbed = new Discord.MessageEmbed()
-          .setColor("#ed1c24")
-          .setTitle(songQueue.title)
-          .setURL(songQueue.url)
-          .setAuthor(
-            interaction.client.user.username,
-            interaction.client.user.avatarURL()
-          )
-          .setDescription(
-            `[${songQueue.title}](${songQueue.url}) has been added to the queue and is number ${serverQueue.songs.length} in the queue!`
-          )
-          .setThumbnail(songQueue.thumbnail);
-
-        return interaction.editReply({ embeds: [addQueueEmbed] });
-      }
-    });
+      return interaction.editReply({ embeds: [addQueueEmbed] });
+    }
   },
 };

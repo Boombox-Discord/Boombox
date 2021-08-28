@@ -1,6 +1,6 @@
 "use strict";
 const Discord = require("discord.js");
-const { getRedis, clientRedis } = require("../utils/redis");
+const { clientRedis } = require("../utils/redis");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
@@ -74,77 +74,69 @@ module.exports = {
     // by defualt set the for loop for playlist to zero so we start at the start of the playlist
     let forNumb = 0;
 
-    await getRedis(`guild_${interaction.guildId}`, function (err, reply) {
-      if (err) {
-        throw new Error("Error with redis");
+    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+
+    let serverQueue = JSON.parse(redisReply);
+
+    if (!serverQueue) {
+      const player = manager.create({
+        guild: interaction.guildId,
+        voiceChannel: voiceChannel.id,
+        textChannel: interaction.channelId,
+      });
+      player.connect();
+
+      serverQueue = {
+        textChannel: interaction.channel,
+        voiceChannel: voiceChannel, //skipcq: JS-0240
+        songs: [],
+      };
+
+      serverQueue.songs.push(songQueue);
+      //play the first song
+      player.play(response.tracks[0]);
+
+      //There were no songs already in the queue so we have already added the first song skip that song in the for loop
+      forNumb = 1;
+    }
+
+    let errorSongs = 0;
+
+    for (let i = forNumb; i < response.tracks.length; i++) {
+      if (response.tracks[0].isStream) {
+        errorSongs++;
       }
+      const songsAdd = {
+        title: response.tracks[i].title,
+        url: response.tracks[i].uri,
+        thumbnail: response.tracks[i].thumbnail,
+      };
+      serverQueue.songs.push(songsAdd);
+    }
+    await clientRedis.set(
+      `guild_${interaction.guildId}`,
+      JSON.stringify(serverQueue)
+    );
 
-      let serverQueue = JSON.parse(reply);
-
-      if (!serverQueue) {
-        const player = manager.create({
-          guild: interaction.guildId,
-          voiceChannel: voiceChannel.id,
-          textChannel: interaction.channelId,
-        });
-        player.connect();
-
-        serverQueue = {
-          textChannel: interaction.channel,
-          voiceChannel: voiceChannel, //skipcq: JS-0240
-          songs: [],
-        };
-
-        serverQueue.songs.push(songQueue);
-        //play the first song
-        player.play(response.tracks[0]);
-
-        //There were no songs already in the queue so we have already added the first song skip that song in the for loop
-        forNumb = 1;
-      }
-
-      let errorSongs = 0;
-
-      for (let i = forNumb; i < response.tracks.length; i++) {
-        if (response.tracks[0].isStream) {
-          errorSongs++;
-        }
-        const songsAdd = {
-          title: response.tracks[i].title,
-          url: response.tracks[i].uri,
-          thumbnail: response.tracks[i].thumbnail,
-        };
-        serverQueue.songs.push(songsAdd);
-      }
-      clientRedis.set(
-        `guild_${interaction.guildId}`,
-        JSON.stringify(serverQueue),
-        "EX",
-        86400 //skipcq: JS-0074
+    const playlistEmbed = new Discord.MessageEmbed()
+      .setColor("#ed1c24")
+      .setTitle("I have added all the songs from that playlist into the queue.")
+      .setAuthor(
+        interaction.client.user.username,
+        interaction.client.user.avatarURL()
       );
+    if (errorSongs > 0) {
+      playlistEmbed.setDescription(
+        `I have added ${
+          response.tracks.length - errorSongs
+        } to the queue and had an erorr adding ${errorSongs}!`
+      );
+    } else {
+      playlistEmbed.setDescription(
+        `I have added ${response.tracks.length} to the queue!`
+      );
+    }
 
-      const playlistEmbed = new Discord.MessageEmbed()
-        .setColor("#ed1c24")
-        .setTitle(
-          "I have added all the songs from that playlist into the queue."
-        )
-        .setAuthor(
-          interaction.client.user.username,
-          interaction.client.user.avatarURL()
-        );
-      if (errorSongs > 0) {
-        playlistEmbed.setDescription(
-          `I have added ${
-            response.tracks.length - errorSongs
-          } to the queue and had an erorr adding ${errorSongs}!`
-        );
-      } else {
-        playlistEmbed.setDescription(
-          `I have added ${response.tracks.length} to the queue!`
-        );
-      }
-
-      return interaction.editReply({ embeds: [playlistEmbed] });
-    });
+    return interaction.editReply({ embeds: [playlistEmbed] });
   },
 };
