@@ -88,22 +88,19 @@ client.manager = new Manager({
     }
   })
   .on("queueEnd", async (player) => {
-    const redisReply = await clientRedis.get(`guild_${player.guild}`)
+    const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
 
     serverQueue.songs.shift();
 
     if (!serverQueue.songs[0]) {
-        await clientRedis.del(`guild_${player.guild}`);
-        player.destroy();
-        return client.channels.cache
-          .get(player.textChannel)
-          .send("No more songs in queue, leaving voice channel!");
+      await clientRedis.del(`guild_${player.guild}`);
+      player.destroy();
+      return client.channels.cache
+        .get(player.textChannel)
+        .send("No more songs in queue, leaving voice channel!");
     }
-    await clientRedis.set(
-      `guild_${player.guild}`,
-      JSON.stringify(serverQueue),
-    );
+    await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
     const response = await client.manager.search(serverQueue.songs[0].url);
     player.play(response.tracks[0]);
   });

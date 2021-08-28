@@ -51,7 +51,7 @@ module.exports = {
     if (interaction.options.getSubcommand() === "save") {
       const queueName = interaction.options.getString("name");
       let userQueues = [];
-      const redisReply = await clientRedis.get(`guild_${interaction.guildId}`)
+      const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
       const serverQueue = JSON.parse(redisReply);
 
       if (!serverQueue) {
@@ -59,7 +59,9 @@ module.exports = {
           "There is currently no songs in the queue to save!"
         );
       }
-      const redisSaveReply = await clientRedis.get(`save_${interaction.user.id}`)
+      const redisSaveReply = await clientRedis.get(
+        `save_${interaction.user.id}`
+      );
       if (redisSaveReply) {
         const redisSaveQueue = JSON.parse(redisSaveReply);
         for (let i = 0; i < redisSaveQueue.length; i++) {
@@ -93,8 +95,7 @@ module.exports = {
 
       return interaction.editReply({ embeds: [saveEmbed] });
     } else if (interaction.options.getSubcommand() === "list") {
-      
-      const redisReply = await clientRedis.get(`save_${interaction.user.id}`)
+      const redisReply = await clientRedis.get(`save_${interaction.user.id}`);
 
       if (!redisReply) {
         return interaction.editReply("There are no saved queues!");
@@ -180,7 +181,7 @@ module.exports = {
         }
       });
     } else if (interaction.options.getSubcommand() === "load") {
-      const redisReply = await clientRedis.get(`save_${interaction.user.id}`)
+      const redisReply = await clientRedis.get(`save_${interaction.user.id}`);
       if (!redisReply) {
         return interaction.editReply("You have no queues saved!");
       }
@@ -236,9 +237,7 @@ module.exports = {
           return interaction.editReply("Sorry, there were no songs found!");
         }
         if (response.tracks[0].isStream) {
-          return interaction.editReply(
-            "Sorry, that video is a livestream!"
-          );
+          return interaction.editReply("Sorry, that video is a livestream!");
         }
 
         const player = manager.create({
@@ -268,7 +267,9 @@ module.exports = {
 
         player.play(response.tracks[0]);
       } else {
-        const redisQueueReply = await clientRedis.get(`guild_${interaction.guildId}`)
+        const redisQueueReply = await clientRedis.get(
+          `guild_${interaction.guildId}`
+        );
 
         const serverQueue = JSON.parse(redisQueueReply); //skipcq: JS-0123
 
@@ -293,7 +294,7 @@ module.exports = {
 
       return interaction.editReply({ embeds: [queueEmbed] });
     } else if (interaction.options.getSubcommand() === "delete") {
-      const redisReply = await clientRedis.get(`save_${interaction.user.id}`)
+      const redisReply = await clientRedis.get(`save_${interaction.user.id}`);
 
       if (!redisReply) {
         return interaction.editReply("You have no queues saved!");

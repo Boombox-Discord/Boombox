@@ -26,15 +26,13 @@ module.exports = {
       return interaction.editReply("There is currently no songs in the queue!");
     }
 
-    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`)
+    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
     const serverQueue = JSON.parse(redisReply);
 
     const remove = interaction.options.get("songnumber").value;
 
     if (remove === 1) {
-      return interaction.editReply(
-        "I cannot remove the current song playing."
-      );
+      return interaction.editReply("I cannot remove the current song playing.");
     }
 
     if (remove > serverQueue.songs.length || remove < 0) {

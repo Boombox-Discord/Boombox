@@ -20,7 +20,7 @@ module.exports = {
       return interaction.editReply("There is currently no song playing!");
     }
 
-    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`)
+    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
 
     const serverQueue = JSON.parse(redisReply);
 
@@ -32,8 +32,8 @@ module.exports = {
       86400 //skipcq: JS-0074
     );
 
-  interaction.editReply("I removed all songs from the queue!");
+    interaction.editReply("I removed all songs from the queue!");
 
-  return player.stop();
+    return player.stop();
   },
 };

@@ -74,7 +74,7 @@ module.exports = {
     // by defualt set the for loop for playlist to zero so we start at the start of the playlist
     let forNumb = 0;
 
-    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`)
+    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
 
     let serverQueue = JSON.parse(redisReply);
 
@@ -122,9 +122,7 @@ module.exports = {
 
     const playlistEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
-      .setTitle(
-        "I have added all the songs from that playlist into the queue."
-      )
+      .setTitle("I have added all the songs from that playlist into the queue.")
       .setAuthor(
         interaction.client.user.username,
         interaction.client.user.avatarURL()

@@ -13,13 +13,11 @@ module.exports = {
     .setName("queue")
     .setDescription("Shows the current queue"),
   async execute(interaction) {
-    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`)
+    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
     const serverQueue = JSON.parse(redisReply);
 
     if (!serverQueue) {
-      return interaction.editReply(
-        "There is currently no songs in the queue!"
-      );
+      return interaction.editReply("There is currently no songs in the queue!");
     }
     const size = 10;
     const songsArray = [];

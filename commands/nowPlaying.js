@@ -16,8 +16,7 @@ module.exports = {
     const manager = interaction.client.manager;
     const player = manager.get(interaction.guildId);
 
-
-    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`)
+    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
 
     if (!player && !redisReply) {
       return interaction.editReply("There is currently no songs playing!");

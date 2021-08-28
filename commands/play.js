@@ -75,7 +75,7 @@ module.exports = {
       thumbnail: response.tracks[0].thumbnail,
     };
 
-    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`)
+    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
     let serverQueue = JSON.parse(redisReply);
 
     if (!serverQueue) {
