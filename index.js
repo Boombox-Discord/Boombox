@@ -135,8 +135,8 @@ client.manager = new Manager({
     player.play(response.tracks[0]);
   })
   .on("socketClosed", async (player) => {
-    await clientRedis.del(`guild_${player.guild}`)
-  })
+    await clientRedis.del(`guild_${player.guild}`);
+  });
 
 const commandFiles = fs
   .readdirSync("./commands")
