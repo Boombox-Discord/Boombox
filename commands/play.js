@@ -26,7 +26,7 @@ module.exports = {
     const permissions = voiceChannel.permissionsFor(interaction.client.user);
 
     if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
-      return interaction.reply(
+      return interaction.editReply(
         "I don't have permission to join or speak in that voice channel!"
       );
     }
@@ -96,8 +96,6 @@ module.exports = {
       await clientRedis.set(
         `guild_${interaction.guildId}`,
         JSON.stringify(serverQueue),
-        "EX",
-        86400 //skipcq: JS-0074
       );
       player.play(response.tracks[0]);
     } else {
@@ -105,8 +103,6 @@ module.exports = {
       clientRedis.set(
         `guild_${interaction.guildId}`,
         JSON.stringify(serverQueue),
-        "EX",
-        86400 //skipcq: JS-0074
       );
 
       const addQueueEmbed = new Discord.MessageEmbed()

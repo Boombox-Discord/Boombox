@@ -116,8 +116,6 @@ module.exports = {
     await clientRedis.set(
       `guild_${interaction.guildId}`,
       JSON.stringify(serverQueue),
-      "EX",
-      86400 //skipcq: JS-0074
     );
 
     const playlistEmbed = new Discord.MessageEmbed()

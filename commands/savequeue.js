@@ -261,8 +261,6 @@ module.exports = {
         await clientRedis.set(
           `guild_${interaction.guildId}`,
           JSON.stringify(serverQueue),
-          "EX",
-          86400
         );
 
         player.play(response.tracks[0]);
@@ -280,8 +278,6 @@ module.exports = {
         await clientRedis.set(
           `guild_${interaction.guildId}`,
           JSON.stringify(serverQueue),
-          "EX",
-          "86400"
         );
       }
       const queueEmbed = new Discord.MessageEmbed()

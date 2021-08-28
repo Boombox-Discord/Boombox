@@ -2,10 +2,11 @@
 const fs = require("fs");
 const Discord = require("discord.js");
 const { Manager } = require("erela.js");
-const { clientRedis, getRedis } = require("./utils/redis");
+const { clientRedis, clientRedisNoAsync } = require("./utils/redis");
 const Sentry = require("@sentry/node");
 const Tracing = require("@sentry/tracing");
 const Spotify = require("erela.js-spotify");
+const redisScan = require('node-redis-scan')
 
 const {
   prefix,
@@ -59,7 +60,35 @@ client.manager = new Manager({
 })
   .on(
     "nodeConnect",
-    (node) => console.log(`Node ${node.options.identifier} connected`) //skipcq: JS-0002
+    async (node) => {
+      console.log(`Node ${node.options.identifier} connected`) //skipcq: JS-0002
+      
+      // go through redis and check if theer are any queues that need playing if the bot has crashed.
+      const scanner = new redisScan(clientRedisNoAsync)
+      scanner.eachScan('guild_*', async (matchingKeys) => {
+        // Depending on the pattern being scanned for, many or most calls to
+        // this function will be passed an empty array.
+        if (matchingKeys.length) {
+            // Matching keys found after this iteration of the SCAN command.
+            const redisQueue = await clientRedis.get(matchingKeys);
+            const serverQueue = JSON.parse(redisQueue)
+            const player = client.manager.create({
+              guild: serverQueue.voiceChannel.guildId,
+              voiceChannel: serverQueue.voiceChannel.id,
+              textChannel: serverQueue.textChannel.id
+            })
+            const response = await client.manager.search(serverQueue.songs[0].url)
+            await player.connect();
+            await player.play(response.tracks[0]);
+        }
+    }, (err, matchCount) => {
+        if (err) throw(err);
+    
+        // matchCount will be an integer count of how many total keys
+        // were found and passed to the intermediate callback.
+        console.log(`Found ${matchCount} keys.`);
+    });
+    } 
   )
   .on(
     "nodeError",
@@ -99,10 +128,11 @@ client.manager = new Manager({
       return client.channels.cache
         .get(player.textChannel)
         .send("No more songs in queue, leaving voice channel!");
+    } else {
+      await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
+      const response = await client.manager.search(serverQueue.songs[0].url);
+      player.play(response.tracks[0]);
     }
-    await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
-    const response = await client.manager.search(serverQueue.songs[0].url);
-    player.play(response.tracks[0]);
   });
 
 const commandFiles = fs
@@ -118,7 +148,6 @@ client.once("ready", async () => {
   console.log(`Logged in as ${client.user.tag}!`); //skipcq: JS-0002
   client.manager.init(client.user.id);
   client.user.setActivity("for /help", { type: "WATCHING" });
-  // console.log(await clientRedis.scan(0))
 });
 
 // send voice events to lavalink library
