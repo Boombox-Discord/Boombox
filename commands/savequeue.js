@@ -1,5 +1,5 @@
 "use strict";
-const { getRedis, clientRedis } = require("../utils/redis");
+const { clientRedis } = require("../utils/redis");
 const Discord = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
@@ -313,14 +313,8 @@ module.exports = {
       }
 
       savedQueues.splice(queueIndex, 1);
-      if (savedQueues.length === 0) {
-        await clientRedis.del(`save_${interaction.user.id}`);
-      } else {
-        await clientRedis.set(
-          `save_${interaction.user.id}`,
-          JSON.stringify(savedQueues)
-        );
-      }
+
+      (savedQueues.length === 0) ? await clientRedis.del(`save_${interaction.user.id}`) : await clientRedis.set(`save_${interaction.user.id}`, JSON.stringify(savedQueues));
 
       const deleteEmbed = new Discord.MessageEmbed()
         .setColor("#ed1c24")

@@ -1,5 +1,5 @@
 "use strict";
-const { clientRedis, getRedis } = require("../utils/redis");
+const { clientRedis } = require("../utils/redis");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {

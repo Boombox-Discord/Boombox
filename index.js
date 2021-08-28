@@ -58,7 +58,7 @@ client.manager = new Manager({
     }
   },
 })
-  .on("nodeConnect", async (node) => {
+  .on("nodeConnect", (node) => {
     console.log(`Node ${node.options.identifier} connected`); //skipcq: JS-0002
 
     // go through redis and check if theer are any queues that need playing if the bot has crashed.
@@ -131,14 +131,13 @@ client.manager = new Manager({
       return client.channels.cache
         .get(player.textChannel)
         .send("No more songs in queue, leaving voice channel!");
-    } else {
-      await clientRedis.set(
-        `guild_${player.guild}`,
-        JSON.stringify(serverQueue)
-      );
-      const response = await client.manager.search(serverQueue.songs[0].url);
-      player.play(response.tracks[0]);
     }
+    await clientRedis.set(
+      `guild_${player.guild}`,
+      JSON.stringify(serverQueue)
+    );
+    const response = await client.manager.search(serverQueue.songs[0].url);
+    player.play(response.tracks[0]);
   });
 
 const commandFiles = fs
@@ -150,7 +149,7 @@ for (const file of commandFiles) {
   client.commands.set(command.name, command);
 }
 
-client.once("ready", async () => {
+client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`); //skipcq: JS-0002
   client.manager.init(client.user.id);
   client.user.setActivity("for /help", { type: "WATCHING" });
