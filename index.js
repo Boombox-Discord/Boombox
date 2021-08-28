@@ -124,7 +124,7 @@ client.manager = new Manager({
     serverQueue.songs.shift();
 
     if (!serverQueue.songs[0]) {
-      await clientRedis.del(`guild_${player.guild}`);      
+      await clientRedis.del(`guild_${player.guild}`);
       client.channels.cache
         .get(serverQueue.textChannel.id)
         .send("No more songs in queue, leaving voice channel!");
