@@ -10,7 +10,7 @@ const redisClient = redis.createClient({
   auth_pass: redisPassword,
 });
 
-const asyncRedisClient = asyncRedis.decorate(redisClient)
+const asyncRedisClient = asyncRedis.decorate(redisClient);
 
 redisClient.on("error", function (error) {
   console.error(error); //skipcq: JS-0002

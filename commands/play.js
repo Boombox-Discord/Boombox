@@ -95,14 +95,14 @@ module.exports = {
       serverQueue.songs.push(songQueue);
       await clientRedis.set(
         `guild_${interaction.guildId}`,
-        JSON.stringify(serverQueue),
+        JSON.stringify(serverQueue)
       );
       player.play(response.tracks[0]);
     } else {
       serverQueue.songs.push(songQueue);
       clientRedis.set(
         `guild_${interaction.guildId}`,
-        JSON.stringify(serverQueue),
+        JSON.stringify(serverQueue)
       );
 
       const addQueueEmbed = new Discord.MessageEmbed()

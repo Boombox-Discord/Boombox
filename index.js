@@ -6,7 +6,7 @@ const { clientRedis, clientRedisNoAsync } = require("./utils/redis");
 const Sentry = require("@sentry/node");
 const Tracing = require("@sentry/tracing");
 const Spotify = require("erela.js-spotify");
-const redisScan = require('node-redis-scan')
+const redisScan = require("node-redis-scan");
 
 const {
   prefix,
@@ -58,38 +58,41 @@ client.manager = new Manager({
     }
   },
 })
-  .on(
-    "nodeConnect",
-    async (node) => {
-      console.log(`Node ${node.options.identifier} connected`) //skipcq: JS-0002
-      
-      // go through redis and check if theer are any queues that need playing if the bot has crashed.
-      const scanner = new redisScan(clientRedisNoAsync)
-      scanner.eachScan('guild_*', async (matchingKeys) => {
+  .on("nodeConnect", async (node) => {
+    console.log(`Node ${node.options.identifier} connected`); //skipcq: JS-0002
+
+    // go through redis and check if theer are any queues that need playing if the bot has crashed.
+    const scanner = new redisScan(clientRedisNoAsync);
+    scanner.eachScan(
+      "guild_*",
+      async (matchingKeys) => {
         // Depending on the pattern being scanned for, many or most calls to
         // this function will be passed an empty array.
         if (matchingKeys.length) {
-            // Matching keys found after this iteration of the SCAN command.
-            const redisQueue = await clientRedis.get(matchingKeys);
-            const serverQueue = JSON.parse(redisQueue)
-            const player = client.manager.create({
-              guild: serverQueue.voiceChannel.guildId,
-              voiceChannel: serverQueue.voiceChannel.id,
-              textChannel: serverQueue.textChannel.id
-            })
-            const response = await client.manager.search(serverQueue.songs[0].url)
-            await player.connect();
-            await player.play(response.tracks[0]);
+          // Matching keys found after this iteration of the SCAN command.
+          const redisQueue = await clientRedis.get(matchingKeys);
+          const serverQueue = JSON.parse(redisQueue);
+          const player = client.manager.create({
+            guild: serverQueue.voiceChannel.guildId,
+            voiceChannel: serverQueue.voiceChannel.id,
+            textChannel: serverQueue.textChannel.id,
+          });
+          const response = await client.manager.search(
+            serverQueue.songs[0].url
+          );
+          await player.connect();
+          await player.play(response.tracks[0]);
         }
-    }, (err, matchCount) => {
-        if (err) throw(err);
-    
+      },
+      (err, matchCount) => {
+        if (err) throw err;
+
         // matchCount will be an integer count of how many total keys
         // were found and passed to the intermediate callback.
         console.log(`Found ${matchCount} keys.`);
-    });
-    } 
-  )
+      }
+    );
+  })
   .on(
     "nodeError",
     (node, error) =>
@@ -129,7 +132,10 @@ client.manager = new Manager({
         .get(player.textChannel)
         .send("No more songs in queue, leaving voice channel!");
     } else {
-      await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
+      await clientRedis.set(
+        `guild_${player.guild}`,
+        JSON.stringify(serverQueue)
+      );
       const response = await client.manager.search(serverQueue.songs[0].url);
       player.play(response.tracks[0]);
     }

@@ -115,7 +115,7 @@ module.exports = {
     }
     await clientRedis.set(
       `guild_${interaction.guildId}`,
-      JSON.stringify(serverQueue),
+      JSON.stringify(serverQueue)
     );
 
     const playlistEmbed = new Discord.MessageEmbed()
