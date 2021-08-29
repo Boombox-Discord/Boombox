@@ -69,9 +69,11 @@ module.exports = {
       return interaction.editReply("Sorry, that video is a livestream!");
     }
 
+    console.log(response.tracks[0])
+
     const songQueue = {
       title: response.tracks[0].title,
-      url: response.tracks[0].uri,
+      url: response.tracks[0].uri || query,
       thumbnail: response.tracks[0].thumbnail,
     };
 
