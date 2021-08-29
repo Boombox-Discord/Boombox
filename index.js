@@ -136,6 +136,7 @@ client.manager = new Manager({
   })
   .on("socketClosed", async (player) => {
     await clientRedis.del(`guild_${player.guild}`);
+    await player.destroy();
   });
 
 const commandFiles = fs
