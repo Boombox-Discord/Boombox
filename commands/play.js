@@ -69,7 +69,7 @@ module.exports = {
       return interaction.editReply("Sorry, that video is a livestream!");
     }
 
-    console.log(response.tracks[0])
+    console.log(response.tracks[0]);
 
     const songQueue = {
       title: response.tracks[0].title,
