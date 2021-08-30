@@ -160,6 +160,13 @@ client.on("raw", (d) => client.manager.updateVoiceState(d));
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
+  if (
+    !interaction.channel
+      .permissionsFor(interaction.client.user)
+      .has("SEND_MESSAGES")
+  )
+    return;
+
   await interaction.deferReply();
 
   const command = client.commands.get(interaction.commandName);
