@@ -65,11 +65,6 @@ module.exports = {
     if (!response.tracks[0]) {
       return interaction.editReply("Sorry, there were no songs found!");
     }
-    if (response.tracks[0].isStream) {
-      return interaction.editReply("Sorry, that video is a livestream!");
-    }
-
-    console.log(response.tracks[0])
 
     const songQueue = {
       title: response.tracks[0].title,
