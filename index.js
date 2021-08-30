@@ -84,7 +84,6 @@ client.manager = new Manager({
             await player.connect();
             await player.play(response.tracks[0]);
           }
-
         }
       },
       (err, matchCount) => {
