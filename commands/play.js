@@ -31,7 +31,6 @@ module.exports = {
       );
     }
 
-
     const mediaName = interaction.options.get("songname").value;
 
     const searchEmbed = new Discord.MessageEmbed()
