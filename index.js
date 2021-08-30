@@ -70,18 +70,21 @@ client.manager = new Manager({
         // this function will be passed an empty array.
         if (matchingKeys.length) {
           // Matching keys found after this iteration of the SCAN command.
-          const redisQueue = await clientRedis.get(matchingKeys);
-          const serverQueue = JSON.parse(redisQueue);
-          const player = client.manager.create({
-            guild: serverQueue.voiceChannel.guildId,
-            voiceChannel: serverQueue.voiceChannel.id,
-            textChannel: serverQueue.textChannel.id,
-          });
-          const response = await client.manager.search(
-            serverQueue.songs[0].url
-          );
-          await player.connect();
-          await player.play(response.tracks[0]);
+          for (let i = 0; i < matchingKeys.length; i++) {
+            const redisQueue = await clientRedis.get(matchingKeys[i]);
+            const serverQueue = JSON.parse(redisQueue);
+            const player = client.manager.create({
+              guild: serverQueue.voiceChannel.guildId,
+              voiceChannel: serverQueue.voiceChannel.id,
+              textChannel: serverQueue.textChannel.id,
+            });
+            const response = await client.manager.search(
+              serverQueue.songs[0].url
+            );
+            await player.connect();
+            await player.play(response.tracks[0]);
+          }
+
         }
       },
       (err, matchCount) => {
