@@ -40,7 +40,7 @@ module.exports = {
       video = mediaName;
       query = mediaName;
     } else {
-      query = `ytsearch:${mediaName}`;
+      query = `${mediaName}`;
       video = mediaName;
     }
 
