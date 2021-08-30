@@ -31,18 +31,8 @@ module.exports = {
       );
     }
 
-    let video = "";
-    let query = "";
 
     const mediaName = interaction.options.get("songname").value;
-
-    if (mediaName.startsWith("https://")) {
-      video = mediaName;
-      query = mediaName;
-    } else {
-      query = `${mediaName}`;
-      video = mediaName;
-    }
 
     const searchEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
@@ -52,11 +42,11 @@ module.exports = {
         interaction.client.user.avatarURL()
       )
       .setDescription(
-        `Please wait we are searching for a song called ${video}`
+        `Please wait we are searching for a song called ${mediaName}`
       );
     await interaction.editReply({ embeds: [searchEmbed] });
 
-    const response = await manager.search(query);
+    const response = await manager.search(mediaName);
     if (!response) {
       return interaction.editReply(
         "Sorry, an error has occurred, please try again later!"
@@ -68,7 +58,7 @@ module.exports = {
 
     const songQueue = {
       title: response.tracks[0].title,
-      url: response.tracks[0].uri || query,
+      url: response.tracks[0].uri || mediaName,
       thumbnail: response.tracks[0].thumbnail,
     };
 
