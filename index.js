@@ -105,6 +105,13 @@ client.manager = new Manager({
   .on("trackStart", async (player, track) => {
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
+    if (
+      !redisReply.textChannel
+        .permissionsFor(interaction.client.user)
+        .has("SEND_MESSAGES")
+    ) {
+      return;
+    }
     const newQueueEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle(track.title)
@@ -122,6 +129,13 @@ client.manager = new Manager({
   .on("queueEnd", async (player) => {
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
+    if (
+      !redisReply.textChannel
+        .permissionsFor(interaction.client.user)
+        .has("SEND_MESSAGES")
+    ) {
+      return;
+    }
 
     serverQueue.songs.shift();
 
@@ -166,8 +180,9 @@ client.on("interactionCreate", async (interaction) => {
     !interaction.channel
       .permissionsFor(interaction.client.user)
       .has("SEND_MESSAGES")
-  )
+  ) {
     return;
+  }
 
   await interaction.deferReply();
 
