@@ -107,7 +107,7 @@ client.manager = new Manager({
     const serverQueue = JSON.parse(redisReply);
     if (
       !redisReply.textChannel
-        .permissionsFor(interaction.client.user)
+        .permissionsFor(client.user)
         .has("SEND_MESSAGES")
     ) {
       return;
@@ -131,7 +131,7 @@ client.manager = new Manager({
     const serverQueue = JSON.parse(redisReply);
     if (
       !redisReply.textChannel
-        .permissionsFor(interaction.client.user)
+        .permissionsFor(client.user)
         .has("SEND_MESSAGES")
     ) {
       return;
