@@ -35,6 +35,6 @@ module.exports = {
       JSON.stringify(serverQueue)
     );
     interaction.editReply("Ok, all songs in the queue have been shuffled");
-    return await player.stop();
+    return player.stop();
   },
 };

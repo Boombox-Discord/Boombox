@@ -224,12 +224,12 @@ client.manager = new Manager({
   .on("playerMove", async (player, oldChannel, newChannel) => {
     if (!newChannel) {
       await clientRedis.del(`guild_${player.guild}`);
-      return await player.destroy();
+      return player.destroy();
     }
     const position = player.position;
     await player.setVoiceChannel(newChannel);
     await player.play(player.queue.current);
-    return await player.seek(position);
+    return player.seek(position);
   });
 
 const commandFiles = fs

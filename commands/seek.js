@@ -18,7 +18,7 @@ module.exports = {
     .addStringOption((option) =>
       option.setName("time").setDescription("e.g 1m 30s").setRequired(true)
     ),
-  async execute(interaction) {
+  execute(interaction) {
     const manager = interaction.client.manager;
     const player = manager.get(interaction.guildId);
     if (!player) {

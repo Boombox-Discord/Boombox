@@ -73,6 +73,8 @@ Below is a table of all of Boombox's commands.
 | Playlist     | /playlist [youtube playlist url or spotify album or playlist] | This command will add all songs from a youtube playlist or spotify album or playlist into the queue.                                    |
 | Pause        | /pause                                                        | Will pause the song that is currently playing.                                                                                          |
 | Remove       | /remove [position in queue]                                   | Will remove that song from the queue.                                                                                                   |
+| Shuffle      | /shuffle                                                      | Shuffles the current queue.                                                                                                    |
+| Seek         | /seek [time e.g 1m 30s]                                       | Goes to that time point in the song.                                                                                                   |
 
 ## Getting Started
 
