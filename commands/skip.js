@@ -15,7 +15,7 @@ module.exports = {
     const player = manager.get(interaction.guildId);
 
     if (!player) {
-      return interaction.editReply("There is currently not song playing!");
+      return interaction.editReply("There is currently no song playing!");
     }
 
     interaction.editReply("I have skipped to the next song!");
