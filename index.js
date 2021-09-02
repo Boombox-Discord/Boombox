@@ -172,10 +172,16 @@ client.manager = new Manager({
     const response = await client.manager.search(serverQueue.songs[0].url);
     player.play(response.tracks[0]);
   })
-  .on("socketClosed", async (player) => {
-    await clientRedis.del(`guild_${player.guild}`);
-    await player.destroy();
-  });
+  .on("playerMove", async (player, oldChannel, newChannel) => {
+    if (!newChannel) {
+      await clientRedis.del(`guild_${player.guild}`);
+      return await player.destroy();
+    }
+    const position = player.position
+    await player.setVoiceChannel(newChannel)
+    await player.play(player.queue.current)
+    return await player.seek(position)
+  })
 
 const commandFiles = fs
   .readdirSync("./commands")
