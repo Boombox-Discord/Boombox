@@ -244,7 +244,7 @@ module.exports = {
           guild: interaction.guildId,
           voiceChannel: voiceChannel.id,
           textChannel: interaction.channelId,
-          selfDeafen: true
+          selfDeafen: true,
         });
 
         player.connect();

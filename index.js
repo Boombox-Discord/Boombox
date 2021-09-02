@@ -77,7 +77,7 @@ client.manager = new Manager({
               guild: serverQueue.voiceChannel.guildId,
               voiceChannel: serverQueue.voiceChannel.id,
               textChannel: serverQueue.textChannel.id,
-              selfDeafen: true
+              selfDeafen: true,
             });
             await player.connect();
             // check for spotify tracks played from /playlist command
@@ -178,11 +178,11 @@ client.manager = new Manager({
       await clientRedis.del(`guild_${player.guild}`);
       return await player.destroy();
     }
-    const position = player.position
-    await player.setVoiceChannel(newChannel)
-    await player.play(player.queue.current)
-    return await player.seek(position)
-  })
+    const position = player.position;
+    await player.setVoiceChannel(newChannel);
+    await player.play(player.queue.current);
+    return await player.seek(position);
+  });
 
 const commandFiles = fs
   .readdirSync("./commands")
