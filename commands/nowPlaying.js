@@ -33,6 +33,54 @@ module.exports = {
       .setURL(serverQueue.songs[0].url)
       .setThumbnail(serverQueue.songs[0].thumbnail);
 
-    return interaction.editReply({ embeds: [npEmbed] });
+    const Buttons = new Discord.MessageActionRow().addComponents(
+      new Discord.MessageButton()
+        .setCustomId("stop")
+        .setLabel("⏹️")
+        .setStyle("SECONDARY"),
+
+      new Discord.MessageButton()
+        .setCustomId("pause")
+        .setLabel("⏯️")
+        .setStyle("SECONDARY"),
+      
+      new Discord.MessageButton()
+        .setCustomId("skip")
+        .setLabel("⏭️")
+        .setStyle("SECONDARY")
+    )
+
+    interaction.editReply({
+      embeds: [npEmbed],
+      components: [Buttons],
+    });
+    const message = await interaction.fetchReply();
+    const collector = message.createMessageComponentCollector({
+      time: serverQueue.songs[0].duration
+    });
+
+    collector.on("collect", async (i) => {
+      if (i.customId === "stop") {
+        serverQueue.songs = []
+        await clientRedis.set(
+          `guild_${i.guildId}`,
+          JSON.stringify(serverQueue)
+        )
+        await player.stop()
+        i.reply("Stoping the music!")
+        return collector.stop()
+      } else if (i.customId === "pause") {
+        player.pause(!player.paused)
+        const pauseText = player.paused ? 'paused' : 'unpaused';
+        i.reply(`I have ${pauseText} the music!`);
+      } else if (i.customId === "skip") {
+        await player.stop();
+        i.reply("I have skipped to the next song!")
+        if (serverQueue.songs.length === 1) {
+          return collector.stop();
+        }
+        return;
+      }
+    })
   },
 };
