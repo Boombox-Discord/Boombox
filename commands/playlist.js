@@ -69,6 +69,8 @@ module.exports = {
       title: response.tracks[0].title,
       url: response.tracks[0].uri,
       thumbnail: response.tracks[0].thumbnail,
+      author: response.tracks[0].author, //used for spotify
+      duration: response.tracks[0].duration, //used for spotify
     };
 
     // by defualt set the for loop for playlist to zero so we start at the start of the playlist
@@ -110,6 +112,8 @@ module.exports = {
         title: response.tracks[i].title,
         url: response.tracks[i].uri,
         thumbnail: response.tracks[i].thumbnail,
+        author: response.tracks[i].author, //used for spotify
+        duration: response.tracks[i].duration, //used for spotify
       };
       serverQueue.songs.push(songsAdd);
     }

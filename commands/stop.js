@@ -27,9 +27,7 @@ module.exports = {
     serverQueue.songs = [];
     clientRedis.set(
       `guild_${interaction.guildId}`,
-      JSON.stringify(serverQueue),
-      "EX",
-      86400 //skipcq: JS-0074
+      JSON.stringify(serverQueue)
     );
 
     interaction.editReply("I removed all songs from the queue!");

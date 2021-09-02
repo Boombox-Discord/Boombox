@@ -1,7 +1,7 @@
 "use strict";
 const fs = require("fs");
 const Discord = require("discord.js");
-const { Manager } = require("erela.js");
+const { Manager, TrackUtils } = require("erela.js");
 const { clientRedis, clientRedisNoAsync } = require("./utils/redis");
 const Sentry = require("@sentry/node");
 const Tracing = require("@sentry/tracing");
@@ -78,10 +78,21 @@ client.manager = new Manager({
               voiceChannel: serverQueue.voiceChannel.id,
               textChannel: serverQueue.textChannel.id,
             });
+            await player.connect();
+            // check for spotify tracks played from /playlist command
+            if (!serverQueue.songs[0].url) {
+              const unersolvedTrack = TrackUtils.buildUnresolved({
+                title: serverQueue.songs[0].title,
+                author: serverQueue.songs[0].author,
+                duration: serverQueue.songs[0].duration,
+              });
+              return player.play(unersolvedTrack);
+            }
             const response = await client.manager.search(
               serverQueue.songs[0].url
             );
-            await player.connect();
+            player.play(response.tracks[0]);
+
             await player.play(response.tracks[0]);
           }
         }
@@ -149,6 +160,15 @@ client.manager = new Manager({
       return player.destroy();
     }
     await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
+    // check for spotify tracks played from /playlist command
+    if (!serverQueue.songs[0].url) {
+      const unersolvedTrack = TrackUtils.buildUnresolved({
+        title: serverQueue.songs[0].title,
+        author: serverQueue.songs[0].author,
+        duration: serverQueue.songs[0].duration,
+      });
+      return player.play(unersolvedTrack);
+    }
     const response = await client.manager.search(serverQueue.songs[0].url);
     player.play(response.tracks[0]);
   })

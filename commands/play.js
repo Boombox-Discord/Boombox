@@ -57,8 +57,10 @@ module.exports = {
 
     const songQueue = {
       title: response.tracks[0].title,
-      url: response.tracks[0].uri || mediaName,
+      url: response.tracks[0].uri,
       thumbnail: response.tracks[0].thumbnail,
+      author: response.tracks[0].author, //used for spotify
+      duration: response.tracks[0].duration, //used for spotify
     };
 
     const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
