@@ -77,6 +77,7 @@ client.manager = new Manager({
               guild: serverQueue.voiceChannel.guildId,
               voiceChannel: serverQueue.voiceChannel.id,
               textChannel: serverQueue.textChannel.id,
+              selfDeafen: true
             });
             await player.connect();
             // check for spotify tracks played from /playlist command

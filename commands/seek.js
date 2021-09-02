@@ -2,7 +2,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const timestring = require("timestring");
 const humanizeDuration = require("humanize-duration");
-const { execute } = require("./play");
 
 module.exports = {
     name: "seek",
@@ -24,7 +23,7 @@ module.exports = {
         const manager = interaction.client.manager;
         const player = manager.get(interaction.guildId)
         if (!player) {
-            return interaction.editReply("There is currnelty no song playing!")
+            return interaction.editReply("There is currently no song playing!")
         }
 
         const time = interaction.options.get("time").value;
