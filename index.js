@@ -77,6 +77,7 @@ client.manager = new Manager({
               guild: serverQueue.voiceChannel.guildId,
               voiceChannel: serverQueue.voiceChannel.id,
               textChannel: serverQueue.textChannel.id,
+              selfDeafen: true,
             });
             await player.connect();
             // check for spotify tracks played from /playlist command
@@ -134,9 +135,57 @@ client.manager = new Manager({
       )
       .setThumbnail(track.thumbnail);
 
-    client.channels.cache
+    const Buttons = new Discord.MessageActionRow().addComponents(
+      new Discord.MessageButton()
+        .setCustomId("stop")
+        .setLabel("⏹️")
+        .setStyle("SECONDARY"),
+
+      new Discord.MessageButton()
+        .setCustomId("pause")
+        .setLabel("⏯️")
+        .setStyle("SECONDARY"),
+
+      new Discord.MessageButton()
+        .setCustomId("skip")
+        .setLabel("⏭️")
+        .setStyle("SECONDARY")
+    );
+
+    const message = await client.channels.cache
       .get(serverQueue.textChannel.id)
-      .send({ embeds: [newQueueEmbed] });
+      .send({
+        embeds: [newQueueEmbed],
+        components: [Buttons],
+      });
+
+    const collector = message.createMessageComponentCollector({
+      time: serverQueue.songs[0].duration,
+    });
+
+    collector.on("collect", async (i) => {
+      if (i.customId === "stop") {
+        serverQueue.songs = [];
+        await clientRedis.set(
+          `guild_${i.guildId}`,
+          JSON.stringify(serverQueue)
+        );
+        await player.stop();
+        i.reply("Stoping the music!");
+        return collector.stop();
+      } else if (i.customId === "pause") {
+        player.pause(!player.paused);
+        const pauseText = player.paused ? "paused" : "unpaused";
+        i.reply(`I have ${pauseText} the music!`);
+      } else if (i.customId === "skip") {
+        await player.stop();
+        i.reply("I have skipped to the next song!");
+        if (serverQueue.songs.length === 1) {
+          return collector.stop();
+        }
+        return;
+      }
+    });
   })
   .on("queueEnd", async (player) => {
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
@@ -172,9 +221,15 @@ client.manager = new Manager({
     const response = await client.manager.search(serverQueue.songs[0].url);
     player.play(response.tracks[0]);
   })
-  .on("socketClosed", async (player) => {
-    await clientRedis.del(`guild_${player.guild}`);
-    await player.destroy();
+  .on("playerMove", async (player, oldChannel, newChannel) => {
+    if (!newChannel) {
+      await clientRedis.del(`guild_${player.guild}`);
+      return player.destroy();
+    }
+    const position = player.position;
+    await player.setVoiceChannel(newChannel);
+    await player.play(player.queue.current);
+    return player.seek(position);
   });
 
 const commandFiles = fs
