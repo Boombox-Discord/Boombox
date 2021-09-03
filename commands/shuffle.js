@@ -2,6 +2,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { clientRedis } = require("../utils/redis");
 const { shuffleArray } = require("../utils/utils");
+const { TrackUtils } = require("erela.js");
 
 module.exports = {
   name: "shuffle",
@@ -35,6 +36,11 @@ module.exports = {
       JSON.stringify(serverQueue)
     );
     interaction.editReply("Ok, all songs in the queue have been shuffled");
-    return player.stop();
+    const unersolvedTrack = TrackUtils.buildUnresolved({
+      title: serverQueue.songs[0].title,
+      author: serverQueue.songs[0].author,
+      duration: serverQueue.songs[0].duration,
+    });
+    return player.play(unersolvedTrack);
   },
 };
