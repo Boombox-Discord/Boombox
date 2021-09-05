@@ -121,7 +121,11 @@ client.manager = new Manager({
       !client.channels.cache
         .get(serverQueue.textChannel.id)
         .permissionsFor(client.user)
-        .has("SEND_MESSAGES")
+        .has("SEND_MESSAGES") ||
+      !client.channels.cache
+        .get(serverQueue.textChannel.id)
+        .permissionsFor(client.user)
+        .has("EMBED_LINKS")
     ) {
       return;
     }
@@ -190,22 +194,27 @@ client.manager = new Manager({
   .on("queueEnd", async (player) => {
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
+    let sendMessage = true;
     if (
+      !serverQueue.textChannel ||
       !client.channels.cache
         .get(serverQueue.textChannel.id)
         .permissionsFor(client.user)
         .has("SEND_MESSAGES")
     ) {
-      return;
+      sendMessage = false;
     }
 
     serverQueue.songs.shift();
 
     if (!serverQueue.songs[0]) {
       await clientRedis.del(`guild_${player.guild}`);
-      client.channels.cache
-        .get(serverQueue.textChannel.id)
-        .send("No more songs in queue, leaving voice channel!");
+      if (sendMessage) {
+        client.channels.cache
+          .get(serverQueue.textChannel.id)
+          .send("No more songs in queue, leaving voice channel!");
+      }
+
       return player.destroy();
     }
     await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
@@ -259,6 +268,16 @@ client.on("interactionCreate", async (interaction) => {
       .has("SEND_MESSAGES")
   ) {
     return;
+  }
+
+  if (
+    !interaction.channel
+      .permissionsFor(interaction.client.user)
+      .has("EMBED_LINKS")
+  ) {
+    return interaction.reply(
+      "I need permission to send embeds in this channel!"
+    );
   }
 
   await interaction.deferReply();
