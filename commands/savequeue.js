@@ -2,6 +2,7 @@
 const { clientRedis } = require("../utils/redis");
 const Discord = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { TrackUtils } = require("erela.js");
 
 module.exports = {
   name: "savequeue",
@@ -225,19 +226,28 @@ module.exports = {
           );
         }
 
-        const response = await manager.search(
-          savedQueues[queueIndex].songs[0].url
-        );
-        if (!response) {
-          return interaction.editReply(
-            "Sorry, an error has occurred, please try again later!"
+        let song;
+
+        if (!savedQueues[queueIndex].songs[0].url) {
+          song = await TrackUtils.buildUnresolved({
+            title: savedQueues[queueIndex].songs[0].title,
+            author: savedQueues[queueIndex].songs[0].author,
+            duration: savedQueues[queueIndex].songs[0].duration,
+          });
+        } else {
+          const response = await manager.search(
+            savedQueues[queueIndex].songs[0].url
           );
-        }
-        if (!response.tracks[0]) {
-          return interaction.editReply("Sorry, there were no songs found!");
-        }
-        if (response.tracks[0].isStream) {
-          return interaction.editReply("Sorry, that video is a livestream!");
+
+          if (!response) {
+            return interaction.editReply(
+              "Sorry, an error has occurred, please try again later!"
+            );
+          }
+          if (!response.tracks[0]) {
+            return interaction.editReply("Sorry, there were no songs found!");
+          }
+          song = response.tracks[0];
         }
 
         const player = manager.create({
@@ -264,7 +274,7 @@ module.exports = {
           JSON.stringify(serverQueue)
         );
 
-        player.play(response.tracks[0]);
+        player.play(song);
       } else {
         const redisQueueReply = await clientRedis.get(
           `guild_${interaction.guildId}`
