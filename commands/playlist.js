@@ -81,11 +81,13 @@ module.exports = {
     let serverQueue = JSON.parse(redisReply);
 
     if (!serverQueue) {
+      const node = await manager.leastLoadNodes;
       const player = manager.create({
         guild: interaction.guildId,
         voiceChannel: voiceChannel.id,
         textChannel: interaction.channelId,
         selfDeafen: true,
+        node: node[0],
       });
       player.connect();
 

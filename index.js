@@ -9,11 +9,8 @@ const Spotify = require("erela.js-spotify");
 const redisScan = require("node-redis-scan");
 
 const {
-  prefix,
   token,
-  lavalinkIP,
-  lavalinkPort,
-  lavalinkPassword,
+  lavalinkNodes,
   sentryDSN,
   sentryEnv,
   spotifyClientID,
@@ -37,13 +34,7 @@ Sentry.init({
 });
 
 client.manager = new Manager({
-  nodes: [
-    {
-      host: lavalinkIP,
-      port: lavalinkPort,
-      password: lavalinkPassword,
-    },
-  ],
+  nodes: lavalinkNodes,
 
   plugins: [
     new Spotify({
@@ -73,11 +64,14 @@ client.manager = new Manager({
           for (let i = 0; i < matchingKeys.length; i++) {
             const redisQueue = await clientRedis.get(matchingKeys[i]);
             const serverQueue = JSON.parse(redisQueue);
+            if (client.manager.get(serverQueue.textChannel.guildId)) return;
+            const node = await client.manager.leastLoadNodes;
             const player = client.manager.create({
               guild: serverQueue.voiceChannel.guildId,
               voiceChannel: serverQueue.voiceChannel.id,
-              textChannel: serverQueue.textChannel.id,
+              textChannel: serverQueue.textChannel.channelId,
               selfDeafen: true,
+              node: node[0],
             });
             await player.connect();
             // check for spotify tracks played from /playlist command

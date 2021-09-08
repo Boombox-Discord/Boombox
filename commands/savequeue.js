@@ -250,11 +250,14 @@ module.exports = {
           song = response.tracks[0];
         }
 
+        const node = await manager.leastLoadNodes;
+        console.log(node);
         const player = manager.create({
           guild: interaction.guildId,
           voiceChannel: voiceChannel.id,
           textChannel: interaction.channelId,
           selfDeafen: true,
+          node: node[0],
         });
 
         player.connect();

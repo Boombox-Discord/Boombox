@@ -2,9 +2,18 @@
   "prefix": "!",
   "token": "Discord token",
   "inviteLink": "https://discord.com/api/oauth2/authorize?client_id=678819994250772480&permissions=36785152&scope=bot",
-  "lavalinkIP": "lavalink",
-  "lavalinkPort": 2333,
-  "lavalinkPassword": "Supper cool password",
+  "lavalinkNodes": [
+    {
+      "host": "localhost",
+      "port": 2333,
+      "password": "password"
+    },
+    {
+      "host": "localhost",
+      "port": 2333,
+      "password": "password"
+    }
+  ],
   "redisIP": "redis",
   "redisPort": "6379",
   "redisPassword": "",
