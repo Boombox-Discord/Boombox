@@ -151,12 +151,10 @@ client.manager = new Manager({
         .setStyle("SECONDARY")
     );
 
-    const message = await client.channels.cache
-      .get(player.textChannel)
-      .send({
-        embeds: [newQueueEmbed],
-        components: [Buttons],
-      });
+    const message = await client.channels.cache.get(player.textChannel).send({
+      embeds: [newQueueEmbed],
+      components: [Buttons],
+    });
 
     const collector = message.createMessageComponentCollector({
       time: serverQueue.songs[0].duration,
