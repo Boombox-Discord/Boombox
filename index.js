@@ -112,12 +112,13 @@ client.manager = new Manager({
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
     if (
+      !player.textChannel ||
       !client.channels.cache
-        .get(serverQueue.textChannel.id)
+        .get(player.textChannel)
         .permissionsFor(client.user)
         .has("SEND_MESSAGES") ||
       !client.channels.cache
-        .get(serverQueue.textChannel.id)
+        .get(player.textChannel)
         .permissionsFor(client.user)
         .has("EMBED_LINKS")
     ) {
@@ -151,7 +152,7 @@ client.manager = new Manager({
     );
 
     const message = await client.channels.cache
-      .get(serverQueue.textChannel.id)
+      .get(player.textChannel)
       .send({
         embeds: [newQueueEmbed],
         components: [Buttons],
@@ -190,9 +191,9 @@ client.manager = new Manager({
     const serverQueue = JSON.parse(redisReply);
     let sendMessage = true;
     if (
-      !serverQueue.textChannel ||
+      !player.textChannel ||
       !client.channels.cache
-        .get(serverQueue.textChannel.id)
+        .get(player.textChannel)
         .permissionsFor(client.user)
         .has("SEND_MESSAGES")
     ) {
@@ -205,7 +206,7 @@ client.manager = new Manager({
       await clientRedis.del(`guild_${player.guild}`);
       if (sendMessage) {
         client.channels.cache
-          .get(serverQueue.textChannel.id)
+          .get(player.textChannel)
           .send("No more songs in queue, leaving voice channel!");
       }
 
@@ -256,6 +257,8 @@ client.on("raw", (d) => client.manager.updateVoiceState(d));
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
+  await interaction.deferReply();
+
   if (
     !interaction.channel
       .permissionsFor(interaction.client.user)
@@ -273,8 +276,6 @@ client.on("interactionCreate", async (interaction) => {
       "I need permission to send embeds in this channel!"
     );
   }
-
-  await interaction.deferReply();
 
   const command = client.commands.get(interaction.commandName);
 
