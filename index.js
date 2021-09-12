@@ -1,6 +1,7 @@
 "use strict";
 const fs = require("fs");
 const Discord = require("discord.js");
+const { Permissions } = require("discord.js");
 const { Manager, TrackUtils } = require("erela.js");
 const { clientRedis, clientRedisNoAsync } = require("./utils/redis");
 const Sentry = require("@sentry/node");
@@ -116,11 +117,11 @@ client.manager = new Manager({
       !client.channels.cache
         .get(player.textChannel)
         .permissionsFor(client.user)
-        .has("SEND_MESSAGES") ||
+        .has(Permissions.FLAGS.SEND_MESSAGES) ||
       !client.channels.cache
         .get(player.textChannel)
         .permissionsFor(client.user)
-        .has("EMBED_LINKS")
+        .has(Permissions.FLAGS.EMBED_LINKS)
     ) {
       return;
     }
@@ -193,7 +194,7 @@ client.manager = new Manager({
       !client.channels.cache
         .get(player.textChannel)
         .permissionsFor(client.user)
-        .has("SEND_MESSAGES")
+        .has(Permissions.FLAGS.SEND_MESSAGES)
     ) {
       sendMessage = false;
     }
@@ -260,7 +261,7 @@ client.on("interactionCreate", async (interaction) => {
   if (
     !interaction.channel
       .permissionsFor(interaction.client.user)
-      .has("SEND_MESSAGES")
+      .has(Permissions.FLAGS.SEND_MESSAGES)
   ) {
     return;
   }
@@ -268,7 +269,7 @@ client.on("interactionCreate", async (interaction) => {
   if (
     !interaction.channel
       .permissionsFor(interaction.client.user)
-      .has("EMBED_LINKS")
+      .has(Permissions.FLAGS.EMBED_LINKS)
   ) {
     return interaction.reply(
       "I need permission to send embeds in this channel!"

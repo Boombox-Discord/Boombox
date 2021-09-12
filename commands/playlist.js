@@ -2,6 +2,7 @@
 const Discord = require("discord.js");
 const { clientRedis } = require("../utils/redis");
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { Permissions } = require("discord.js");
 
 module.exports = {
   name: "playlist",
@@ -28,7 +29,10 @@ module.exports = {
 
     const permissions = voiceChannel.permissionsFor(interaction.client.user);
 
-    if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+    if (
+      !permissions.has(Permissions.FLAGS.CONNECT) ||
+      !permissions.has(Permissions.FLAGS.SPEAK)
+    ) {
       return interaction.editReply(
         "I don't have permission to join or speak in that voice channel!"
       );

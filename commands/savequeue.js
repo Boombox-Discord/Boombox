@@ -3,6 +3,7 @@ const { clientRedis } = require("../utils/redis");
 const Discord = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { TrackUtils } = require("erela.js");
+const { Permissions } = require("discord.js");
 
 module.exports = {
   name: "savequeue",
@@ -220,7 +221,10 @@ module.exports = {
           interaction.client.user
         );
 
-        if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
+        if (
+          !permissions.has(Permissions.FLAGS.CONNECT) ||
+          !permissions.has(Permissions.FLAGS.SPEAK)
+        ) {
           return interaction.editReply(
             "I don't have permission to join or speak in that voice channel!"
           );
