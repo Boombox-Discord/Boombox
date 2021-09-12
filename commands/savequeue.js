@@ -221,7 +221,10 @@ module.exports = {
           interaction.client.user
         );
 
-        if (!permissions.has(Permissions.FLAGS.CONNECT) || !permissions.has(Permissions.FLAGS.SPEAK)) {
+        if (
+          !permissions.has(Permissions.FLAGS.CONNECT) ||
+          !permissions.has(Permissions.FLAGS.SPEAK)
+        ) {
           return interaction.editReply(
             "I don't have permission to join or speak in that voice channel!"
           );

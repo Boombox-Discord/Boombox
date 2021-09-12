@@ -1,7 +1,7 @@
 "use strict";
 const fs = require("fs");
 const Discord = require("discord.js");
-const { Permissions } = require('discord.js');
+const { Permissions } = require("discord.js");
 const { Manager, TrackUtils } = require("erela.js");
 const { clientRedis, clientRedisNoAsync } = require("./utils/redis");
 const Sentry = require("@sentry/node");
