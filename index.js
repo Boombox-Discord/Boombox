@@ -118,7 +118,8 @@ client.manager = new Manager({
         .get(player.textChannel)
         .permissionsFor(client.user)
         .has([Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.EMBED_LINKS])
-    ) return;
+    )
+      return;
     const newQueueEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle(track.title)
