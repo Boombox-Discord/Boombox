@@ -113,11 +113,16 @@ client.manager = new Manager({
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
     if (!player.textChannel) return;
+    if (!client.channels.cache.get(player.textChannel)) return;
     if (
       !client.channels.cache
         .get(player.textChannel)
-        .permissionsFor(client.user)
-        .has([Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.EMBED_LINKS])
+        .permissionsFor(client.user.id)
+        .has([
+          Permissions.FLAGS.SEND_MESSAGES,
+          Permissions.FLAGS.EMBED_LINKS,
+          Permissions.FLAGS.VIEW_CHANNEL,
+        ])
     )
       return;
     const newQueueEmbed = new Discord.MessageEmbed()
@@ -158,6 +163,9 @@ client.manager = new Manager({
 
     collector.on("collect", async (i) => {
       if (i.customId === "stop") {
+        if (!player) {
+          return collector.stop();
+        }
         serverQueue.songs = [];
         await clientRedis.set(
           `guild_${i.guildId}`,
@@ -167,10 +175,16 @@ client.manager = new Manager({
         i.reply("Stoping the music!");
         return collector.stop();
       } else if (i.customId === "pause") {
+        if (!player) {
+          return collector.stop();
+        }
         player.pause(!player.paused);
         const pauseText = player.paused ? "paused" : "unpaused";
         i.reply(`I have ${pauseText} the music!`);
       } else if (i.customId === "skip") {
+        if (!player) {
+          return collector.stop();
+        }
         await player.stop();
         i.reply("I have skipped to the next song!");
         if (serverQueue.songs.length === 1) {
@@ -187,11 +201,14 @@ client.manager = new Manager({
     if (!player.textChannel) {
       sendMessage = false;
     }
+    if (!client.channels.cache.get(player.textChannel)) {
+      sendMessage = false;
+    }
     if (
       !client.channels.cache
         .get(player.textChannel)
-        .permissionsFor(client.user)
-        .has(Permissions.FLAGS.SEND_MESSAGES)
+        .permissionsFor(client.user.id)
+        .has([Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.VIEW_CHANNEL])
     ) {
       sendMessage = false;
     }
@@ -257,20 +274,39 @@ client.on("interactionCreate", async (interaction) => {
 
   if (
     !interaction.channel
-      .permissionsFor(interaction.client.user)
+      .permissionsFor(interaction.client.user.id)
       .has(Permissions.FLAGS.SEND_MESSAGES)
   ) {
-    return;
+    try {
+      const errorEmbed = new Discord.MessageEmbed()
+        .setColor("#ed1c24")
+        .setTitle(`Missing Permissions in Guild ${interaction.guild.name}!`)
+        .setDescription(
+          `Hey! You just ran the ${interaction.commandName} command on server ${interaction.guild.name} but I don't have permission to send messages on that channel. Please make sure that I have send messages permission for that channel and try again.`
+        );
+
+      return interaction.user.send({ embeds: [errorEmbed] });
+    } catch {
+      return;
+    }
   }
 
   if (
     !interaction.channel
-      .permissionsFor(interaction.client.user)
+      .permissionsFor(interaction.client.user.id)
       .has(Permissions.FLAGS.EMBED_LINKS)
   ) {
-    return interaction.reply(
+    return interaction.editReply(
       "I need permission to send embeds in this channel!"
     );
+  }
+
+  if (
+    !interaction.channel
+      .permissionsFor(interaction.client.user.id)
+      .has(Permissions.FLAGS.VIEW_CHANNEL)
+  ) {
+    return interaction.editReply("I need permission to view this channel!");
   }
 
   const command = client.commands.get(interaction.commandName);

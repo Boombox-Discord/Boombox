@@ -61,6 +61,9 @@ module.exports = {
 
     collector.on("collect", async (i) => {
       if (i.customId === "stop") {
+        if (!player) {
+          return collector.stop();
+        }
         serverQueue.songs = [];
         await clientRedis.set(
           `guild_${i.guildId}`,
@@ -70,10 +73,16 @@ module.exports = {
         i.reply("Stoping the music!");
         return collector.stop();
       } else if (i.customId === "pause") {
+        if (!player) {
+          return collector.stop();
+        }
         player.pause(!player.paused);
         const pauseText = player.paused ? "paused" : "unpaused";
         i.reply(`I have ${pauseText} the music!`);
       } else if (i.customId === "skip") {
+        if (!player) {
+          return collector.stop();
+        }
         await player.stop();
         i.reply("I have skipped to the next song!");
         if (serverQueue.songs.length === 1) {
