@@ -113,7 +113,12 @@ client.manager = new Manager({
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
     if (!player.textChannel) return;
-    if (!client.channels.cache.get(player.textChannel).permissionsFor(client.user.id)) return;
+    if (
+      !client.channels.cache
+        .get(player.textChannel)
+        .permissionsFor(client.user.id)
+    )
+      return;
     if (
       !client.channels.cache
         .get(player.textChannel)
@@ -201,7 +206,11 @@ client.manager = new Manager({
     if (!player.textChannel) {
       sendMessage = false;
     }
-    if (!client.channels.cache.get(player.textChannel).permissionsFor(client.user.id)) {
+    if (
+      !client.channels.cache
+        .get(player.textChannel)
+        .permissionsFor(client.user.id)
+    ) {
       sendMessage = false;
     }
     if (
