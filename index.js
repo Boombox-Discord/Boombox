@@ -112,19 +112,13 @@ client.manager = new Manager({
   .on("trackStart", async (player, track) => {
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
+    if (!player.textChannel) return;
     if (
-      !player.textChannel ||
       !client.channels.cache
         .get(player.textChannel)
         .permissionsFor(client.user)
-        .has(Permissions.FLAGS.SEND_MESSAGES) ||
-      !client.channels.cache
-        .get(player.textChannel)
-        .permissionsFor(client.user)
-        .has(Permissions.FLAGS.EMBED_LINKS)
-    ) {
-      return;
-    }
+        .has([Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.EMBED_LINKS])
+    ) return;
     const newQueueEmbed = new Discord.MessageEmbed()
       .setColor("#ed1c24")
       .setTitle(track.title)
@@ -189,8 +183,10 @@ client.manager = new Manager({
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
     let sendMessage = true;
+    if (!player.textChannel) {
+      sendMessage = false;
+    }
     if (
-      !player.textChannel ||
       !client.channels.cache
         .get(player.textChannel)
         .permissionsFor(client.user)
