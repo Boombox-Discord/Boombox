@@ -5,4 +5,3 @@ export function shuffleArray(a: any[]) {
   }
   return a;
 }
-

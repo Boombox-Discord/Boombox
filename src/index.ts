@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/node";
-import { Client } from "./client"
+import { Client } from "./client";
 
 import { token, sentryDSN, sentryEnv } from "../config.json";
 import { LogLevel } from "@sapphire/framework";
@@ -35,6 +35,6 @@ async function main() {
     client.destroy();
     process.exit(1);
   }
-};
+}
 
 main();
