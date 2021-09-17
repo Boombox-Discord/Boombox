@@ -70,7 +70,7 @@ client.manager = new Manager({
             const player = client.manager.create({
               guild: serverQueue.voiceChannel.guildId,
               voiceChannel: serverQueue.voiceChannel.id,
-              textChannel: serverQueue.textChannel.channelId,
+              textChannel: serverQueue.textChannel.id,
               selfDeafen: true,
               node: node[0],
             });
@@ -113,12 +113,6 @@ client.manager = new Manager({
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
     if (!player.textChannel) return;
-    if (
-      !client.channels.cache
-        .get(player.textChannel)
-        .permissionsFor(client.user.id)
-    )
-      return;
     if (
       !client.channels.cache
         .get(player.textChannel)
@@ -204,15 +198,11 @@ client.manager = new Manager({
     const serverQueue = JSON.parse(redisReply);
     let sendMessage = true;
     if (!player.textChannel) {
-      sendMessage = false;
+      await clientRedis.del(`guild_${player.guild}`);
+      return player.destroy();
     }
-    if (
-      !client.channels.cache
-        .get(player.textChannel)
-        .permissionsFor(client.user.id)
-    ) {
-      sendMessage = false;
-    }
+    console.log(player)
+    console.log(typeof(player.textChannel))
     if (
       !client.channels.cache
         .get(player.textChannel)
