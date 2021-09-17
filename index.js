@@ -208,7 +208,7 @@ client.manager = new Manager({
     }
     const response = await client.manager.search(serverQueue.songs[0].url);
     player.play(response.tracks[0]);
-    
+
     let sendMessage = true;
     if (!player.textChannel) {
       await clientRedis.del(`guild_${player.guild}`);
