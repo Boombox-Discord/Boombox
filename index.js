@@ -196,6 +196,19 @@ client.manager = new Manager({
   .on("queueEnd", async (player) => {
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
+    await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
+    // check for spotify tracks played from /playlist command
+    if (!serverQueue.songs[0].url) {
+      const unersolvedTrack = TrackUtils.buildUnresolved({
+        title: serverQueue.songs[0].title,
+        author: serverQueue.songs[0].author,
+        duration: serverQueue.songs[0].duration,
+      });
+      return player.play(unersolvedTrack);
+    }
+    const response = await client.manager.search(serverQueue.songs[0].url);
+    player.play(response.tracks[0]);
+    
     let sendMessage = true;
     if (!player.textChannel) {
       await clientRedis.del(`guild_${player.guild}`);
@@ -224,18 +237,6 @@ client.manager = new Manager({
 
       return player.destroy();
     }
-    await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
-    // check for spotify tracks played from /playlist command
-    if (!serverQueue.songs[0].url) {
-      const unersolvedTrack = TrackUtils.buildUnresolved({
-        title: serverQueue.songs[0].title,
-        author: serverQueue.songs[0].author,
-        duration: serverQueue.songs[0].duration,
-      });
-      return player.play(unersolvedTrack);
-    }
-    const response = await client.manager.search(serverQueue.songs[0].url);
-    player.play(response.tracks[0]);
   })
   .on("playerMove", async (player, oldChannel, newChannel) => {
     if (!newChannel) {
