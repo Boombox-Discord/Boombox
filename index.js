@@ -201,8 +201,8 @@ client.manager = new Manager({
       await clientRedis.del(`guild_${player.guild}`);
       return player.destroy();
     }
-    console.log(player)
-    console.log(typeof(player.textChannel))
+    console.log(player);
+    console.log(typeof player.textChannel);
     if (
       !client.channels.cache
         .get(player.textChannel)
