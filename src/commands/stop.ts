@@ -1,42 +1,48 @@
-import { clientRedis } from "../utils/redis";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, Message, MessageEmbed, MessageEmbedOptions } from "discord.js";
-import { Command } from "../types/Command";
+import { SlashCommandBuilder } from '@discordjs/builders';
+
+import { Command, CommandInteraction } from "../types/Command";
+import { clientRedis } from '../utils/redis';
 
 export default class Stop extends Command {
-    name = "stop"
-    description =
-        "Stop's the currnet playing song and deletes the queue."
-    args = false
-    usage = null
-    guildOnly = true
-    voice = true
+  name = 'stop';
 
-    data = new SlashCommandBuilder()
-        .setName(this.name)
-        .setDescription(this.description)
+  description = "Stop's the currnet playing song and deletes the queue.";
 
-    execute = async (interaction: CommandInteraction) => {
-        const manager = interaction.client.manager;
+  args = false;
 
-        const player = manager.get(interaction.guildId);
+  usage = null;
 
-        if (!player) {
-            return interaction.editReply("There is currently no song playing!");
-        }
+  guildOnly = true;
 
-        const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+  voice = true;
 
-        const serverQueue = JSON.parse(redisReply);
+  data = new SlashCommandBuilder()
+    .setName(this.name)
+    .setDescription(this.description);
 
-        serverQueue.songs = [];
-        clientRedis.set(
-            `guild_${interaction.guildId}`,
-            JSON.stringify(serverQueue)
-        );
+  execute = async (interaction: CommandInteraction): Promise<void> => {
+    const { manager } = interaction.client;
 
-        interaction.editReply("I removed all songs from the queue!");
+    const player = manager.get(interaction.guildId);
 
-        return player.stop();
+    if (!player) {
+      interaction.editReply('There is currently no song playing!');
+      return;
     }
+
+    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+
+    const serverQueue = JSON.parse(redisReply);
+
+    serverQueue.songs = [];
+    clientRedis.set(
+      `guild_${interaction.guildId}`,
+      JSON.stringify(serverQueue)
+    );
+
+    interaction.editReply('I removed all songs from the queue!');
+
+    player.stop();
+    return;
+  };
 }

@@ -1,14 +1,20 @@
-import { clientRedis } from "../utils/redis";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember } from "discord.js";
-import { Command } from "../types/Command";
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { GuildMember, MessageEmbed } from 'discord.js';
+
+import { Command, CommandInteraction } from "../types/Command";
+import { clientRedis } from '../utils/redis';
 
 export default class Play extends Command {
-  name = "play";
-  description = "Plays a song from youtube, spotify or any MP3 url.";
+  name = 'play';
+
+  description = 'Plays a song from youtube, spotify or any MP3 url.';
+
   args = true;
-  usage = "<youtube URL, video name or spotify URL>";
+
+  usage = '<youtube URL, video name or spotify URL>';
+
   guildOnly = true;
+
   voice = true;
 
   data = new SlashCommandBuilder()
@@ -16,19 +22,19 @@ export default class Play extends Command {
     .setDescription(this.description)
     .addStringOption((option) =>
       option
-        .setName("songname")
-        .setDescription("Youtube URL, video name or Spotify URL.")
+        .setName('songname')
+        .setDescription('Youtube URL, video name or Spotify URL.')
         .setRequired(true)
     );
 
-  execute = async (interaction: CommandInteraction) => {
+  execute = async (interaction: CommandInteraction): Promise<void> => {
     interaction.member = interaction.member as GuildMember;
-    const manager = interaction.client.manager;
+    const { manager } = interaction.client;
     const voiceChannel = interaction.member.voice.channel;
-    const mediaName = interaction.options.get("songname").value as string;
+    const mediaName = interaction.options.get('songname').value as string;
 
     if (!voiceChannel) {
-      interaction.reply("You need to be in a voice channel to play music!");
+      interaction.reply('You need to be in a voice channel to play music!');
     }
 
     const issue = this.hasPermissionsJoin(voiceChannel);
@@ -36,9 +42,9 @@ export default class Play extends Command {
       interaction.reply(issue);
     }
 
-    const searchEmbed = new Discord.MessageEmbed()
-      .setColor("#ed1c24")
-      .setTitle("🔍 Searching For Video")
+    const searchEmbed = new MessageEmbed()
+      .setColor('#ed1c24')
+      .setTitle('🔍 Searching For Video')
       .setAuthor(
         interaction.client.user.username,
         interaction.client.user.avatarURL()
@@ -51,12 +57,12 @@ export default class Play extends Command {
     const response = await manager.search(mediaName);
     if (!response) {
       interaction.editReply(
-        "Sorry, an error has occurred, please try again later!"
+        'Sorry, an error has occurred, please try again later!'
       );
       return;
     }
     if (!response.tracks[0]) {
-      interaction.editReply("Sorry, there were no songs found!");
+      interaction.editReply('Sorry, there were no songs found!');
       return;
     }
 
@@ -64,8 +70,8 @@ export default class Play extends Command {
       title: response.tracks[0].title,
       url: response.tracks[0].uri,
       thumbnail: response.tracks[0].thumbnail,
-      author: response.tracks[0].author, //used for spotify
-      duration: response.tracks[0].duration, //used for spotify
+      author: response.tracks[0].author, // used for spotify
+      duration: response.tracks[0].duration, // used for spotify
     };
 
     const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
@@ -85,7 +91,7 @@ export default class Play extends Command {
 
       serverQueue = {
         textChannel: interaction.channel,
-        voiceChannel: voiceChannel,
+        voiceChannel,
         songs: [],
       };
       serverQueue.songs.push(songQueue);
@@ -101,8 +107,8 @@ export default class Play extends Command {
         JSON.stringify(serverQueue)
       );
 
-      const addQueueEmbed = new Discord.MessageEmbed()
-        .setColor("#ed1c24")
+      const addQueueEmbed = new MessageEmbed()
+        .setColor('#ed1c24')
         .setTitle(songQueue.title)
         .setURL(songQueue.url)
         .setAuthor(

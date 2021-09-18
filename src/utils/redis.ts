@@ -1,7 +1,7 @@
-import { AsyncRedis } from "async-redis";
-import * as redis from "redis";
+import { AsyncRedis } from 'async-redis';
+import * as redis from 'redis';
 
-import { redisIP, redisPort, redisPassword } from "../../config.json";
+import { redisIP, redisPort, redisPassword } from '../../config.json';
 
 export const clientRedisNoAsync = redis.createClient({
   host: redisIP,
@@ -11,6 +11,6 @@ export const clientRedisNoAsync = redis.createClient({
 
 export const clientRedis = AsyncRedis.decorate(clientRedisNoAsync);
 
-clientRedis.on("error", function (error: any) {
+clientRedis.on('error', function (error) {
   console.error(error);
 });

@@ -1,7 +1,6 @@
-import { clientRedis } from "../utils/redis";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, Message, MessageEmbed, MessageEmbedOptions } from "discord.js";
-import { Command } from "../types/Command";
+import { Command, CommandInteraction } from "../types/Command";
+import { timestring, humanizeDuration } from "timestring"
 
 export default class Seek extends Command {
     name = "seek"
@@ -17,9 +16,9 @@ export default class Seek extends Command {
         .setDescription(this.description)
         .addStringOption((option) =>
             option.setName("time").setDescription("e.g 1m 30s").setRequired(true)
-        ),
+        );
 
-    execute = async (interaction: CommandInteraction) => {
+    execute = async (interaction: CommandInteraction): Promise<void> => {
         const manager = interaction.client.manager;
         const player = manager.get(interaction.guildId);
         if (!player) {

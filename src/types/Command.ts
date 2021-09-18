@@ -1,11 +1,15 @@
 import { Client } from "../client";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder, SlashCommandSubcommandsOnlyBuilder } from "@discordjs/builders";
 import {
-    CommandInteraction,
+    CommandInteraction as DiscordCommandInteraction,
     StageChannel,
     TextChannel,
     VoiceChannel,
 } from "discord.js";
+
+export interface CommandInteraction extends DiscordCommandInteraction {
+    client: Client;
+}
 
 export abstract class Command {
     client: Client;
@@ -14,10 +18,8 @@ export abstract class Command {
     abstract args: boolean;
     abstract usage: string;
     abstract guildOnly: boolean;
-    abstract data: Omit<
-        SlashCommandBuilder,
-        "addSubcommand" | "addSubcommandGroup"
-    >;
+    abstract voice: boolean;
+    abstract data: Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup"> | SlashCommandSubcommandsOnlyBuilder;
     abstract execute: (interaction: CommandInteraction) => Promise<void>;
 
     public constructor(client: Client) {
@@ -26,35 +28,27 @@ export abstract class Command {
 
     /**
      * Check if the bot has permissions to play in the voice channel.
+     * This is just a shortcut method to this.client.hasPermissionsJoin.
      *
      * @param voiceChannel the voice channel to join
      * @returns a string with the issue preventing the bot from connecting, else
      *          null if there are no issues
      */
     protected hasPermissionsJoin(voiceChannel: VoiceChannel | StageChannel): string {
-        const permissions = voiceChannel.permissionsFor(this.client.user);
-        if (!permissions.has("CONNECT")) {
-            return "I need the permissions to join your voice channel!";
-        } else if (!permissions.has("SPEAK")) {
-            return "I need the permissions to speak in your voice channel!";
-        }
-        return null;
+        return this.client.hasPermissionsJoin(voiceChannel);
     }
 
     /**
      * 
      * Check if the bot has permissions to send a message in the channel.
+     * This is just a shortcut method to this.client.hasPermissionsSend.
      * 
      * @param textChannel the text channel to send the message in
      * @returns a string with the issue preventing the bot from sending a message, else
      *          null if there are no issues
      */
     protected hasPermissionsSend(textChannel: TextChannel): string {
-        const permissions = textChannel.permissionsFor(this.client.user);
-        if (!permissions.has("SEND_MESSAGES")) {
-            return "I need the permissions to send messages in this channel!";
-        } else if (!permissions.has("EMBED_LINKS")) {
-            return "I need the permissions to send embeds in this channel!";
-        }
-        return null;
+        return this.client.hasPermissionsSend(textChannel);
     }
+
+}

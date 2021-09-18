@@ -1,7 +1,8 @@
 import { clientRedis } from "../utils/redis";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, Message, MessageEmbed, MessageEmbedOptions } from "discord.js";
-import { Command } from "../types/Command";
+import { GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { Command, CommandInteraction } from "../types/Command";
+import { Track, TrackUtils, UnresolvedTrack } from "erela.js";
 
 export default class SaveQueue extends Command {
     name = "remove"
@@ -50,9 +51,10 @@ export default class SaveQueue extends Command {
                         .setDescription("Name of the saved queue you would like to delete.")
                         .setRequired(true)
                 )
-        ),
+        );
 
-    execute = async (interaction: CommandInteraction) => {
+    execute = async (interaction: CommandInteraction): Promise<void> => {
+        interaction.member = interaction.member as GuildMember
         if (interaction.options.getSubcommand() === "save") {
             const queueName = interaction.options.getString("name");
             let userQueues = [];
@@ -60,9 +62,10 @@ export default class SaveQueue extends Command {
             const serverQueue = JSON.parse(redisReply);
 
             if (!serverQueue) {
-                return interaction.editReply(
+                interaction.editReply(
                     "There is currently no songs in the queue to save!"
                 );
+                return;
             }
             const redisSaveReply = await clientRedis.get(
                 `save_${interaction.user.id}`
@@ -71,9 +74,10 @@ export default class SaveQueue extends Command {
                 const redisSaveQueue = JSON.parse(redisSaveReply);
                 for (let i = 0; i < redisSaveQueue.length; i++) {
                     if (redisSaveQueue[i].name === queueName) {
-                        return interaction.editReply(
+                        interaction.editReply(
                             `There is already a saved queue called ${queueName}! PLease choose a different name.`
                         );
+                        return;
                     }
                 }
                 userQueues = JSON.parse(redisSaveReply);
@@ -88,7 +92,7 @@ export default class SaveQueue extends Command {
                 `save_${interaction.user.id}`,
                 JSON.stringify(userQueues)
             );
-            const saveEmbed = new Discord.MessageEmbed()
+            const saveEmbed = new MessageEmbed()
                 .setColor("#ed1c24")
                 .setTitle(
                     `💾  I have saved the current queue under the name ${queueName}!`
@@ -98,12 +102,14 @@ export default class SaveQueue extends Command {
                     interaction.client.user.avatarURL()
                 );
 
-            return interaction.editReply({ embeds: [saveEmbed] });
+            interaction.editReply({ embeds: [saveEmbed] });
+            return;
         } else if (interaction.options.getSubcommand() === "list") {
             const redisReply = await clientRedis.get(`save_${interaction.user.id}`);
 
             if (!redisReply) {
-                return interaction.editReply("There are no saved queues!");
+                interaction.editReply("There are no saved queues!");
+                return;
             }
 
             const savedQueues = JSON.parse(redisReply);
@@ -120,7 +126,7 @@ export default class SaveQueue extends Command {
             const embedPagesArray = [];
 
             for (let i = 0; i < queueArray.length; i++) {
-                const queueEmbed = new Discord.MessageEmbed()
+                const queueEmbed = new MessageEmbed()
                     .setColor("#ed1c24")
                     .setTitle(`Current Saved Queues for ${interaction.user.username}`)
                     .setAuthor(
@@ -137,13 +143,13 @@ export default class SaveQueue extends Command {
                 embedPagesArray.push(queueEmbed);
             }
 
-            const Buttons = new Discord.MessageActionRow().addComponents(
-                new Discord.MessageButton()
+            const Buttons = new MessageActionRow().addComponents(
+                new MessageButton()
                     .setCustomId("previousPage")
                     .setLabel("⬅️")
                     .setStyle("SECONDARY"),
 
-                new Discord.MessageButton()
+                new MessageButton()
                     .setCustomId("nextPage")
                     .setLabel("➡️")
                     .setStyle("SECONDARY")
@@ -188,7 +194,8 @@ export default class SaveQueue extends Command {
         } else if (interaction.options.getSubcommand() === "load") {
             const redisReply = await clientRedis.get(`save_${interaction.user.id}`);
             if (!redisReply) {
-                return interaction.editReply("You have no queues saved!");
+                interaction.editReply("You have no queues saved!");
+                return;
             }
             const name = interaction.options.getString("name");
             const savedQueues = JSON.parse(redisReply);
@@ -207,7 +214,7 @@ export default class SaveQueue extends Command {
                 return;
             }
 
-            const loadEmbed = new Discord.MessageEmbed()
+            const loadEmbed = new MessageEmbed()
                 .setColor("#ed1c24")
                 .setTitle(`Now loading all songs from the saved queue ${name}`)
                 .setAuthor(
@@ -221,23 +228,20 @@ export default class SaveQueue extends Command {
             const voiceChannel = interaction.member.voice.channel;
 
             if (!manager.get(interaction.guildId)) {
-                const permissions = voiceChannel.permissionsFor(
-                    interaction.client.user
-                );
 
                 if (
-                    !permissions.has(Permissions.FLAGS.CONNECT) ||
-                    !permissions.has(Permissions.FLAGS.SPEAK)
+                    !this.hasPermissionsJoin(voiceChannel)
                 ) {
-                    return interaction.editReply(
+                    interaction.editReply(
                         "I don't have permission to join or speak in that voice channel!"
                     );
+                    return;
                 }
 
-                let song;
+                let song: UnresolvedTrack | Track;
 
                 if (!savedQueues[queueIndex].songs[0].url) {
-                    song = await TrackUtils.buildUnresolved({
+                    song = TrackUtils.buildUnresolved({
                         title: savedQueues[queueIndex].songs[0].title,
                         author: savedQueues[queueIndex].songs[0].author,
                         duration: savedQueues[queueIndex].songs[0].duration,
@@ -248,12 +252,14 @@ export default class SaveQueue extends Command {
                     );
 
                     if (!response) {
-                        return interaction.editReply(
+                        interaction.editReply(
                             "Sorry, an error has occurred, please try again later!"
                         );
+                        return;
                     }
                     if (!response.tracks[0]) {
-                        return interaction.editReply("Sorry, there were no songs found!");
+                        interaction.editReply("Sorry, there were no songs found!");
+                        return;
                     }
                     song = response.tracks[0];
                 }
@@ -302,7 +308,7 @@ export default class SaveQueue extends Command {
                     JSON.stringify(serverQueue)
                 );
             }
-            const queueEmbed = new Discord.MessageEmbed()
+            const queueEmbed = new MessageEmbed()
                 .setColor("#ed1c24")
                 .setTitle(`All songs from ${name} has been loaded into the queue!`)
                 .setAuthor(
@@ -315,7 +321,8 @@ export default class SaveQueue extends Command {
             const redisReply = await clientRedis.get(`save_${interaction.user.id}`);
 
             if (!redisReply) {
-                return interaction.editReply("You have no queues saved!");
+                interaction.editReply("You have no queues saved!");
+                return;
             }
 
             const name = interaction.options.getString("name");
@@ -329,9 +336,10 @@ export default class SaveQueue extends Command {
             }
 
             if (queueIndex === -1) {
-                return interaction.editReply(
+                interaction.editReply(
                     `The queue with the name of ${name} could not be found!`
                 );
+                return;
             }
 
             savedQueues.splice(queueIndex, 1);
@@ -343,7 +351,7 @@ export default class SaveQueue extends Command {
                     JSON.stringify(savedQueues)
                 );
 
-            const deleteEmbed = new Discord.MessageEmbed()
+            const deleteEmbed = new MessageEmbed()
                 .setColor("#ed1c24")
                 .setTitle(`Deleted the queue ${name}`)
                 .setAuthor(

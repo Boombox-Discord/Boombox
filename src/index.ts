@@ -1,23 +1,14 @@
-import * as Sentry from "@sentry/node";
-import { Client } from "./client";
+import * as Sentry from '@sentry/node';
 
-import { token, sentryDSN, sentryEnv } from "../config.json";
-import { LogLevel } from "@sapphire/framework";
+import { token, sentryDSN, sentryEnv } from '../config.json';
+import { Client } from './client';
 
-const client = new Client({
-  defaultPrefix: "$",
-  caseInsensitiveCommands: true,
-  logger: {
-    level: LogLevel.Trace,
-  },
-  shards: "auto",
-  intents: [
-    "GUILDS",
-    "GUILD_VOICE_STATES",
-    "DIRECT_MESSAGES",
-    "GUILD_MESSAGE_REACTIONS",
-  ],
-});
+const client = new Client(
+  "../",
+  "build/src/commands",
+  "build/src/events",
+  "build/src/manager_events",
+);
 
 Sentry.init({
   dsn: sentryDSN,
@@ -27,12 +18,10 @@ Sentry.init({
 
 async function main() {
   try {
-    client.logger.info("Logging in");
     await client.login(token);
-    client.logger.info("Logged in");
   } catch (error) {
-    client.logger.fatal(error);
     client.destroy();
+    Sentry.captureException(error);
     process.exit(1);
   }
 }

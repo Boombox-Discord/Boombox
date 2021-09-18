@@ -1,7 +1,7 @@
 import { clientRedis } from "../utils/redis";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, Message, MessageEmbed, MessageEmbedOptions } from "discord.js";
-import { Command } from "../types/Command";
+import { Command, CommandInteraction } from "../types/Command";
+import { MessageEmbed } from "discord.js";
 
 export default class Remove extends Command {
     name = "remove"
@@ -20,9 +20,9 @@ export default class Remove extends Command {
                 .setName("songnumber")
                 .setDescription("Song number in queue to remove.")
                 .setRequired(true)
-        ),
+        )
 
-    execute = async (interaction: CommandInteraction) => {
+    execute = async (interaction: CommandInteraction): Promise<void> => {
         const manager = interaction.client.manager;
         const player = manager.get(interaction.guildId);
 
@@ -58,7 +58,7 @@ export default class Remove extends Command {
             86400
         );
 
-        const replyEmbed = new Discord.MessageEmbed()
+        const replyEmbed = new MessageEmbed()
             .setColor("#ed1c24")
             .setTitle(`${deletedSong} Has Been Removed From The Queue!`)
             .setAuthor(
@@ -68,6 +68,5 @@ export default class Remove extends Command {
 
         interaction.editReply({ embeds: [replyEmbed] });
         return;
-    },
-}
+    }
 }

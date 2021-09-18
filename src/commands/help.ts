@@ -1,13 +1,19 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
-import { Command } from "../types/Command";
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { MessageEmbed } from 'discord.js';
+
+import { Command, CommandInteraction } from "../types/Command";
 
 export default class Help extends Command {
-  name: "help";
+  name: 'help';
+
   description: "List's all available commands and info for the commands.";
-  usage: "[command name]";
+
+  usage: '[command name]';
+
   args = true;
+
   guildOnly = false;
+
   voice = false;
 
   data = new SlashCommandBuilder()
@@ -15,17 +21,17 @@ export default class Help extends Command {
     .setDescription(this.description)
     .addStringOption((option) =>
       option
-        .setName("command")
-        .setDescription("Name of the command you want help for.")
+        .setName('command')
+        .setDescription('Name of the command you want help for.')
     );
 
-  execute = async (interaction: CommandInteraction) => {
+  execute = async (interaction: CommandInteraction): Promise<void> => {
     const { commands } = interaction.client;
-    const commandHelp = interaction.options.get("command");
+    const commandHelp = interaction.options.get('command');
 
     if (!commandHelp) {
-      const helpEmbed = new Discord.MessageEmbed()
-        .setColor("#ed1c24")
+      const helpEmbed = new MessageEmbed()
+        .setColor('#ed1c24')
         .setTitle(`${interaction.client.user.username} Help`)
         .setAuthor(
           interaction.client.user.username,
@@ -46,12 +52,12 @@ export default class Help extends Command {
       });
 
       await interaction.user.send({ embeds: [helpEmbed] });
-      if (interaction.channel.type === "DM") {
+      if (interaction.channel.type === 'DM') {
         return;
       }
       try {
         interaction.editReply("I've sent you a DM with all my commands!");
-      } catch (_error: any) {
+      } catch (_error) {
         interaction.editReply(
           "it seems like I can't DM you! Do you have DMs disabled?"
         );
@@ -59,7 +65,7 @@ export default class Help extends Command {
       return;
     }
 
-    const name = commandHelp.value;
+    const name = commandHelp.value as string;
     const command = commands.get(name);
 
     if (!command) {
@@ -67,8 +73,8 @@ export default class Help extends Command {
       return;
     }
 
-    const helpCommandEmbed = new Discord.MessageEmbed()
-      .setColor("#ed1c24")
+    const helpCommandEmbed = new MessageEmbed()
+      .setColor('#ed1c24')
       .setTitle(`Help For Command ${command.name}`)
       .setAuthor(
         interaction.client.user.username,
@@ -76,14 +82,14 @@ export default class Help extends Command {
       )
       .setDescription(`Usage for command ${command.name}.`)
       .addFields(
-        { name: "Command Name", value: command.name },
-        { name: "Description", value: command.description }
+        { name: 'Command Name', value: command.name },
+        { name: 'Description', value: command.description }
       );
 
     if (!command.usage) {
-      helpCommandEmbed.addField("Usage", `/${command.name}`);
+      helpCommandEmbed.addField('Usage', `/${command.name}`);
     } else {
-      helpCommandEmbed.addField("Usage", `/${command.name} ${command.usage}`);
+      helpCommandEmbed.addField('Usage', `/${command.name} ${command.usage}`);
     }
 
     interaction.editReply({ embeds: [helpCommandEmbed] });

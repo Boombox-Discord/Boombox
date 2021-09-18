@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "outDir": "./build",
-    "allowJs": true,
     "target": "es6",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
   },
-  "include": ["./src/**/*"]
+  "include": [
+    "./src/**/*"
+  ]
 }

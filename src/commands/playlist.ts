@@ -1,7 +1,7 @@
 import { clientRedis } from "../utils/redis";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember, Message, MessageEmbed, MessageEmbedOptions } from "discord.js";
-import { Command } from "../types/Command";
+import { GuildMember, MessageEmbed } from "discord.js";
+import { Command, CommandInteraction } from "../types/Command";
 
 export default class Playlist extends Command {
     name = "playlist"
@@ -20,9 +20,9 @@ export default class Playlist extends Command {
                 .setName("playlisturl")
                 .setDescription("Youtube URL, spotify album or playlist URL.")
                 .setRequired(true)
-        ),
+        );
 
-    execute = async (interaction: CommandInteraction) => {
+    execute = async (interaction: CommandInteraction): Promise<void> => {
         const manager = interaction.client.manager;
         interaction.member = interaction.member as GuildMember
         const voiceChannel = interaction.member.voice.channel;
@@ -41,7 +41,7 @@ export default class Playlist extends Command {
             return;
         }
 
-        const searchEmbed = new Discord.MessageEmbed()
+        const searchEmbed = new MessageEmbed()
             .setColor("#ed1c24")
             .setTitle("🔍 Searching For Video")
             .setAuthor(
@@ -53,9 +53,10 @@ export default class Playlist extends Command {
 
         const response = await manager.search(mediaName);
         if (!response) {
-            return interaction.editReply(
+            interaction.editReply(
                 "Sorry, an error has occurred, please try again later!"
             );
+            return;
         }
         if (!response.tracks[0]) {
             interaction.editReply("Sorry, there were no songs found!");
@@ -126,7 +127,7 @@ export default class Playlist extends Command {
             JSON.stringify(serverQueue)
         );
 
-        const playlistEmbed = new Discord.MessageEmbed()
+        const playlistEmbed = new MessageEmbed()
             .setColor("#ed1c24")
             .setTitle("I have added all the songs from that playlist into the queue.")
             .setAuthor(
