@@ -3,9 +3,6 @@ import { Event } from '../types/Event';
 
 export default class NodeError extends Event {
     run = async (node: Node, error: Error): Promise<void> => {
-        console.log
-            (
-                `Node ${node.options.identifier} had an error: ${error.message}`
-            )
+        console.log(`Node ${node.options.identifier} had an error: ${error.message}`)
     }
 }
