@@ -197,6 +197,7 @@ client.manager = new Manager({
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
     await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
+    serverQueue.songs.shift();
     // check for spotify tracks played from /playlist command
     if (!serverQueue.songs[0].url) {
       const unersolvedTrack = TrackUtils.buildUnresolved({
@@ -224,8 +225,6 @@ client.manager = new Manager({
     ) {
       sendMessage = false;
     }
-
-    serverQueue.songs.shift();
 
     if (!serverQueue.songs[0]) {
       await clientRedis.del(`guild_${player.guild}`);
