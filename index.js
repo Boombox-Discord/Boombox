@@ -197,26 +197,28 @@ client.manager = new Manager({
     const redisReply = await clientRedis.get(`guild_${player.guild}`);
     const serverQueue = JSON.parse(redisReply);
     serverQueue.songs.shift();
-    await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
-    // check for spotify tracks played from /playlist command
-    if (!serverQueue.songs[0].url) {
+    let endMsg = false;
+    if (!serverQueue.songs[0]) {
+      await clientRedis.del(`guild_${player.guild}`);
+      player.destroy();
+      endMsg = true;
+    } else {
+      await clientRedis.set(`guild_${player.guild}`, JSON.stringify(serverQueue));
+      // check for spotify tracks played from /playlist command
       const unersolvedTrack = TrackUtils.buildUnresolved({
         title: serverQueue.songs[0].title,
         author: serverQueue.songs[0].author,
         duration: serverQueue.songs[0].duration,
       });
-      return player.play(unersolvedTrack);
+      player.play(unersolvedTrack);
     }
-    const response = await client.manager.search(serverQueue.songs[0].url);
-    player.play(response.tracks[0]);
+
 
     let sendMessage = true;
     if (!player.textChannel) {
       await clientRedis.del(`guild_${player.guild}`);
       return player.destroy();
     }
-    console.log(player);
-    console.log(typeof player.textChannel);
     if (
       !client.channels.cache
         .get(player.textChannel)
@@ -226,15 +228,10 @@ client.manager = new Manager({
       sendMessage = false;
     }
 
-    if (!serverQueue.songs[0]) {
-      await clientRedis.del(`guild_${player.guild}`);
-      if (sendMessage) {
-        client.channels.cache
-          .get(player.textChannel)
-          .send("No more songs in queue, leaving voice channel!");
-      }
-
-      return player.destroy();
+    if (sendMessage && endMsg) {
+      client.channels.cache
+        .get(player.textChannel)
+        .send("No more songs in queue, leaving voice channel!");
     }
   })
   .on("playerMove", async (player, oldChannel, newChannel) => {
