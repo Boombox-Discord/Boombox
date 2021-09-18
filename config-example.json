@@ -14,9 +14,10 @@
       "password": "password"
     }
   ],
+  "redisUser": "redis",
+  "redisPassword": "",
   "redisIP": "redis",
   "redisPort": 6379,
-  "redisPassword": "",
   "sentryDSN": "",
   "sentryEnv": "dev",
   "spotifyClientID": "",

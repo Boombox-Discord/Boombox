@@ -46,17 +46,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/timestring", "npm:6.0.2"],
             ["@typescript-eslint/eslint-plugin", "virtual:de55eee66f874988b9dfec8bf39b410581263a9c32a3cfcd1923eadeb5d498b0fe1989d0fb4d7fefbd9ef813ac243a0743eef8d5a396633b19cb7d4ba66bc1cd#npm:4.31.1"],
             ["@typescript-eslint/parser", "virtual:de55eee66f874988b9dfec8bf39b410581263a9c32a3cfcd1923eadeb5d498b0fe1989d0fb4d7fefbd9ef813ac243a0743eef8d5a396633b19cb7d4ba66bc1cd#npm:4.31.1"],
-            ["async-redis", "npm:2.0.0"],
             ["discord-api-types", "npm:0.23.1"],
             ["discord.js", "npm:13.1.0"],
             ["erela.js", "npm:2.3.3"],
             ["erela.js-spotify", "npm:1.2.0"],
             ["eslint", "npm:7.32.0"],
-            ["humanize-duration", "npm:3.27.0"],
             ["husky", "npm:7.0.2"],
-            ["node-redis-scan", "npm:1.3.3"],
             ["prettier", "npm:2.4.1"],
-            ["redis", "npm:3.1.2"],
+            ["redis", "npm:4.0.0-rc.1"],
             ["timestring", "npm:6.0.0"],
             ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"]
           ],
@@ -803,16 +800,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["async-redis", [
-        ["npm:2.0.0", {
-          "packageLocation": "./.yarn/cache/async-redis-npm-2.0.0-ea0523bd57-0d92d3a8d7.zip/node_modules/async-redis/",
-          "packageDependencies": [
-            ["async-redis", "npm:2.0.0"],
-            ["redis", "npm:3.1.2"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["asynckit", [
         ["npm:0.4.0", {
           "packageLocation": "./.yarn/cache/asynckit-npm-0.4.0-c718858525-7b78c451df.zip/node_modules/asynckit/",
@@ -857,17 +844,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/timestring", "npm:6.0.2"],
             ["@typescript-eslint/eslint-plugin", "virtual:de55eee66f874988b9dfec8bf39b410581263a9c32a3cfcd1923eadeb5d498b0fe1989d0fb4d7fefbd9ef813ac243a0743eef8d5a396633b19cb7d4ba66bc1cd#npm:4.31.1"],
             ["@typescript-eslint/parser", "virtual:de55eee66f874988b9dfec8bf39b410581263a9c32a3cfcd1923eadeb5d498b0fe1989d0fb4d7fefbd9ef813ac243a0743eef8d5a396633b19cb7d4ba66bc1cd#npm:4.31.1"],
-            ["async-redis", "npm:2.0.0"],
             ["discord-api-types", "npm:0.23.1"],
             ["discord.js", "npm:13.1.0"],
             ["erela.js", "npm:2.3.3"],
             ["erela.js-spotify", "npm:1.2.0"],
             ["eslint", "npm:7.32.0"],
-            ["humanize-duration", "npm:3.27.0"],
             ["husky", "npm:7.0.2"],
-            ["node-redis-scan", "npm:1.3.3"],
             ["prettier", "npm:2.4.1"],
-            ["redis", "npm:3.1.2"],
+            ["redis", "npm:4.0.0-rc.1"],
             ["timestring", "npm:6.0.0"],
             ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"]
           ],
@@ -921,6 +905,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chalk", "npm:4.1.2"],
             ["ansi-styles", "npm:4.3.0"],
             ["supports-color", "npm:7.2.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["cluster-key-slot", [
+        ["npm:1.1.0", {
+          "packageLocation": "./.yarn/cache/cluster-key-slot-npm-1.1.0-c895b3234e-fc953c7520.zip/node_modules/cluster-key-slot/",
+          "packageDependencies": [
+            ["cluster-key-slot", "npm:1.1.0"]
           ],
           "linkType": "HARD",
         }]
@@ -1034,15 +1027,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/delayed-stream-npm-1.0.0-c5a4c4cc02-46fe6e83e2.zip/node_modules/delayed-stream/",
           "packageDependencies": [
             ["delayed-stream", "npm:1.0.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["denque", [
-        ["npm:1.5.1", {
-          "packageLocation": "./.yarn/cache/denque-npm-1.5.1-2dd42d2dcb-4375ad19d5.zip/node_modules/denque/",
-          "packageDependencies": [
-            ["denque", "npm:1.5.1"]
           ],
           "linkType": "HARD",
         }]
@@ -1498,6 +1482,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["generic-pool", [
+        ["npm:3.8.2", {
+          "packageLocation": "./.yarn/cache/generic-pool-npm-3.8.2-e08966e1f1-f549077d90.zip/node_modules/generic-pool/",
+          "packageDependencies": [
+            ["generic-pool", "npm:3.8.2"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["glob", [
         ["npm:7.1.7", {
           "packageLocation": "./.yarn/cache/glob-npm-7.1.7-5698ad9c48-b61f48973b.zip/node_modules/glob/",
@@ -1571,15 +1564,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["https-proxy-agent", "npm:5.0.0"],
             ["agent-base", "npm:6.0.2"],
             ["debug", "virtual:428f325a939c2653ad822eb3d75efb02ac311523dd0d4f9645afc39ea00bd86eceac35a9d59c9b6977d76b670a4ef0ae057ea572338a44729aa592711a8c05a3#npm:4.3.2"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["humanize-duration", [
-        ["npm:3.27.0", {
-          "packageLocation": "./.yarn/cache/humanize-duration-npm-3.27.0-dde7ed8208-db34111b39.zip/node_modules/humanize-duration/",
-          "packageDependencies": [
-            ["humanize-duration", "npm:3.27.0"]
           ],
           "linkType": "HARD",
         }]
@@ -1900,15 +1884,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["node-redis-scan", [
-        ["npm:1.3.3", {
-          "packageLocation": "./.yarn/cache/node-redis-scan-npm-1.3.3-5e14d0b86b-37b0c6bd1d.zip/node_modules/node-redis-scan/",
-          "packageDependencies": [
-            ["node-redis-scan", "npm:1.3.3"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
       ["once", [
         ["npm:1.4.0", {
           "packageLocation": "./.yarn/cache/once-npm-1.4.0-ccf03ef07a-cd0a885013.zip/node_modules/once/",
@@ -2050,23 +2025,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["redis", [
-        ["npm:3.1.2", {
-          "packageLocation": "./.yarn/cache/redis-npm-3.1.2-0dbc9973a0-baec421986.zip/node_modules/redis/",
+        ["npm:4.0.0-rc.1", {
+          "packageLocation": "./.yarn/cache/redis-npm-4.0.0-rc.1-0b445a95e3-5ba67e1b26.zip/node_modules/redis/",
           "packageDependencies": [
-            ["redis", "npm:3.1.2"],
-            ["denque", "npm:1.5.1"],
-            ["redis-commands", "npm:1.7.0"],
-            ["redis-errors", "npm:1.2.0"],
-            ["redis-parser", "npm:3.0.0"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["redis-commands", [
-        ["npm:1.7.0", {
-          "packageLocation": "./.yarn/cache/redis-commands-npm-1.7.0-528f61f9d8-d1ff7fbcb5.zip/node_modules/redis-commands/",
-          "packageDependencies": [
-            ["redis-commands", "npm:1.7.0"]
+            ["redis", "npm:4.0.0-rc.1"],
+            ["cluster-key-slot", "npm:1.1.0"],
+            ["generic-pool", "npm:3.8.2"],
+            ["redis-parser", "npm:3.0.0"],
+            ["yallist", "npm:4.0.0"]
           ],
           "linkType": "HARD",
         }]

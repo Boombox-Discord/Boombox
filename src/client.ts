@@ -13,10 +13,16 @@ import {
 import { Command } from './types/Command';
 import { Event } from './types/Event';
 import { Client as DiscordClient } from 'discord.js';
+import { createClient } from 'redis';
+import { RedisClientType } from 'redis/dist/lib/client';
+import { RedisModules } from 'redis/dist/lib/commands';
+import { RedisLuaScripts } from 'redis/dist/lib/lua-script';
+import { redisIP, redisPort, redisUser, redisPassword } from '../config.json';
 
 export class Client extends DiscordClient {
   commands: Collection<string, Command>;
   manager: Manager;
+  redis: RedisClientType<RedisModules, RedisLuaScripts>;
 
   constructor(
     relativePath: string,
@@ -33,6 +39,19 @@ export class Client extends DiscordClient {
         'GUILD_MESSAGE_REACTIONS',
       ]
     });
+    this.redis = createClient({
+      socket: {
+        url: `redis://${redisUser}@${redisPassword}${redisIP}:${redisPort}`
+      }
+    });
+    (async () => {
+
+      this.redis.on('error', (err) => console.log('Redis Client Error', err));
+
+      await this.redis.connect();
+    })();
+
+
     this.commands = new Collection();
 
     // discord.js

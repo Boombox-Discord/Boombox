@@ -2,7 +2,6 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { TrackUtils } from 'erela.js';
 
 import { Command, CommandInteraction } from "../types/Command";
-import { clientRedis } from '../utils/redis';
 import { shuffleArray } from '../utils/utils';
 
 export default class Shuffle extends Command {
@@ -29,7 +28,7 @@ export default class Shuffle extends Command {
       interaction.editReply('There is currently no song playing!');
       return;
     }
-    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+    const redisReply = await this.client.redis.get(`guild_${interaction.guildId}`);
     const serverQueue = JSON.parse(redisReply);
 
     if (serverQueue.songs.length === 1) {
@@ -42,7 +41,7 @@ export default class Shuffle extends Command {
     const ShuffledQueue = shuffleArray(serverQueue.songs);
     serverQueue.songs = ShuffledQueue;
 
-    await clientRedis.set(
+    await this.client.redis.set(
       `guild_${interaction.guildId}`,
       JSON.stringify(serverQueue)
     );

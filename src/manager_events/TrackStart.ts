@@ -1,11 +1,10 @@
 import { MessageActionRow, MessageButton, MessageEmbed, TextChannel } from 'discord.js';
 import { Player, Track } from 'erela.js';
 import { Event } from '../types/Event';
-import { clientRedis } from '../utils/redis';
 
 export default class TrackStart extends Event {
     run = async (player: Player, track: Track): Promise<void> => {
-        const redisReply = await clientRedis.get(`guild_${player.guild}`);
+        const redisReply = await this.client.redis.get(`guild_${player.guild}`);
         const serverQueue = JSON.parse(redisReply);
         if (!player.textChannel) return;
         const channel = this.client.channels.cache.get(player.textChannel) as TextChannel;

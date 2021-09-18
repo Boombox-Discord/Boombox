@@ -2,7 +2,6 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { Message, MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
 
 import { Command, CommandInteraction } from "../types/Command";
-import { clientRedis } from '../utils/redis';
 
 export default class NowPlaying extends Command {
   name = 'nowPlaying';
@@ -25,7 +24,7 @@ export default class NowPlaying extends Command {
     const { manager } = interaction.client;
     const player = manager.get(interaction.guildId);
 
-    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+    const redisReply = await this.client.redis.get(`guild_${interaction.guildId}`);
 
     if (!player && !redisReply) {
       interaction.editReply('There is currently no songs playing!');
@@ -75,7 +74,7 @@ export default class NowPlaying extends Command {
           return collector.stop();
         }
         serverQueue.songs = [];
-        await clientRedis.set(
+        await this.client.redis.set(
           `guild_${i.guildId}`,
           JSON.stringify(serverQueue)
         );

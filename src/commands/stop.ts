@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 
 import { Command, CommandInteraction } from "../types/Command";
-import { clientRedis } from '../utils/redis';
 
 export default class Stop extends Command {
   name = 'stop';
@@ -30,12 +29,12 @@ export default class Stop extends Command {
       return;
     }
 
-    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+    const redisReply = await this.client.redis.get(`guild_${interaction.guildId}`);
 
     const serverQueue = JSON.parse(redisReply);
 
     serverQueue.songs = [];
-    clientRedis.set(
+    this.client.redis.set(
       `guild_${interaction.guildId}`,
       JSON.stringify(serverQueue)
     );

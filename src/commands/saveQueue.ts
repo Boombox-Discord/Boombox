@@ -1,4 +1,3 @@
-import { clientRedis } from "../utils/redis";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import { Command, CommandInteraction } from "../types/Command";
@@ -58,7 +57,7 @@ export default class SaveQueue extends Command {
         if (interaction.options.getSubcommand() === "save") {
             const queueName = interaction.options.getString("name");
             let userQueues = [];
-            const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+            const redisReply = await this.client.redis.get(`guild_${interaction.guildId}`);
             const serverQueue = JSON.parse(redisReply);
 
             if (!serverQueue) {
@@ -67,7 +66,7 @@ export default class SaveQueue extends Command {
                 );
                 return;
             }
-            const redisSaveReply = await clientRedis.get(
+            const redisSaveReply = await this.client.redis.get(
                 `save_${interaction.user.id}`
             );
             if (redisSaveReply) {
@@ -88,7 +87,7 @@ export default class SaveQueue extends Command {
                 songs: serverQueue.songs,
             };
             userQueues.push(queuePush);
-            await clientRedis.set(
+            await this.client.redis.set(
                 `save_${interaction.user.id}`,
                 JSON.stringify(userQueues)
             );
@@ -105,7 +104,7 @@ export default class SaveQueue extends Command {
             interaction.editReply({ embeds: [saveEmbed] });
             return;
         } else if (interaction.options.getSubcommand() === "list") {
-            const redisReply = await clientRedis.get(`save_${interaction.user.id}`);
+            const redisReply = await this.client.redis.get(`save_${interaction.user.id}`);
 
             if (!redisReply) {
                 interaction.editReply("There are no saved queues!");
@@ -192,7 +191,7 @@ export default class SaveQueue extends Command {
                 }
             });
         } else if (interaction.options.getSubcommand() === "load") {
-            const redisReply = await clientRedis.get(`save_${interaction.user.id}`);
+            const redisReply = await this.client.redis.get(`save_${interaction.user.id}`);
             if (!redisReply) {
                 interaction.editReply("You have no queues saved!");
                 return;
@@ -286,14 +285,14 @@ export default class SaveQueue extends Command {
                     serverQueue.songs.push(savedQueues[queueIndex].songs[i]);
                 }
 
-                await clientRedis.set(
+                await this.client.redis.set(
                     `guild_${interaction.guildId}`,
                     JSON.stringify(serverQueue)
                 );
 
                 player.play(song);
             } else {
-                const redisQueueReply = await clientRedis.get(
+                const redisQueueReply = await this.client.redis.get(
                     `guild_${interaction.guildId}`
                 );
 
@@ -303,7 +302,7 @@ export default class SaveQueue extends Command {
                     serverQueue.songs.push(savedQueues[queueIndex].songs[i]);
                 }
 
-                await clientRedis.set(
+                await this.client.redis.set(
                     `guild_${interaction.guildId}`,
                     JSON.stringify(serverQueue)
                 );
@@ -318,7 +317,7 @@ export default class SaveQueue extends Command {
 
             interaction.editReply({ embeds: [queueEmbed] });
         } else if (interaction.options.getSubcommand() === "delete") {
-            const redisReply = await clientRedis.get(`save_${interaction.user.id}`);
+            const redisReply = await this.client.redis.get(`save_${interaction.user.id}`);
 
             if (!redisReply) {
                 interaction.editReply("You have no queues saved!");
@@ -345,8 +344,8 @@ export default class SaveQueue extends Command {
             savedQueues.splice(queueIndex, 1);
 
             savedQueues.length === 0
-                ? await clientRedis.del(`save_${interaction.user.id}`)
-                : await clientRedis.set(
+                ? await this.client.redis.del(`save_${interaction.user.id}`)
+                : await this.client.redis.set(
                     `save_${interaction.user.id}`,
                     JSON.stringify(savedQueues)
                 );

@@ -1,14 +1,13 @@
 import { TextChannel } from 'discord.js';
 import { Player } from 'erela.js';
 import { Event } from '../types/Event';
-import { clientRedis } from '../utils/redis';
 import { TrackUtils } from 'erela.js';
 
 
 
 export default class QueueEnd extends Event {
     run = async (player: Player): Promise<void> => {
-        const redisReply = await clientRedis.get(`guild_${player.guild}`);
+        const redisReply = await this.client.redis.get(`guild_${player.guild}`);
         const serverQueue = JSON.parse(redisReply);
         const channel = this.client.channels.cache.get(player.textChannel) as TextChannel;
         let sendMessage = true;
@@ -20,14 +19,14 @@ export default class QueueEnd extends Event {
         serverQueue.songs.shift();
 
         if (!serverQueue.songs[0]) {
-            await clientRedis.del(`guild_${player.guild}`);
+            await this.client.redis.del(`guild_${player.guild}`);
             if (sendMessage) {
                 channel.send('No more songs in queue, leaving voice channel!');
             }
 
             return player.destroy();
         }
-        await clientRedis.set(
+        await this.client.redis.set(
             `guild_${player.guild}`,
             JSON.stringify(serverQueue)
         );

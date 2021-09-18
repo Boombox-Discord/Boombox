@@ -5,7 +5,6 @@ services:
     build: .
     volumes:
       - .:/usr/app/ # for dev only
-      - /usr/app/node_modules
     depends_on:
       - redis
       - lavalink

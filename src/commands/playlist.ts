@@ -1,4 +1,3 @@
-import { clientRedis } from "../utils/redis";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { Command, CommandInteraction } from "../types/Command";
@@ -78,7 +77,7 @@ export default class Playlist extends Command {
         // by defualt set the for loop for playlist to zero so we start at the start of the playlist
         let forNumb = 0;
 
-        const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+        const redisReply = await this.client.redis.get(`guild_${interaction.guildId}`);
 
         let serverQueue = JSON.parse(redisReply);
 
@@ -122,7 +121,7 @@ export default class Playlist extends Command {
             };
             serverQueue.songs.push(songsAdd);
         }
-        await clientRedis.set(
+        await this.client.redis.set(
             `guild_${interaction.guildId}`,
             JSON.stringify(serverQueue)
         );

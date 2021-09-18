@@ -1,4 +1,3 @@
-import { clientRedis } from "../utils/redis";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Command, CommandInteraction } from "../types/Command";
 import { MessageEmbed } from "discord.js";
@@ -31,7 +30,7 @@ export default class Remove extends Command {
             return;
         }
 
-        const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+        const redisReply = await this.client.redis.get(`guild_${interaction.guildId}`);
         const serverQueue = JSON.parse(redisReply);
 
         const remove = interaction.options.get("songnumber").value as number;
@@ -51,7 +50,7 @@ export default class Remove extends Command {
 
         serverQueue.songs.splice(remove - 1, 1);
 
-        await clientRedis.set(
+        await this.client.redis.set(
             `guild_${interaction.guildId}`,
             JSON.stringify(serverQueue),
             "EX",

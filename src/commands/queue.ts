@@ -2,7 +2,6 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { Message, MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
 
 import { Command, CommandInteraction } from "../types/Command";
-import { clientRedis } from '../utils/redis';
 
 export default class Queue extends Command {
   name = 'queue';
@@ -22,7 +21,7 @@ export default class Queue extends Command {
     .setDescription(this.description);
 
   execute = async (interaction: CommandInteraction): Promise<void> => {
-    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+    const redisReply = await this.client.redis.get(`guild_${interaction.guildId}`);
     const serverQueue = JSON.parse(redisReply);
 
     if (!serverQueue) {

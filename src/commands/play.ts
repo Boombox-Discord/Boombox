@@ -2,7 +2,6 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { GuildMember, MessageEmbed } from 'discord.js';
 
 import { Command, CommandInteraction } from "../types/Command";
-import { clientRedis } from '../utils/redis';
 
 export default class Play extends Command {
   name = 'play';
@@ -74,7 +73,7 @@ export default class Play extends Command {
       duration: response.tracks[0].duration, // used for spotify
     };
 
-    const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
+    const redisReply = await this.client.redis.get(`guild_${interaction.guildId}`);
     let serverQueue = JSON.parse(redisReply);
 
     if (!serverQueue) {
@@ -95,14 +94,14 @@ export default class Play extends Command {
         songs: [],
       };
       serverQueue.songs.push(songQueue);
-      await clientRedis.set(
+      await this.client.redis.set(
         `guild_${interaction.guildId}`,
         JSON.stringify(serverQueue)
       );
       player.play(response.tracks[0]);
     } else {
       serverQueue.songs.push(songQueue);
-      clientRedis.set(
+      this.client.redis.set(
         `guild_${interaction.guildId}`,
         JSON.stringify(serverQueue)
       );
