@@ -1,12 +1,11 @@
 import * as Sentry from '@sentry/node';
 import {
-  CommandInteraction,
   GuildMember,
   Interaction,
 } from 'discord.js';
 
 import { Event } from '../types/Event';
-
+import { CommandInteraction } from '../types/Command';
 export default class InteractionCreate extends Event {
   run = async (args: Interaction[]): Promise<void> => {
     const [interaction] = args;
