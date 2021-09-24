@@ -164,6 +164,8 @@ export class Client extends DiscordClient {
       return "I need the permissions to send messages in this channel!";
     } else if (!permissions.has("EMBED_LINKS")) {
       return "I need the permissions to send embeds in this channel!";
+    } else if (!permissions.has("VIEW_CHANNEL")) {
+      return "I need the permissions to view this channel!";
     }
     return null;
   }
