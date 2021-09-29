@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { MessageEmbed } from 'discord.js';
 
-import { inviteLink } from '../../config.json';
-import { Command, CommandInteraction } from "../types/Command";
+import { inviteLink } from '../../config.js';
+import { Command, CommandInteraction } from "../types/Command.js";
 
 export default class Help extends Command {
   name: 'invite';

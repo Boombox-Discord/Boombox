@@ -1,5 +1,5 @@
 import { Node, TrackUtils } from 'erela.js';
-import { Event } from '../types/Event';
+import { Event } from '../types/Event.js';
 
 
 export default class NodeConnect extends Event {

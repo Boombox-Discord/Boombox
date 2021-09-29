@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { TrackUtils } from 'erela.js';
 
-import { Command, CommandInteraction } from "../types/Command";
-import { shuffleArray } from '../utils/utils';
+import { Command, CommandInteraction } from "../types/Command.js";
+import { shuffleArray } from '../utils/utils.js';
 
 export default class Shuffle extends Command {
   name = 'shuffle';

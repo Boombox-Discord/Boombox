@@ -3,7 +3,6 @@
     "outDir": "./build",
     "target": "es6",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "strict": false,
     "module": "ES2015"

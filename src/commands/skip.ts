@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Command, CommandInteraction } from "../types/Command";
+import { Command, CommandInteraction } from "../types/Command.js";
 
 export default class Skip extends Command {
     name = "skip"

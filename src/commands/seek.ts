@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Command, CommandInteraction } from "../types/Command";
+import { Command, CommandInteraction } from "../types/Command.js";
 import { timestring, humanizeDuration } from "timestring"
 
 export default class Seek extends Command {

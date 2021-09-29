@@ -5,19 +5,18 @@ import { Collection, StageChannel, TextChannel, VoiceChannel } from 'discord.js'
 import { Manager } from 'erela.js';
 import Spotify from 'erela.js-spotify';
 
-import {
-  lavalinkNodes,
-  spotifyClientID,
-  spotifyClientSecret,
-} from '../config.json';
-import { Command } from './types/Command';
-import { Event } from './types/Event';
+import { Command } from './types/Command.js';
+import { Event } from './types/Event.js';
 import { Client as DiscordClient } from 'discord.js';
 import { createClient } from 'redis';
 import { RedisClientType } from 'redis/dist/lib/client';
 import { RedisModules } from 'redis/dist/lib/commands';
 import { RedisLuaScripts } from 'redis/dist/lib/lua-script';
-import { redisIP, redisPort, redisUser, redisPassword } from '../config.json';
+import {
+  redisIP, redisPort, redisUser, redisPassword, lavalinkNodes,
+  spotifyClientID,
+  spotifyClientSecret,
+} from '../config.js';
 
 export class Client extends DiscordClient {
   commands: Collection<string, Command>;
@@ -71,6 +70,7 @@ export class Client extends DiscordClient {
         );
 
         for (const file of commandFiles) {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
           const FoundCommand = require(join(
             relativePath,
             `commands/${dir}/${file}`
@@ -87,6 +87,7 @@ export class Client extends DiscordClient {
   private loadEvents(eventsPath: string, relativePath: string) {
     const eventFiles = readdirSync(eventsPath).filter((f) => f.endsWith('.ts'));
     for (const file of eventFiles) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const FoundEvent = require(join(relativePath, `events/${file}`)).default;
       const event: Event = new FoundEvent(this);
       const eventFileName = file.split('.')[0];
@@ -102,6 +103,7 @@ export class Client extends DiscordClient {
   private loadManagerEvents(managerEventsPath: string, relativePath: string) {
     const eventFiles = readdirSync(managerEventsPath).filter((f) => f.endsWith('.ts'));
     for (const file of eventFiles) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const FoundEvent = require(join(relativePath, `events/${file}`)).default;
       const event: Event = new FoundEvent(this);
       const eventFileName = file.split('.')[0];

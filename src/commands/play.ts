@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { GuildMember, MessageEmbed } from 'discord.js';
 
-import { Command, CommandInteraction } from "../types/Command";
+import { Command, CommandInteraction } from "../types/Command.js";
 
 export default class Play extends Command {
   name = 'play';

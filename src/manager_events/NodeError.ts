@@ -1,5 +1,5 @@
 import { Node } from 'erela.js';
-import { Event } from '../types/Event';
+import { Event } from '../types/Event.js';
 
 export default class NodeError extends Event {
     run = async (node: Node, error: Error): Promise<void> => {

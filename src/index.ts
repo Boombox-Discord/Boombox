@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/node';
 
-import { token, sentryDSN, sentryEnv } from '../config.json';
-import { Client } from './client';
+import { token, sentryDSN, sentryEnv } from '../config.js';
+import { Client } from './client.js';
 
 const client = new Client(
   "../",

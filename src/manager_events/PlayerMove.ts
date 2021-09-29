@@ -1,5 +1,5 @@
 import { Player } from 'erela.js';
-import { Event } from '../types/Event';
+import { Event } from '../types/Event.js';
 
 export default class PlayerMove extends Event {
     run = async (player: Player, oldChannel: string, newChannel: string): Promise<void> => {

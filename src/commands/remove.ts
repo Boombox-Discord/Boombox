@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { Command, CommandInteraction } from "../types/Command";
+import { Command, CommandInteraction } from "../types/Command.js";
 import { MessageEmbed } from "discord.js";
 
 export default class Remove extends Command {

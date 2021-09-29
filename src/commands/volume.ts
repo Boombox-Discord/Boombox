@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { MessageEmbed } from "discord.js";
-import { Command, CommandInteraction } from "../types/Command";
+import { Command, CommandInteraction } from "../types/Command.js";
 
 export default class Volume extends Command {
     name = "volume"

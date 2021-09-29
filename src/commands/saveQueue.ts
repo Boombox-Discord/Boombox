@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
-import { Command, CommandInteraction } from "../types/Command";
+import { Command, CommandInteraction } from "../types/Command.js";
 import { Track, TrackUtils, UnresolvedTrack } from "erela.js";
 
 export default class SaveQueue extends Command {

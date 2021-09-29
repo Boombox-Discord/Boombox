@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { Message, MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
 
-import { Command, CommandInteraction } from "../types/Command";
+import { Command, CommandInteraction } from "../types/Command.js";
 
 export default class Queue extends Command {
   name = 'queue';

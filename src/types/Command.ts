@@ -1,4 +1,4 @@
-import { Client } from "../client";
+import { Client } from "../client.js";
 import { SlashCommandBuilder, SlashCommandSubcommandsOnlyBuilder } from "@discordjs/builders";
 import {
     CommandInteraction as DiscordCommandInteraction,

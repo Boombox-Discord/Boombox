@@ -1,5 +1,5 @@
 import { VoicePacket } from 'erela.js';
-import { Event } from '../types/Event';
+import { Event } from '../types/Event.js';
 
 export default class Raw extends Event {
   run = async (d: VoicePacket): Promise<void> => {

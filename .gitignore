@@ -11,8 +11,9 @@
 build/*
 
 # config
-config.json
+config.ts
 lavalink-config.yml
 
 # editors
 .vscode
+node_modules

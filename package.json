@@ -2,10 +2,11 @@
   "name": "boombox",
   "version": "3.1.0",
   "description": "A free and open source Discord music bot built on Discord.js.",
+  "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "watch": "tsc -p tsconfig.json -w",
-    "start": "node build/deploy.js && node build/index.js",
+    "start": "yarn node build/src/deploy.js && yarn node build/src/index.js",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "ci": "yarn run lint"
@@ -23,7 +24,6 @@
   ],
   "author": "Boombox-Dev",
   "license": "AGPL-3.0",
-  "type": "module",
   "bugs": {
     "url": "https://github.com/Boombox-Dev/Boombox/issues"
   },

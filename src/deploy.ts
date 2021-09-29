@@ -1,14 +1,15 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 
-import { token, clientID } from '../config.json';
-import { Command } from './types/Command';
+import { token, clientID } from '../config.js';
+import { Command } from './types/Command.js';
 import { readdirSync } from 'fs';
 
 const commands = [];
 const commandFiles = readdirSync('./commands').filter((file) => file.endsWith('.js'));
 
 for (const file of commandFiles) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const command: Command = require(`./commands/${file}`);
   commands.push(command.data.toJSON());
 }

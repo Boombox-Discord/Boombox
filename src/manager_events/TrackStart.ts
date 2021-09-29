@@ -1,6 +1,6 @@
 import { MessageActionRow, MessageButton, MessageEmbed, TextChannel } from 'discord.js';
 import { Player, Track } from 'erela.js';
-import { Event } from '../types/Event';
+import { Event } from '../types/Event.js';
 
 export default class TrackStart extends Event {
     run = async (player: Player, track: Track): Promise<void> => {

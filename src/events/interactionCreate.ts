@@ -4,8 +4,8 @@ import {
   Interaction,
 } from 'discord.js';
 
-import { Event } from '../types/Event';
-import { CommandInteraction } from '../types/Command';
+import { Event } from '../types/Event.js';
+import { CommandInteraction } from '../types/Command.js';
 export default class InteractionCreate extends Event {
   run = async (args: Interaction[]): Promise<void> => {
     const [interaction] = args;

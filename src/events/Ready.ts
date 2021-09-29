@@ -1,4 +1,4 @@
-import { Event } from '../types/Event';
+import { Event } from '../types/Event.js';
 
 export default class Ready extends Event {
   run = async (): Promise<void> => {

@@ -1,6 +1,6 @@
 import { TextChannel } from 'discord.js';
 import { Player } from 'erela.js';
-import { Event } from '../types/Event';
+import { Event } from '../types/Event.js';
 import { TrackUtils } from 'erela.js';
 
 
