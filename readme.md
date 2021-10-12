@@ -51,7 +51,7 @@
 
 ## About The Project
 
-Boombox is a free and open source music bot for Discord built on Disocrd.js. Boombox uses Lavalink as it's music server and redis as it's database. All commands on Boombox are free and will always be free to use.
+Boombox is a free and open source music bot for Discord built on Disocrd.js and the sapphire framework. Boombox uses Lavalink as it's music server and redis as it's database. All commands on Boombox are free and will always be free to use.
 
 <p align="center">
     <a href="https://www.digitalocean.com/?refcode=430f071b1344&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%203.svg" alt="DigitalOcean Referral Badge" /></a>
