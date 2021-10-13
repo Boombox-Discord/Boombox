@@ -16,13 +16,18 @@ module.exports = {
 
     const player = manager.get(interaction.guildId);
 
-    if (!player) {
-      return interaction.editReply("There is currently no song playing!");
-    }
-
     const redisReply = await clientRedis.get(`guild_${interaction.guildId}`);
 
     const serverQueue = JSON.parse(redisReply);
+
+    if (!player) {
+      console.log(serverQueue)
+      if (serverQueue || serverQueue.songs) {
+        clientRedis.del(`guild_${interaction.guildId}`);
+        return interaction.editReply("All songs from the queue have been removed.")
+      }
+      return interaction.editReply("There is currently no song playing!");
+    }
 
     serverQueue.songs = [];
     clientRedis.set(
