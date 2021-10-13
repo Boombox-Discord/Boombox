@@ -80,7 +80,7 @@ module.exports = {
         node: node[0],
       });
 
-      // player.connect();
+      player.connect();
 
       serverQueue = {
         textChannel: interaction.channel,
