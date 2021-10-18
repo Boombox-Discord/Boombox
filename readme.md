@@ -84,6 +84,8 @@ The eaisest way to start Boombox is by using docker. Docker will automaticly ins
 
 Make sure you have Docker and docker-compose installed. You can find instructions on how to install <a href="https://docs.docker.com/docker-for-windows/install/">Docker here, </a> and <a href="https://docs.docker.com/compose/install/"> docker-compose here. </a>
 
+Make sure you have Node >= 14 installed.
+
 ### Docker Install
 
 1.  Clone the repo
