@@ -76,7 +76,7 @@ client.manager = new Manager({
                         });
                         await player.connect();
                         // check for spotify tracks played from /playlist command
-                        if (!serverQueue.songs[0].url) {
+                        if (!serverQueue.songs[0]?.url) {
                             const unersolvedTrack = TrackUtils.buildUnresolved({
                                 title: serverQueue.songs[0].title,
                                 author: serverQueue.songs[0].author,
