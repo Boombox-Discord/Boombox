@@ -26,7 +26,7 @@
   "dependencies": {
     "@discordjs/builders": "^0.8.1",
     "@discordjs/rest": "^0.1.0-canary.0",
-    "@sentry/node": "^6.13.3",
+    "@sentry/node": "^6.14.0",
     "@sentry/tracing": "^6.13.2",
     "async-redis": "^2.0.0",
     "discord-api-types": "^0.24.0",
