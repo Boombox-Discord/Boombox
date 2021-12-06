@@ -2,11 +2,11 @@
   "name": "boombox",
   "version": "3.1.0",
   "description": "A free and open source Discord music bot built on Discord.js.",
-  "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "watch": "tsc -p tsconfig.json -w",
-    "start": "yarn node build/src/deploy.js && yarn node build/src/index.js",
+    "start": "yarn node build/src/index.js",
+    "dev": "yarn concurrently \"yarn watch\" \"nodemon build/src/index.js\"",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "ci": "yarn run lint"
@@ -31,17 +31,21 @@
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
-    "@sapphire/framework": "^1.0.2",
+    "@sapphire/framework": "pr-293",
+    "@sapphire/plugin-logger": "^2.1.0",
     "@sentry/node": "^6.12.0",
     "@sentry/tracing": "^6.12.0",
+    "concurrently": "^6.4.0",
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.1.0",
     "erela.js": "^2.3.3",
     "erela.js-spotify": "^1.2.0",
+    "nodemon": "^2.0.15",
     "redis": "next",
     "timestring": "^6.0.0"
   },
   "devDependencies": {
+    "@types/concurrently": "^6",
     "@types/eslint": "^7",
     "@types/node": "^16.7.10",
     "@types/redis": "^2.8.32",

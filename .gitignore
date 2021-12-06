@@ -11,7 +11,7 @@
 build/*
 
 # config
-config.ts
+config.json
 lavalink-config.yml
 
 # editors

@@ -8,15 +8,18 @@ import Spotify from 'erela.js-spotify';
 import { Command } from './types/Command.js';
 import { Event } from './types/Event.js';
 import { Client as DiscordClient } from 'discord.js';
+import {LogLevel, SapphireClient} from '@sapphire/framework';
 import { createClient } from 'redis';
 import { RedisClientType } from 'redis/dist/lib/client';
 import { RedisModules } from 'redis/dist/lib/commands';
 import { RedisLuaScripts } from 'redis/dist/lib/lua-script';
+import '@sapphire/plugin-logger/register';
 import {
   redisIP, redisPort, redisUser, redisPassword, lavalinkNodes,
   spotifyClientID,
   spotifyClientSecret,
-} from '../config.js';
+  prefix
+} from '../config.json';
 
 export class Client extends DiscordClient {
   commands: Collection<string, Command>;
@@ -120,12 +123,12 @@ export class Client extends DiscordClient {
     this.manager = new Manager({
       nodes: lavalinkNodes,
 
-      plugins: [
-        new Spotify({
-          clientID: spotifyClientID,
-          clientSecret: spotifyClientSecret,
-        }),
-      ],
+      // plugins: [
+      //   new Spotify({
+      //     clientID: spotifyClientID,
+      //     clientSecret: spotifyClientSecret,
+      //   }),
+      // ],
       send(id, payload) {
         const guild = this.guilds.cache.get(id);
         if (guild) {
@@ -170,5 +173,24 @@ export class Client extends DiscordClient {
       return "I need the permissions to view this channel!";
     }
     return null;
+  }
+}
+
+
+export class ClientNew extends SapphireClient {
+  constructor() {
+    super({
+      defaultPrefix: prefix,
+      caseInsensitiveCommands: true,
+      logger: {
+        level: LogLevel.Debug
+      },
+      intents: [
+        'GUILDS',
+        'GUILD_VOICE_STATES',
+        'DIRECT_MESSAGES',
+        'GUILD_MESSAGE_REACTIONS'
+      ]
+    })
   }
 }
