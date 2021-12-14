@@ -35,7 +35,7 @@
     "erela.js-spotify": "^1.2.0",
     "humanize-duration": "^3.27.1",
     "node-redis-scan": "^1.3.3",
-    "redis": "^3.1.2",
+    "redis": "^4.0.1",
     "timestring": "^6.0.0"
   }
 }
