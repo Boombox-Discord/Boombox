@@ -6,7 +6,7 @@ const { Manager, TrackUtils } = require("erela.js");
 const { clientRedis, clientRedisNoAsync } = require("./utils/redis");
 const Sentry = require("@sentry/node");
 const Tracing = require("@sentry/tracing");
-const Spotify = require("erela.js-spotify");
+const Spotify = require("better-erela.js-spotify").default;
 const redisScan = require("node-redis-scan");
 
 const {
