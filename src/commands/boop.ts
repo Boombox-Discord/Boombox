@@ -1,4 +1,3 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
 import { ApplicationCommandRegistry, Command } from '@sapphire/framework';
 import { CommandInteraction } from 'discord.js';
 
