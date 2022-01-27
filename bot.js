@@ -39,8 +39,7 @@ client.manager = new Manager({
 
     plugins: [
         new Spotify({
-            clientID: spotifyClientID,
-            clientSecret: spotifyClientSecret,
+            strategy: 'SCRAPE'
         }),
     ],
     send(id, payload) {

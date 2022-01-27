@@ -19,7 +19,5 @@
   "redisPassword": "",
   "sentryDSN": "",
   "sentryEnv": "dev",
-  "spotifyClientID": "",
-  "spotifyClientSecret": "",
   "clientId": "Discord Client ID"
 }
