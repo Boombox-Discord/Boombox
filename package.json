@@ -26,7 +26,7 @@
   "dependencies": {
     "@discordjs/builders": "^0.12.0",
     "@discordjs/rest": "^0.3.0",
-    "@sentry/node": "^6.17.1",
+    "@sentry/node": "^6.19.6",
     "@sentry/tracing": "^6.19.3",
     "async-redis": "^2.0.0",
     "better-erela.js-spotify": "^1.3.6",
